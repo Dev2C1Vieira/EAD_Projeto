@@ -352,6 +352,11 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 5:
             // Read the records of type Meio
+            meios = readRecords_Meio();
+            yellow();
+            printf("The records were successfully read!");
+            reset();
+            pause();
             break;
         case 6:
             clear();
@@ -367,11 +372,11 @@ int main()
     Client* clients = NULL; // Empty Linked List of type Client
     Manager* managers = NULL; // Empty Linked List of type Manager
 
-    meios = insertNewRecord_Meio(meios, 0001, "Bicicleta", 27.30, 180, 36.45, "Amorim");
-    meios = insertNewRecord_Meio(meios, 0002, "Trotinete", 16.30, 120, 24.45, "Estela");
-    meios = insertNewRecord_Meio(meios, 0003, "Mota", 21.80, 201, 57.45, "Beiriz");
+    meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180, 36.45, "Amorim");
+    meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.30, 120, 24.45, "Estela");
+    meios = insertNewRecord_Meio(meios, 3, "Mota", 21.80, 201, 57.45, "Beiriz");
 
-    clients = insertNewRecord_Client(clients, 0001, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 
+    clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 
         729164537, 753.56, "pedro@gmail.com", "pc123456789");
 
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");

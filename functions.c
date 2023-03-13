@@ -68,26 +68,6 @@ void listRecords_Meio(Meio* start) {
     }
 }
 
-int saveRecords_Meio(Meio* start)
-{
-    FILE* fp = fopen("Data/Records_Meio.txt", "w");
-
-    if (fp != NULL)
-    {
-        Meio* aux = start;
-        while (aux != NULL)
-        {
-            fprintf(fp, "%d;%s;%f;%f;%f;%s\n", aux->code, aux->type, aux->battery, 
-                aux->autonomy, aux->cost, aux->location);
-            aux = aux->next;
-        }
-        fclose(fp);
-        return(1);
-    }
-    
-    return(0);
-}
-
 Meio* removeRecord_Meio(Meio* start, int cod) {
     Meio *prev = start, *now = start, *aux;
 
@@ -112,6 +92,26 @@ Meio* removeRecord_Meio(Meio* start, int cod) {
         }
 }
 
+int saveRecords_Meio(Meio* start)
+{
+    FILE* fp = fopen("Data/Records_Meio.txt", "w");
+
+    if (fp != NULL)
+    {
+        Meio* aux = start;
+        while (aux != NULL)
+        {
+            fprintf(fp, "%d;%s;%f;%f;%f;%s\n", aux->code, aux->type, aux->battery, 
+                aux->autonomy, aux->cost, aux->location);
+            aux = aux->next;
+        }
+        fclose(fp);
+        return(1);
+    }
+    
+    return(0);
+}
+
 // Unfinished
 Meio* readRecords_Meio() {
     int code;
@@ -120,17 +120,17 @@ Meio* readRecords_Meio() {
 
     FILE* fp = fopen("../data/Records_Meio.txt","r");
 
-    Meio* aux=NULL;
+    Meio* meios = NULL;
     
-    if (fp!=NULL) {
+    if (fp != NULL) {
         while (!feof(fp))
         {
-            fscanf(fp,"%d;%[^\n]s;%2.f;%2.f;%2.f;%[^\n]s\n", &code, type, &bat, &aut, &cost, loc);
-            aux = insertNewRecord_Meio(aux, code, type, bat, aut, cost, loc);
+            fscanf(fp,"%d;%[^;];%f;%f;%f;%[^;]\n", &code, type, &bat, &aut, &cost, loc);
+            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, loc);
         }
         fclose(fp);
     }
-    return(aux);
+    return(meios);
 }
 
 // Functions related to records of type Client
