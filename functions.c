@@ -29,6 +29,8 @@ void pause() {
     reset();
 }
 
+//%[^\n] sem s Gets, para permitir valor nulo
+//%[^;] sem s, para permitir ler um dado do .txt
 
 // Functions related to records of type Meio
 
@@ -44,6 +46,7 @@ Meio* insertNewRecord_Meio(Meio* start, int cod, char type[50], float bat,
             meio->cost = cost;
             strcpy(meio->location, loc);
             meio->next = start;
+            //meio->next = NULL
             return(meio);
         }
     }

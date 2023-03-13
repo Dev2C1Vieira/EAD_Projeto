@@ -188,7 +188,9 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
 }
 
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
-    int op = 1;
+    int op = 1, cod;
+    char tipo[50], loc[50];
+    float bat, aut, custo;
 
     while (1)
     {
@@ -222,7 +224,36 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
         {
         case 1:
             // Insert a new record of type Meio
-            InsertNewRecord_Meio(meios);
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the code of the new record: ");
+            scanf("%d", &cod);
+            printf("Enter the type of the new record: ");
+            getstring(tipo);
+            printf("Enter the battery of the new record: ");
+            scanf("%f", &bat);
+            flushstdin();
+            printf("Enter the autonomy of the new record: ");
+            scanf("%f", &aut);
+            flushstdin();
+            printf("Enter the cost of the new record: ");
+            scanf("%f", &custo);
+            flushstdin();
+            printf("Enter the location of the new record: ");
+            getstring(loc);
+            if (!existRecord_Meio(meios, cod)) {
+                meios = insertNewRecord_Meio(meios, cod, tipo, bat, aut, custo, loc);
+                red();
+                printf("\n\nNew registered record!");
+                reset();
+            }
+            else {
+                red();
+                printf("\n\nCan't insert the new record");
+                reset();
+            }
+            pause();
             break;
         case 2:
             // List the records of type Meio
@@ -247,34 +278,9 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
 }
 
 // 
-int InsertNewRecord_Meio(Meio* meios) {
-    int cod;
-    char tipo[50], loc[50];
-    float bat, aut, custo;
-    yellow();
-    printf("Enter the needed information!\n\n");
-    reset();
-    printf("Enter the code of the new record: ");
-    scanf("%d", &cod);
-    printf("Enter the type of the new record: ");
-    getstring(tipo);
-    printf("Enter the battery of the new record: ");
-    scanf("%.2f", &bat);
-    flushstdin();
-    printf("Enter the autonomy of the new record: ");
-    scanf("%.2f", &aut);
-    flushstdin();
-    printf("Enter the cost of the new record: ");
-    scanf("%.2f", &custo);
-    flushstdin();
-    printf("Enter the location of the new record: ");
-    getstring(loc);
-    meios = insertNewRecord_Meio(meios, cod, tipo, bat, aut, custo, loc);
-    red();
-    printf("\n\nNew registered record!");
-    reset();
-
-    pause();
+int InsertNewRecord_Meio(Meio** meios) {
+    
+    
 
     return(1);
 }
