@@ -46,7 +46,6 @@ Meio* insertNewRecord_Meio(Meio* start, int cod, char type[50], float bat,
             meio->cost = cost;
             strcpy(meio->location, loc);
             meio->next = start;
-            //meio->next = NULL
             return(meio);
         }
     }
