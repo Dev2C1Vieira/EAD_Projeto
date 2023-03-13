@@ -85,7 +85,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             clear();
             reset();
             red();
-            printf("  --------- Wellcome to the Client Sub-Menu ---------\n");
+            printf("  --------- Wellcome to the Client Menu ---------\n");
             reset();
             if (op < 1 || op > 6)
             {
@@ -131,8 +131,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
 }
 
 int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
-    int op = 1;
-    char email[50], pass[20];
+    int op = 1, id, phn, nif, bd, bm, by;
+    char name[50], addr[50], email[50], pass[50];
+    float balance;
 
     while (1)
     {
@@ -178,7 +179,44 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 2:
             // Insert a new record of type Client
-            InsertNewRecord_Client(clients);
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter your id number: ");
+            scanf("%d", &id);
+            flushstdin();
+            printf("Enter the name you want to be displayed: ");
+            getstring(name);
+            printf("Enter your birthdate (dd-mm-yyyy): ");
+            scanf("%d-%d-%d", &bd, &bm, &by);
+            flushstdin();
+            printf("Enter your phone number: ");
+            scanf("%d", &phn);
+            flushstdin();
+            printf("Enter your address: ");
+            getstring(addr);
+            printf("Enter your nif: ");
+            scanf("%d", &nif);
+            flushstdin();
+            printf("Enter your balance: ");
+            scanf("%.2f", &balance);
+            flushstdin();
+            printf("Enter your email: ");
+            getstring(email);
+            printf("Enter your password: ");
+            getstring(pass);
+            if (!existRecord_Client(clients, id)) {
+                clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                red();
+                printf("\n\nYour registration was successful!");
+                reset();
+            }
+            else {
+                red();
+                printf("\n\nYour registration was unsuccessful.");
+                reset();
+            }
+            pause();
             break;
         case 3:
             clear();
@@ -299,47 +337,6 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             break;
         }
     }
-}
-
-
-int InsertNewRecord_Client(Client* clients) {
-    int id, phn, nif, bd, bm, by;
-    char name[50], addr[50], email[50], pass[50];
-    float balance;
-    yellow();
-    printf("Enter the needed information!\n\n");
-    reset();
-    printf("Enter your id number: ");
-    scanf("%d", &id);
-    flushstdin();
-    printf("Enter the name you want to be displayed: ");
-    getstring(name);
-    printf("Enter your birthdate (dd-mm-yyyy): ");
-    scanf("%d-%d-%d", &bd, &bm, &by);
-    flushstdin();
-    printf("Enter your phone number: ");
-    scanf("%d", &phn);
-    flushstdin();
-    printf("Enter your address: ");
-    getstring(addr);
-    printf("Enter your nif: ");
-    scanf("%d", &nif);
-    flushstdin();
-    printf("Enter your balance: ");
-    scanf("%.2f", &balance);
-    flushstdin();
-    printf("Enter your email: ");
-    getstring(email);
-    printf("Enter your password: ");
-    getstring(pass);
-    clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
-    red();
-    printf("\n\nYour registration was successful!");
-    reset();
-
-    pause();
-
-    return(1);
 }
 
 int main()
