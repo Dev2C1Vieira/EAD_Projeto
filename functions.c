@@ -88,6 +88,30 @@ int saveRecords_Meio(Meio* start)
     return(0);
 }
 
+Meio* removeRecord_Meio(Meio* start, int cod) {
+    Meio *prev = start, *now = start, *aux;
+
+    if (now == NULL) return(NULL);
+        else if (now->code == cod) {
+            aux = now->next;
+            free(now);
+            return(aux);
+        }
+        else {
+            while ((now != NULL) && (now->code != cod))
+            {
+                prev = now;
+                now = now->next;
+            }
+            if (now == NULL) return(start);
+            else {
+                prev->next = now->next;
+                free(now);
+                return(start);
+            }
+        }
+}
+
 // Unfinished
 Meio* readRecords_Meio() {
     int code;

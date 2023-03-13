@@ -312,6 +312,28 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 3:
             // Remove a record of type Meio
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the code of record you want to remove: ");
+            scanf("%d", &cod);
+            if (!existRecord_Meio(meios, cod)) {
+                red();
+                printf("\n\nUnable to remove the record");
+                reset();
+            }
+            else {
+                meios = removeRecord_Meio(meios, cod);
+                red();
+                printf("\n\nThe record containing the code");
+                yellow();
+                printf(" %d ", cod);
+                reset();
+                red();
+                printf("was successfully removed!");
+                reset();
+            }
+            pause();
             break;
         case 4:
             // Save the records of type Meio

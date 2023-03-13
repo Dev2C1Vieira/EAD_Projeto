@@ -88,13 +88,13 @@ void listRecords_Manager(Manager* start);
 
 
 // Function that removes a record of type Meio from it's code
-Meio* removeRecord_Meio(Meio* inicio, int cod);
+Meio* removeRecord_Meio(Meio* start, int cod);
 
 // Function that removes a record of type Client from it's id
-Client* removeRecord_Client(Client* inicio, int id);
+Client* removeRecord_Client(Client* start, int id);
 
 // Function that removes a record of type Manager from it's id
-Manager* removeRecord_Manager(Manager* inicio, int id);
+Manager* removeRecord_Manager(Manager* start, int id);
 
 
 // Function that saves records of type Meio in a text file
