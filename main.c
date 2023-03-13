@@ -21,7 +21,7 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
             clear();
             reset(); 
             red();
-            printf("--------- Wellcome to the Menu ---------\n");
+            printf("  -------- Welcome to the Menu ---------\n");
             reset();
             if (op < 1 || op > 3)
             {
@@ -85,11 +85,11 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             clear();
             reset();
             red();
-            printf("--------- Wellcome to the Client Sub-Menu ---------\n");
+            printf("  --------- Wellcome to the Client Sub-Menu ---------\n");
             reset();
             if (op < 1 || op > 6)
             {
-                printf("\nInvalid Option! [1-3]\n");
+                printf("\n  Invalid Option! [1-3]\n");
             }
             printf("\n  Here you need to choose the option you want to run\n");
             printf("\n  1. Insert a new record of type Meio!");
@@ -141,7 +141,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             clear();
             reset();
             red();
-            printf("--------- Wellcome to the Client Login Menu ---------\n");
+            printf("  --------- Welcome to the Client Login Menu ---------\n");
             reset();
             if (op < 1 || op > 3)
             {
@@ -153,7 +153,9 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("\n  1. I've already have one account.");
             printf("\n  2. I want to create one.");
             printf("\n  3. Return to Main Menu");
-            printf("\n\nOption: ");
+            red();
+            printf("\n\n  Option: ");
+            reset();
             scanf("%d", &op);
             flushstdin();
             reset();
@@ -199,7 +201,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             clear();
             reset();
             red();
-            printf("--------- Wellcome to the Manager Sub-Menu ---------\n");
+            printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
             reset();
             if (op < 1 || op > 6)
             {
@@ -214,7 +216,9 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             printf("\n  4. Save the records of type Meio!");
             printf("\n  5. Read the records of type Meio!");
             printf("\n  6. Return to Main Menu.");
-            printf("\n\nOption: ");
+            red();
+            printf("\n\n  Option: ");
+            reset();
             scanf("%d", &op);
             flushstdin();
             reset();
