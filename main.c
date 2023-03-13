@@ -257,14 +257,34 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 2:
             // List the records of type Meio
-            ListRecords_Meio(meios);
+            red();
+            printf("\nTable containing the information of the records of type Meio.\n");
+            // Table Construction
+            yellow();
+            printf("\n+--------------------------------------------------------------------------------------------+");
+            printf("\n|    CODE      TYPE               BATTERY      AUTONOMY       COST      LOCATION             |");
+            printf("\n+--------------------------------------------------------------------------------------------+");
+            reset();
+            listRecords_Meio(meios);
+            pause();
             break;
         case 3:
             // Remove a record of type Meio
             break;
         case 4:
             // Save the records of type Meio
-            SaveRecords_Meio(meios);
+            if (!saveRecords_Meio(meios)) {
+                red();
+                printf("Unable to save records!");
+                reset();
+            }
+            else {
+                saveRecords_Meio(meios);
+                yellow();
+                printf("Records have been saved successfully!");
+                reset();
+            }
+            pause();
             break;
         case 5:
             // Read the records of type Meio
@@ -277,15 +297,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
-// 
-int InsertNewRecord_Meio(Meio** meios) {
-    
-    
 
-    return(1);
-}
-
-//
 int InsertNewRecord_Client(Client* clients) {
     int id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
@@ -326,45 +338,6 @@ int InsertNewRecord_Client(Client* clients) {
     return(1);
 }
 
-// 
-int ListRecords_Meio(Meio* meios) {
-    red();
-    printf("\nTable containing the information of the records of type Meio.");
-    // Table Construction
-    yellow();
-    printf("\n\t+------------------------------------   ------------------------------------------------------------------------------+");
-    printf("\n\t|    CODE         TYPE                           BATTERY      AUTONOMY         COST      LOCATION                NEXT   |");
-    printf("\n\t+------------------------------------------------------------------------------------------------------------------+");
-    reset();
-    listRecords_Meio(meios);
-
-    pause();
-
-    return(1);
-}
-
-// Option 3
-// ....
-
-// 
-int SaveRecords_Meio(Meio* start) {
-    if (!saveRecords_Meio(start)) {
-        red();
-        printf("Unable to save records!");
-        reset();
-    }
-    else {
-        yellow();
-        printf("Records have been saved successfully!");
-        reset();
-    }
-    pause();
-    return(1);
-}
-
-// Option 5
-// ....
-
 int main()
 {
     Meio* meios = NULL; // Empty Linked List of type Meio
@@ -378,7 +351,7 @@ int main()
     clients = insertNewRecord_Client(clients, 0001, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 
         729164537, 753.56, "pedro@gmail.com", "pc123456789");
 
-    managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "tiago2002@gmail.com", "silva123");
+    managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
 
     showMenu(meios, clients, managers);
 

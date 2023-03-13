@@ -63,7 +63,7 @@ int existRecord_Meio(Meio* start, int cod) {
 
 void listRecords_Meio(Meio* start) {
     while (start != NULL) {
-        printf("\n\t    %-5d %-30s %f %f %f %s\n", start->code, start->type, start->battery,
+        printf("\n|    %-11d %-30s %.2f %.2f %.2f %s   |\n", start->code, start->type, start->battery,
             start->autonomy, start->cost, start->location);
         start = start->next;
     }
@@ -85,7 +85,8 @@ int saveRecords_Meio(Meio* start)
         fclose(fp);
         return(1);
     }
-    else return(0);
+    
+    return(0);
 }
 
 // Unfinished
