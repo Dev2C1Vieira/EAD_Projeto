@@ -97,6 +97,20 @@ Client* removeRecord_Client(Client* start, int id);
 Manager* removeRecord_Manager(Manager* start, int id);
 
 
+// 
+Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
+    float aut, float cost, char loc[50]);
+
+//
+Client* editRecord_Client(Client* start, int id, char nome[100],
+	int birth_day, int birth_month, int birth_year, int phn, 
+	char adr[100], int nif, float saldo, char email[50], char pass[50]);
+
+//
+Manager* editRecord_Manager(Manager* start, int id, char nome[100],
+	int birth_day, int birth_month, int birth_year, int phn, char email[50], char pass[50]);
+
+
 // Function that saves records of type Meio in a text file
 int saveRecords_Meio(Meio* start);
 

@@ -29,17 +29,17 @@ void pause() {
     reset();
 }
 
-//%[^\n] sem s Gets, para permitir valor nulo
+//   sem s Gets, para permitir valor nulo
 //%[^;] sem s, para permitir ler um dado do .txt
 
 // Functions related to records of type Meio
 
-Meio* insertNewRecord_Meio(Meio* start, int cod, char type[50], float bat,
+Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat,
     float aut, float cost, char loc[50]) {
-    if (!existRecord_Meio(start, cod)) {
+    if (!existRecord_Meio(start, code)) {
         Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
         if (meio != NULL) {
-            meio->code = cod;
+            meio->code = code;
             strcpy(meio->type, type);
             meio->battery = bat;
             meio->autonomy = aut;
@@ -52,9 +52,9 @@ Meio* insertNewRecord_Meio(Meio* start, int cod, char type[50], float bat,
     else return(start);
 }
 
-int existRecord_Meio(Meio* start, int cod) {
+int existRecord_Meio(Meio* start, int code) {
     while (start != NULL) {
-        if (start->code == cod) return(1);
+        if (start->code == code) return(1);
         start = start->next;
     }
     return(0);
@@ -68,17 +68,17 @@ void listRecords_Meio(Meio* start) {
     }
 }
 
-Meio* removeRecord_Meio(Meio* start, int cod) {
+Meio* removeRecord_Meio(Meio* start, int code) {
     Meio *prev = start, *now = start, *aux;
 
     if (now == NULL) return(NULL);
-        else if (now->code == cod) {
+        else if (now->code == code) {
             aux = now->next;
             free(now);
             return(aux);
         }
         else {
-            while ((now != NULL) && (now->code != cod))
+            while ((now != NULL) && (now->code != code))
             {
                 prev = now;
                 now = now->next;
@@ -90,6 +90,36 @@ Meio* removeRecord_Meio(Meio* start, int cod) {
                 return(start);
             }
         }
+}
+
+Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
+    float aut, float cost, char loc[50]) {
+    int code_v;
+    char type_v[50], loc_v[50];
+    float bat_v, aut_v, cost_v;
+
+    // Saving the old data in variables
+    code_v = start->code;
+    strcpy(type_v, start->type);
+    bat_v = start->battery;
+    aut_v = start->autonomy;
+    cost_v = start->cost;
+    strcpy(loc_v, start->location);
+
+    // Setting the new data to the record
+    if (existRecord_Meio(start, code)) {
+        while (start != NULL) {
+            if (start->code == code) {
+                strcpy(start->type, type);
+                start->battery = bat;
+                start->autonomy = aut;
+                start->cost = cost;
+                strcpy(start->location, loc);
+                return(start);
+            }
+        }
+    }
+    else return(start);
 }
 
 int saveRecords_Meio(Meio* start)

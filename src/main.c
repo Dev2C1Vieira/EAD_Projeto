@@ -230,7 +230,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, cod;
     char tipo[50], loc[50];
-    float bat, aut, custo;
+    float bat, aut, cost;
 
     while (1)
     {
@@ -251,9 +251,10 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             printf("\n  1. Insert a new record of type Meio!");
             printf("\n  2. List the records of type Meio!");
             printf("\n  3. Remove a record of type Meio!");
-            printf("\n  4. Save the records of type Meio!");
-            printf("\n  5. Read the records of type Meio!");
-            printf("\n  6. Return to Main Menu.");
+            printf("\n  4. Edit a record of type Meio!");
+            printf("\n  5. Save the records of type Meio!");
+            printf("\n  6. Read the records of type Meio!");
+            printf("\n  7. Return to Main Menu.");
             red();
             printf("\n\n  Option: ");
             reset();
@@ -280,12 +281,12 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             scanf("%f", &aut);
             flushstdin();
             printf("Enter the cost of the new record: ");
-            scanf("%f", &custo);
+            scanf("%f", &cost);
             flushstdin();
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, cod, tipo, bat, aut, custo, loc);
+                meios = insertNewRecord_Meio(meios, cod, tipo, bat, aut, cost, loc);
                 red();
                 printf("\n\nNew registered record!");
                 reset();
@@ -336,6 +337,47 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             pause();
             break;
         case 4:
+            yellow();
+            printf("What record id you want to edit?\n\n");
+            reset();
+            printf("Enter the code: ");
+            scanf("%d", &cod);
+            if (existRecord_Meio(meios, cod)) {
+                clear();
+                yellow();
+                printf("Edit only the fields you want to change!\n\n");
+                reset();
+                printf("Enter the type of the new record: ");
+                getstring(tipo);
+                printf("Enter the battery of the new record: ");
+                scanf(/*%[^\n]f*/"%f", &bat);
+                flushstdin();
+                printf("Enter the autonomy of the new record: ");
+                scanf(/*%[^\n]f*/"%f", &aut);
+                flushstdin();
+                printf("Enter the cost of the new record: ");
+                scanf(/*%[^\n]f*/"%f", &cost);
+                flushstdin();
+                printf("Enter the location of the new record: ");
+                getstring(loc);
+                meios = editRecord_Meio(meios, cod, tipo, bat, aut, cost, loc);
+                red();
+                printf("\n\nRegistration data has been successfully edited!");
+                reset();
+            }
+            else {
+                red();
+                printf("\n\nRecord with id");
+                yellow();
+                printf(" %d ", cod);
+                red();
+                printf("does not exist");
+                printf("\n\nUnable to edit registry data");
+                reset();
+            }
+            pause();
+            break;
+        case 5:
             // Save the records of type Meio
             if (!saveRecords_Meio(meios)) {
                 red();
@@ -350,7 +392,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             }
             pause();
             break;
-        case 5:
+        case 6:
             // Read the records of type Meio
             meios = readRecords_Meio();
             yellow();
@@ -358,7 +400,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             reset();
             pause();
             break;
-        case 6:
+        case 7:
             clear();
             showMenu(meios, clients, managers);
             break;
