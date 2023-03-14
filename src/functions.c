@@ -94,7 +94,7 @@ Meio* removeRecord_Meio(Meio* start, int cod) {
 
 int saveRecords_Meio(Meio* start)
 {
-    FILE* fp = fopen("Data/Records_Meio.txt", "w");
+    FILE* fp = fopen("../data/Records_Meio.txt", "w");
 
     if (fp != NULL)
     {
@@ -118,14 +118,14 @@ Meio* readRecords_Meio() {
     float bat, aut, cost;
     char type[50], loc[50];
 
-    FILE* fp = fopen("/data/Records_Meio.txt","r");
+    FILE* fp = fopen("../data/Records_Meio.txt","r");
 
     Meio* meios = NULL;
     
     if (fp != NULL) {
         while (!feof(fp))
         {
-            fscanf(fp,"%d;%[^;];%f;%f;%f;%[^;]\n", &code, type, &bat, &aut, &cost, loc);
+            fscanf(fp,"%d;%[^;];%f;%f;%f;%[^\n]\n", &code, type, &bat, &aut, &cost, loc);
             meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, loc);
         }
         fclose(fp);

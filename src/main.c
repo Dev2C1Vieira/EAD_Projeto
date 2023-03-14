@@ -371,7 +371,7 @@ int main()
     Meio* meios = NULL; // Empty Linked List of type Meio
     Client* clients = NULL; // Empty Linked List of type Client
     Manager* managers = NULL; // Empty Linked List of type Manager
-
+    
     meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180, 36.45, "Amorim");
     meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.30, 120, 24.45, "Estela");
     meios = insertNewRecord_Meio(meios, 3, "Mota", 21.80, 201, 57.45, "Beiriz");
