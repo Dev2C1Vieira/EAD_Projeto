@@ -50,6 +50,7 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat,
         }
     }
     else return(start);
+    //saveRecords_Meio(start);
 }
 
 int existRecord_Meio(Meio* start, int code) {
@@ -62,7 +63,7 @@ int existRecord_Meio(Meio* start, int code) {
 
 void listRecords_Meio(Meio* start) {
     while (start != NULL) {
-        printf("\n|     %-8d %-20s %-12.2f %-14.2f %-10.2f %-15s   |\n", start->code, start->type, start->battery,
+        printf("\n|     %-8d %-20s %-12.2f %-14.2f %-10.2f %-15s   |", start->code, start->type, start->battery,
             start->autonomy, start->cost, start->location);
         start = start->next;
     }
@@ -94,69 +95,74 @@ Meio* removeRecord_Meio(Meio* start, int code) {
 
 Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
     float aut, float cost, char loc[50]) {
-    int code_v;
+        int code_v;
     char type_v[50], loc_v[50];
     float bat_v, aut_v, cost_v;
 
-    // Saving the old data in variables
-    code_v = start->code;
+    Meio* aux = start;
+
+    // Saving the old data
+    /*    code_v = start->code;
     strcpy(type_v, start->type);
     bat_v = start->battery;
     aut_v = start->autonomy;
     cost_v = start->cost;
-    strcpy(loc_v, start->location);
+    strcpy(loc_v, start->location);*/
 
     // Setting the new data to the record
-    if (existRecord_Meio(start, code)) {
-        while (start != NULL) {
-            if (start->code == code) {
+    if (existRecord_Meio(aux, code)) {
+        while (aux != NULL) {
+            if (aux->code == code) {
+                
                 /*if (type[0] == '\n') {
-                    strcpy(start->type, type_v);
-                    start->battery = bat_v;
-                    start->autonomy = aut;
-                    start->cost = cost;
-                    strcpy(start->location, loc);
+                    strcpy(aux->type, type_v);
+                    aux->battery = bat_v;
+                    aux->autonomy = aut;
+                    aux->cost = cost;
+                    strcpy(aux->location, loc);
                 }
                 if (bat == -1.00) {
-                    strcpy(start->type, type);
-                    start->battery = bat_v;
-                    start->autonomy = aut;
-                    start->cost = cost;
-                    strcpy(start->location, loc);
+                    strcpy(aux->type, type);
+                    aux->battery = bat_v;
+                    aux->autonomy = aut;
+                    aux->cost = cost;
+                    strcpy(aux->location, loc);
                 }
                 if (aut == -1.00) {
-                    strcpy(start->type, type);
-                    start->battery = bat;
-                    start->autonomy = aut_v;
-                    start->cost = cost;
-                    strcpy(start->location, loc);
+                    strcpy(aux->type, type);
+                    aux->battery = bat;
+                    aux->autonomy = aut_v;
+                    aux->cost = cost;
+                    strcpy(aux->location, loc);
                 }
                 if (cost == -1.00) {
-                    strcpy(start->type, type);
-                    start->battery = bat;
-                    start->autonomy = aut;
-                    start->cost = cost_v;
-                    strcpy(start->location, loc);
+                    strcpy(aux->type, type);
+                    aux->battery = bat;
+                    aux->autonomy = aut;
+                    aux->cost = cost_v;
+                    strcpy(aux->location, loc);
                     
                 }
                 if (loc[0] == '\n') {
-                    strcpy(start->type, type);
-                    start->battery = bat_v;
-                    start->autonomy = aut;
-                    start->cost = cost;
-                    strcpy(start->location, loc_v);
-                }*/
-                strcpy(start->type, type);
-                start->battery = bat;
-                start->autonomy = aut;
-                start->cost = cost;
-                strcpy(start->location, loc);
-                return(start);
+                    strcpy(aux->type, type);
+                    aux->battery = bat_v;
+                    aux->autonomy = aut;
+                    aux->cost = cost;
+                    strcpy(aux->location, loc_v);
+                }
+                return(aux);*/
+                
+                strcpy(aux->type, type);
+                aux->battery = bat;
+                aux->autonomy = aut;
+                aux->cost = cost;
+                strcpy(aux->location, loc);
+                return(aux);
             }
         }
     }
     else return(start);
-}
+    }
 
 int saveRecords_Meio(Meio* start)
 {
@@ -189,9 +195,10 @@ Meio* readRecords_Meio() {
     Meio* meios = NULL;
     
     if (fp != NULL) {
-        while (!feof(fp))
+        char line[1024];
+        while (fgets(line, sizeof(line), fp))
         {
-            fscanf(fp,"%d;%[^;];%f;%f;%f;%[^\n]\n", &code, type, &bat, &aut, &cost, loc);
+            sscanf(line, "%d;%[^;];%f;%f;%f;%[^\n]\n", &code, type, &bat, &aut, &cost, loc);
             meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, loc);
         }
         fclose(fp);
@@ -233,8 +240,8 @@ int existRecord_Client(Client* start, int id) {
 }
 
 void listRecords_Client(Client* start) {
-    while (start != NULL) {
-        printf("%d %s %d-%d-%d %d %d %s %d %f %s %s\n", start->id, start->nome, start->birthDate.day, 
+    while (start != NULL) {      
+        printf("\n|     %d %s %d-%d-%d %d %d %s %d %f %s %s   |", start->id, start->nome, start->birthDate.day, 
         start->birthDate.month, start->birthDate.year, start->phoneNumber, start->address, 
         start->nif, start->saldo, start->email, start->password);
         start = start->next;
@@ -243,7 +250,7 @@ void listRecords_Client(Client* start) {
 
 int saveRecords_Client(Client* start)
 {
-    FILE* fp = fopen("Data/Records_Client.txt", "w");
+    FILE* fp = fopen("../data/Records_Client.txt", "w");
 
     if (fp != NULL)
     {
@@ -259,6 +266,28 @@ int saveRecords_Client(Client* start)
         return(1);
     }
     else return(0);
+}
+
+Meio* readRecords_Client() {
+    int id, phn, nif, bd, bm, by;
+    float saldo;
+    char nome[50], addr[50], email[50], pass[20];
+
+    FILE* fp = fopen("../data/Records_Client.txt","r");
+
+    Meio* meios = NULL;
+    
+    if (fp != NULL) {
+        char line[1024];
+        while (fgets(line, sizeof(line), fp))
+        {
+            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", 
+            &code, type, &bat, &aut, &cost, loc);
+            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, loc);
+        }
+        fclose(fp);
+    }
+    return(meios);
 }
 
 

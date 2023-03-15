@@ -425,6 +425,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
                 fgets(cost_s, sizeof cost_s, stdin);
                 printf("Enter the location of the new record: ");
                 fgets(loc, sizeof loc, stdin);
+                printf(" ");
                 
                 /*//https://stackoverflow.com/questions/30220691/how-to-get-empty-input-or-only-enter-in-c - LINK for stackoverflow
 
@@ -443,6 +444,20 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
                     cost = atof(cost_s);
                 }*/
                 
+                if (bat_s[0] == '\n') {
+                    bat = -1;
+                }
+                if (aut_s[0] == '\n') {
+                    aut = -1;
+                }
+                if (cost_s[0] == '\n') {
+                    cost = -1;
+                }
+                else {
+                    bat = atof(bat_s);
+                    aut = atof(aut_s);
+                    cost = atof(cost_s);
+                }
                 meios = editRecord_Meio(meios, cod, tipo, bat, aut, cost, loc);
                 red();
                 printf("\n\nRegistration data has been successfully edited!");
@@ -513,12 +528,12 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             printf("\n  Here you need to choose the option you want to run\n");
             reset();
             printf("\n  +-----------------------------------------+");
-            printf("\n  |  1. Insert a new record of type Meio!   |");
-            printf("\n  |  2. List the records of type Meio!      |");
-            printf("\n  |  3. Remove a record of type Meio!       |");
-            printf("\n  |  4. Edit a record of type Meio!         |");
-            printf("\n  |  5. Save the records of type Meio!      |");
-            printf("\n  |  6. Read the records of type Meio       |");
+            printf("\n  |  1. Insert a new record of type Client!   |");
+            printf("\n  |  2. List the records of type Client!      |");
+            printf("\n  |  3. Remove a record of type Client!       |");
+            printf("\n  |  4. Edit a record of type Client!         |");
+            printf("\n  |  5. Save the records of type Client!      |");
+            printf("\n  |  6. Read the records of type Client       |");
             printf("\n  |  7. Return to Main Menu.                |");
             printf("\n  +-----------------------------------------+");
             red();
@@ -532,26 +547,26 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
         switch (op)
         {
         case 1:
-            // Insert a new record of type Meio
+            // Insert a new record of type Client
             
             break;
         case 2:
-            // List the records of type Meio
+            // List the records of type Client
             
             break;
         case 3:
-            // Remove a record of type Meio
+            // Remove a record of type Client
             
             break;
         case 4:
             
             break;
         case 5:
-            // Save the records of type Meio
+            // Save the records of type Client
             
             break;
         case 6:
-            // Read the records of type Meio
+            // Read the records of type Client
             
             break;
         case 7:
