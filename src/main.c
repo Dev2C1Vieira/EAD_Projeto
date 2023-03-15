@@ -228,8 +228,54 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
 }
 
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
+    int op = 1;
+
+    while (1)
+    {
+        do
+        {
+            clear();
+            reset(); 
+            red();
+            printf("  -------- Welcome to the Manager Menu ---------\n");
+            reset();
+            if (op < 1 || op > 3)
+            {
+                printf("\nInvalid Option! [1-3]\n");
+            }
+            yellow();
+            printf("\n  Here you choose whether you want to manage records of type Meios or Clients!\n");
+            reset();
+            printf("\n  1. Manage Meios.");
+            printf("\n  2. Manage Clients.");
+            printf("\n  3. Return to Main Menu.");
+            red();
+            printf("\n\n  Option: ");
+            reset();
+            scanf("%d", &op);
+            flushstdin();
+            reset();
+        } while (op < 1 || op > 6);
+        clear();
+        switch (op)
+        {
+        case 1:
+            showSubMenu_Manager_Meios(meios, clients, managers);
+            break;
+        case 2:
+            showSubMenu_Manager_Clients(meios, clients, managers);
+            break;
+        case 3:
+            clear();
+            showMenu(meios, clients, managers);
+            break;
+        }
+    }
+}
+
+int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, cod;
-    char tipo[50], loc[50];
+    char tipo[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
     float bat, aut, cost;
 
     while (1)
@@ -241,27 +287,44 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             red();
             printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
             reset();
-            if (op < 1 || op > 6)
+            if (op < 1 || op > 7)
             {
-                printf("\nInvalid Option! [1-3]\n");
+                printf("\nInvalid Option! [1-7]\n");
             }
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
             reset();
-            printf("\n  1. Insert a new record of type Meio!");
-            printf("\n  2. List the records of type Meio!");
-            printf("\n  3. Remove a record of type Meio!");
-            printf("\n  4. Edit a record of type Meio!");
-            printf("\n  5. Save the records of type Meio!");
-            printf("\n  6. Read the records of type Meio!");
-            printf("\n  7. Return to Main Menu.");
+            printf("\n  +-----------------------------------------+");
+            printf("\n  |  1. Insert a new record of type Meio!   |");
+            printf("\n  |  2. List the records of type Meio!      |");
+            printf("\n  |  3. Remove a record of type Meio!       |");
+            printf("\n  |  4. Edit a record of type Meio!         |");
+            printf("\n  |  5. Save the records of type Meio!      |");
+            printf("\n  |  6. Read the records of type Meio       |");
+            printf("\n  |  7. Return to Main Menu.                |");
+            printf("\n  +-----------------------------------------+");
+            red();
+            printf("\n\n    Choose an Option: ");
+            reset();
+            scanf("%d", &op);
+            flushstdin();
+            reset();
+            /*printf("\n+-------------------------------------------------------------------------------------+");
+            printf("\n|     1. Insert a new record of type Meio!");
+            printf("\t2. List the records of type Meio!     |");
+            printf("\n|     3. Remove a record of type Meio!");
+            printf("\t\t4. Edit a record of type Meio!        |");
+            printf("\n|     5. Save the records of type Meio!");
+            printf("\t\t6. Read the records of type Meio!     |");
+            printf("\n|     7. Return to Main Menu.                                                         |");
+            printf("\n+-------------------------------------------------------------------------------------+");
             red();
             printf("\n\n  Option: ");
             reset();
             scanf("%d", &op);
             flushstdin();
-            reset();
-        } while (op < 1 || op > 6);
+            reset();*/
+        } while (op < 1 || op > 7);
         clear();
         switch (op)
         {
@@ -305,10 +368,11 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             // Table Construction
             yellow();
             printf("\n+--------------------------------------------------------------------------------------------+");
-            printf("\n|    CODE      TYPE               BATTERY      AUTONOMY       COST      LOCATION             |");
+            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      LOCATION           |");
             printf("\n+--------------------------------------------------------------------------------------------+");
             reset();
             listRecords_Meio(meios);
+            printf("\n+--------------------------------------------------------------------------------------------+");
             pause();
             break;
         case 3:
@@ -347,19 +411,38 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
                 yellow();
                 printf("Edit only the fields you want to change!\n\n");
                 reset();
+                flushstdin();
                 printf("Enter the type of the new record: ");
-                getstring(tipo);
+                fgets(tipo, sizeof tipo, stdin);
                 printf("Enter the battery of the new record: ");
-                scanf(/*%[^\n]f*/"%f", &bat);
-                flushstdin();
+                //scanf("%[^\n]", &bat_s);
+                fgets(bat_s, sizeof bat_s, stdin);
                 printf("Enter the autonomy of the new record: ");
-                scanf(/*%[^\n]f*/"%f", &aut);
-                flushstdin();
+                //scanf("%[^\n]", &aut_s);
+                fgets(aut_s, sizeof aut_s, stdin);
                 printf("Enter the cost of the new record: ");
-                scanf(/*%[^\n]f*/"%f", &cost);
-                flushstdin();
+                //scanf("%[^\n]", &cost_s);
+                fgets(cost_s, sizeof cost_s, stdin);
                 printf("Enter the location of the new record: ");
-                getstring(loc);
+                fgets(loc, sizeof loc, stdin);
+                
+                /*//https://stackoverflow.com/questions/30220691/how-to-get-empty-input-or-only-enter-in-c - LINK for stackoverflow
+
+                if (bat_s[0] == '\n') {
+                    bat = -1;
+                }
+                if (aut_s[0] == '\n') {
+                    aut = -1;
+                }
+                if (cost_s[0] == '\n') {
+                    cost = -1;
+                }
+                else {
+                    bat = atof(bat_s);
+                    aut = atof(aut_s);
+                    cost = atof(cost_s);
+                }*/
+                
                 meios = editRecord_Meio(meios, cod, tipo, bat, aut, cost, loc);
                 red();
                 printf("\n\nRegistration data has been successfully edited!");
@@ -402,7 +485,78 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 7:
             clear();
-            showMenu(meios, clients, managers);
+            showSubMenu_Manager(meios, clients, managers);
+            break;
+        }
+    }
+}
+
+int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers) {
+    int op = 1, cod;
+    char tipo[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
+    float bat, aut, cost;
+
+    while (1)
+    {
+        do
+        {
+            clear();
+            reset();
+            red();
+            printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
+            reset();
+            if (op < 1 || op > 7)
+            {
+                printf("\nInvalid Option! [1-7]\n");
+            }
+            yellow();
+            printf("\n  Here you need to choose the option you want to run\n");
+            reset();
+            printf("\n  +-----------------------------------------+");
+            printf("\n  |  1. Insert a new record of type Meio!   |");
+            printf("\n  |  2. List the records of type Meio!      |");
+            printf("\n  |  3. Remove a record of type Meio!       |");
+            printf("\n  |  4. Edit a record of type Meio!         |");
+            printf("\n  |  5. Save the records of type Meio!      |");
+            printf("\n  |  6. Read the records of type Meio       |");
+            printf("\n  |  7. Return to Main Menu.                |");
+            printf("\n  +-----------------------------------------+");
+            red();
+            printf("\n\n    Choose an Option: ");
+            reset();
+            scanf("%d", &op);
+            flushstdin();
+            reset();
+        } while (op < 1 || op > 7);
+        clear();
+        switch (op)
+        {
+        case 1:
+            // Insert a new record of type Meio
+            
+            break;
+        case 2:
+            // List the records of type Meio
+            
+            break;
+        case 3:
+            // Remove a record of type Meio
+            
+            break;
+        case 4:
+            
+            break;
+        case 5:
+            // Save the records of type Meio
+            
+            break;
+        case 6:
+            // Read the records of type Meio
+            
+            break;
+        case 7:
+            clear();
+            showSubMenu_Manager(meios, clients, managers);
             break;
         }
     }

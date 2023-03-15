@@ -29,8 +29,8 @@ void pause() {
     reset();
 }
 
-//   sem s Gets, para permitir valor nulo
-//%[^;] sem s, para permitir ler um dado do .txt
+// %[^\n] sem s Gets, para permitir valor nulo
+// %[^;] sem s, para permitir ler um dado do .txt
 
 // Functions related to records of type Meio
 
@@ -62,7 +62,7 @@ int existRecord_Meio(Meio* start, int code) {
 
 void listRecords_Meio(Meio* start) {
     while (start != NULL) {
-        printf("\n|    %-11d %-30s %.2f %.2f %.2f %s   |\n", start->code, start->type, start->battery,
+        printf("\n|     %-8d %-20s %-12.2f %-14.2f %-10.2f %-15s   |\n", start->code, start->type, start->battery,
             start->autonomy, start->cost, start->location);
         start = start->next;
     }
@@ -110,6 +110,42 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
     if (existRecord_Meio(start, code)) {
         while (start != NULL) {
             if (start->code == code) {
+                /*if (type[0] == '\n') {
+                    strcpy(start->type, type_v);
+                    start->battery = bat_v;
+                    start->autonomy = aut;
+                    start->cost = cost;
+                    strcpy(start->location, loc);
+                }
+                if (bat == -1.00) {
+                    strcpy(start->type, type);
+                    start->battery = bat_v;
+                    start->autonomy = aut;
+                    start->cost = cost;
+                    strcpy(start->location, loc);
+                }
+                if (aut == -1.00) {
+                    strcpy(start->type, type);
+                    start->battery = bat;
+                    start->autonomy = aut_v;
+                    start->cost = cost;
+                    strcpy(start->location, loc);
+                }
+                if (cost == -1.00) {
+                    strcpy(start->type, type);
+                    start->battery = bat;
+                    start->autonomy = aut;
+                    start->cost = cost_v;
+                    strcpy(start->location, loc);
+                    
+                }
+                if (loc[0] == '\n') {
+                    strcpy(start->type, type);
+                    start->battery = bat_v;
+                    start->autonomy = aut;
+                    start->cost = cost;
+                    strcpy(start->location, loc_v);
+                }*/
                 strcpy(start->type, type);
                 start->battery = bat;
                 start->autonomy = aut;
