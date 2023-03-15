@@ -34,8 +34,8 @@ void pause() {
 
 // Functions related to records of type Meio
 
-Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat,
-    float aut, float cost, char loc[50]) {
+Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
+	float bat, float aut, float cost, char loc[50]) {
     if (!existRecord_Meio(start, code)) {
         Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
         if (meio != NULL) {
@@ -73,28 +73,27 @@ Meio* removeRecord_Meio(Meio* start, int code) {
     Meio *prev = start, *now = start, *aux;
 
     if (now == NULL) return(NULL);
-        else if (now->code == code) {
-            aux = now->next;
-            free(now);
-            return(aux);
+    else if (now->code == code) {
+        aux = now->next;
+        free(now);
+        return(aux);
+    }
+    else {
+        while ((now != NULL) && (now->code != code)) {
+            prev = now;
+            now = now->next;
         }
+        if (now == NULL) return(start);
         else {
-            while ((now != NULL) && (now->code != code))
-            {
-                prev = now;
-                now = now->next;
-            }
-            if (now == NULL) return(start);
-            else {
-                prev->next = now->next;
-                free(now);
-                return(start);
-            }
+            prev->next = now->next;
+            free(now);
+            return(start);
         }
+    }
 }
 
-Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
-    float aut, float cost, char loc[50]) {
+Meio* editRecord_Meio(Meio* start, int code, char type[50], 
+	float bat, float aut, float cost, char loc[50]) {
         int code_v;
     char type_v[50], loc_v[50];
     float bat_v, aut_v, cost_v;
@@ -162,7 +161,7 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
         }
     }
     else return(start);
-    }
+}
 
 int saveRecords_Meio(Meio* start)
 {
@@ -185,7 +184,7 @@ int saveRecords_Meio(Meio* start)
 }
 
 // Unfinished
-Meio* readRecords_Meio() {
+Meio* readdrecords_Meio() {
     int code;
     float bat, aut, cost;
     char type[50], loc[50];
@@ -208,20 +207,21 @@ Meio* readRecords_Meio() {
 
 // Functions related to records of type Client
 
-Client* insertNewRecord_Client(Client* start, int id, char nome[100], int bd, int bm, int by, 
-    int phn, char adr[100], int nif, float balance, char email[50], char pass[50]) {
+Client* insertNewRecord_Client(Client* start, int id, char name[100],
+	int bd, int bm, int by, int phn, char addr[100], int nif, 
+	float balance, char email[50], char pass[50]) {
     if (!existRecord_Client(start, id)) {
         Client* client = malloc(sizeof(struct Cliente_Registo));
         if (client != NULL) {
             client->id = id;
-            strcpy(client->nome, nome);
+            strcpy(client->name, name);
             client->birthDate.day = bd;
             client->birthDate.month = bm;
             client->birthDate.year = by;
             client->phoneNumber = phn;
-            strcpy(client->address, adr);
+            strcpy(client->address, addr);
             client->nif = nif;
-            client->saldo = balance;
+            client->balance = balance;
             strcpy(client->email, email);
             strcpy(client->password, pass);
             client->next = start;
@@ -241,11 +241,59 @@ int existRecord_Client(Client* start, int id) {
 
 void listRecords_Client(Client* start) {
     while (start != NULL) {      
-        printf("\n|     %d %s %d-%d-%d %d %d %s %d %f %s %s   |", start->id, start->nome, start->birthDate.day, 
+        printf("\n|     %d %s %d-%d-%d %d %d %s %d %f %s %s   |", start->id, start->name, start->birthDate.day, 
         start->birthDate.month, start->birthDate.year, start->phoneNumber, start->address, 
-        start->nif, start->saldo, start->email, start->password);
+        start->nif, start->balance, start->email, start->password);
         start = start->next;
     }
+}
+
+Client* removeRecord_Client(Client* start, int id) {
+    Client *prev = start, *now = start, *aux;
+
+    if (now == NULL) return(NULL);
+    else if (now->id == id) {
+        aux = now->next;
+        free(now);
+        return(aux);
+    }
+    else {
+        while ((now != NULL) && (now->id != id)) {
+            prev = now;
+            now = now->next;
+        }
+        if (now == NULL) return(start);
+        else {
+            prev->next = now->next;
+            free(now);
+            return(start);
+        }
+    }
+}
+
+Client* editRecord_Client(Client* start, int id, char name[100],
+	int bd, int bm, int by, int phn, char addr[100], int nif, 
+	float balance, char email[50], char pass[50]) {
+        Client* aux = start;
+
+        if (existRecord_Client(aux, id)) {
+        while (aux != NULL) {
+            if (aux->id == id) {
+                strcpy(aux->name, name);
+                aux->birthDate.day = bd;
+                aux->birthDate.month = bm;
+                aux->birthDate.year = by;
+                aux->phoneNumber = phn;
+                strcpy(aux->address, addr);
+                aux->nif = nif;
+                aux->balance = balance;
+                strcpy(aux->email, email);
+                strcpy(aux->password, pass);
+                return(aux);
+            }
+        }
+    }
+    else return(start);
 }
 
 int saveRecords_Client(Client* start)
@@ -257,9 +305,9 @@ int saveRecords_Client(Client* start)
         Client* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%d-%d-%d;%d;%d;%s;%d;%f;%s;%s\n", aux->id, aux->nome, aux->birthDate.day, 
+            fprintf(fp, "%d;%s;%d-%d-%d;%d;%d;%s;%d;%f;%s;%s\n", aux->id, aux->name, aux->birthDate.day, 
             aux->birthDate.month, aux->birthDate.year, aux->phoneNumber, aux->address, 
-            aux->nif, aux->saldo, aux->email, aux->password);
+            aux->nif, aux->balance, aux->email, aux->password);
             aux = aux->next;
         }
         fclose(fp);
@@ -268,10 +316,10 @@ int saveRecords_Client(Client* start)
     else return(0);
 }
 
-Meio* readRecords_Client() {
+Meio* readdrecords_Client() {
     int id, phn, nif, bd, bm, by;
-    float saldo;
-    char nome[50], addr[50], email[50], pass[20];
+    float balance;
+    char name[50], addr[50], email[50], pass[20];
 
     FILE* fp = fopen("../data/Records_Client.txt","r");
 
@@ -281,9 +329,9 @@ Meio* readRecords_Client() {
         char line[1024];
         while (fgets(line, sizeof(line), fp))
         {
-            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", 
-            &code, type, &bat, &aut, &cost, loc);
-            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, loc);
+            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", &id, 
+            name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass);
+            meios = insertNewRecord_Meio(meios, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
         }
         fclose(fp);
     }
@@ -293,13 +341,13 @@ Meio* readRecords_Client() {
 
 // Functions related to records of type Manager
 
-Manager* insertNewRecord_Manager(Manager* start, int id, char nome[100],
+Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
     int bd, int bm, int by, int phn, char email[50], char pass[50]) {
     if (!existRecord_Manager(start, id)) {
         Manager* manager = malloc(sizeof(struct Gerente_Registo));
         if (manager != NULL) {
             manager->id = id;
-            strcpy(manager->nome, nome);
+            strcpy(manager->name, name);
             manager->birthDate.day = bd;
             manager->birthDate.month = bm;
             manager->birthDate.year = by;
@@ -323,7 +371,7 @@ int existRecord_Manager(Manager* start, int id) {
 
 void listRecords_Manager(Manager* start) {
     while (start != NULL) {
-        printf("%d %s %d-%d-%d %d %s %s\n", start->id, start->nome, start->birthDate.day, 
+        printf("%d %s %d-%d-%d %d %s %s\n", start->id, start->name, start->birthDate.day, 
             start->birthDate.month, start->birthDate.year, start->phoneNumber, 
             start->email, start->password);
         start = start->next;
@@ -339,7 +387,7 @@ int saveRecords_Manager(Manager* start)
         Manager* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%d-%d-%d;%d;%s;%s\n", start->id, start->nome, start->birthDate.day, 
+            fprintf(fp, "%d;%s;%d-%d-%d;%d;%s;%s\n", start->id, start->name, start->birthDate.day, 
                 start->birthDate.month, start->birthDate.year, start->phoneNumber,
                 start->email, start->password);
             aux = aux->next;

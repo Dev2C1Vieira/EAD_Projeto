@@ -28,12 +28,12 @@ typedef struct Mobilidade_Registo
 typedef struct Cliente_Registo
 {
 	int id; // Code that identifies the client
-	char nome[100];
+	char name[100];
 	struct Date birthDate;
 	int phoneNumber;
 	char address[100];
 	int nif;
-	float saldo;
+	float balance;
 	char email[50];
 	char password[20];
 	struct registo* next;
@@ -43,7 +43,7 @@ typedef struct Cliente_Registo
 typedef struct Gerente_Registo
 {
 	int id; // Code identifying the manager
-	char nome[100];
+	char name[100];
 	struct Date birthDate;
 	int phoneNumber;
 	char email[50];
@@ -54,17 +54,17 @@ typedef struct Gerente_Registo
 // Creation of functions for manipulating records
 
 // Function that inserts a new record of type Meio
-Meio* insertNewRecord_Meio(Meio* start, int cod, char tipo[50], float bat,
-	float aut, float custo, char loc[50]);
+Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
+	float bat, float aut, float cost, char loc[50]);
 
 // Function that inserts a new record of type Client
-Client* insertNewRecord_Client(Client* start, int id, char nome[100],
-	int birth_day, int birth_month, int birth_year, int phn, 
-	char adr[100], int nif, float saldo, char email[50], char pass[50]);
+Client* insertNewRecord_Client(Client* start, int id, char name[100],
+	int bd, int bm, int by, int phn, char addr[100], int nif, 
+	float balance, char email[50], char pass[50]);
 
 // Function that inserts a new record of type Manager
-Manager* insertNewRecord_Manager(Manager* start, int id, char nome[100],
-	int birth_day, int birth_month, int birth_year, int phn, char email[50], char pass[50]);
+Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
+	int bd, int bm, int by, int phn, char email[50], char pass[50]);
 
 
 // Function that checks whether or not a certain record of type Meio already exists
@@ -98,17 +98,17 @@ Manager* removeRecord_Manager(Manager* start, int id);
 
 
 // 
-Meio* editRecord_Meio(Meio* start, int code, char type[50], float bat,
-    float aut, float cost, char loc[50]);
+Meio* editRecord_Meio(Meio* start, int code, char type[50], 
+	float bat, float aut, float cost, char loc[50]);
 
 //
-Client* editRecord_Client(Client* start, int id, char nome[100],
-	int birth_day, int birth_month, int birth_year, int phn, 
-	char adr[100], int nif, float saldo, char email[50], char pass[50]);
+Client* editRecord_Client(Client* start, int id, char name[100],
+	int bd, int bm, int by, int phn, char addr[100], int nif, 
+	float balance, char email[50], char pass[50]);
 
 //
-Manager* editRecord_Manager(Manager* start, int id, char nome[100],
-	int birth_day, int birth_month, int birth_year, int phn, char email[50], char pass[50]);
+Manager* editRecord_Manager(Manager* start, int id, char name[100], int bd, 
+	int bm, int by, int phn, char email[50], char pass[50]);
 
 
 // Function that saves records of type Meio in a text file
@@ -122,13 +122,13 @@ int saveRecords_Manager(Manager* start);
 
 
 // Function that reads records of type Meio from a text file
-Meio* readRecords_Meio();
+Meio* readdrecords_Meio();
 
 // Function that reads records of type Client from a text file
-Meio* readRecords_Client();
+Meio* readdrecords_Client();
 
 // Function that reads records of type Manager from a text file
-Meio* readRecords_Manager();
+Meio* readdrecords_Manager();
 
 
 // The main menu function, where the user can log itself in in his account
