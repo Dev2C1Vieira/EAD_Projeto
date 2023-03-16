@@ -341,7 +341,13 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             }
             else {
                 red();
-                printf("\n\nCan't insert the new record");
+                printf("\n\nA record with code");
+                yellow();
+                printf(" %d ", cod);
+                reset();
+                red();
+                printf("already exists!");
+                printf("\n\nUnable to insert new record!");
                 reset();
             }
             pause();
@@ -369,13 +375,19 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             scanf("%d", &cod);
             if (!existRecord_Meio(meios, cod)) {
                 red();
-                printf("\n\nUnable to remove the record");
+                printf("\n\nThe record with code");
+                yellow();
+                printf(" %d ", cod);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to remove the record!");
                 reset();
             }
             else {
                 meios = removeRecord_Meio(meios, cod);
                 red();
-                printf("\n\nThe record containing the code");
+                printf("\n\nA record containing the code");
                 yellow();
                 printf(" %d ", cod);
                 reset();
@@ -567,12 +579,18 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             if (!existRecord_Client(clients, id)) {
                 clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
                 red();
-                printf("\n\nYour registration was successful!");
+                printf("\n\nNew client registred!!");
                 reset();
             }
             else {
                 red();
-                printf("\n\nYour registration was unsuccessful.");
+                printf("\n\nA client with id");
+                yellow();
+                printf(" %d ", id);
+                reset();
+                red();
+                printf("already exists!");
+                printf("\n\nUnable to insert new client!");
                 reset();
             }
             pause();
@@ -593,10 +611,115 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             break;
         case 3:
             // Remove a record of type Client
-            
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the id of the client you want to remove: ");
+            scanf("%d", &cod);
+            if (!existRecord_Client(clients, id)) {
+                red();
+                printf("\n\nThe client with id");
+                yellow();
+                printf(" %d ", id);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to remove the client!");
+                reset();
+            }
+            else {
+                clients = removeRecord_Client(clients, id);
+                red();
+                printf("\n\nA client containing the code");
+                yellow();
+                printf(" %d ", id);
+                reset();
+                red();
+                printf("was successfully removed!");
+                reset();
+            }
+            pause();
             break;
         case 4:
-            
+            // Edit a record of type Client
+            yellow();
+            printf("What record id you want to edit?\n\n");
+            reset();
+            printf("Enter the id: ");
+            scanf("%d", &id);
+            if (existRecord_Client(clients, id)) {
+                clear();
+                yellow();
+                printf("Edit only the fields you want to change!\n\n");
+                reset();
+                flushstdin();
+                printf("Enter the name of the new record: ");
+                fgets(tipo, sizeof tipo, stdin);
+                printf("Enter the battery of the new record: ");
+                //scanf("%[^\n]", &bat_s);
+                fgets(bat_s, sizeof bat_s, stdin);
+                printf("Enter the autonomy of the new record: ");
+                //scanf("%[^\n]", &aut_s);
+                fgets(aut_s, sizeof aut_s, stdin);
+                printf("Enter the cost of the new record: ");
+                //scanf("%[^\n]", &cost_s);
+                fgets(cost_s, sizeof cost_s, stdin);
+                printf("Enter the location of the new record: ");
+                fgets(loc, sizeof loc, stdin);
+                printf(" ");
+                
+                //meios = consultarDados(meios, id);
+                //if (aut = null) aut = meios->aut;
+                //Create consulting function
+
+
+                /*//https://stackoverflow.com/questions/30220691/how-to-get-empty-input-or-only-enter-in-c - LINK for stackoverflow
+
+                if (bat_s[0] == '\n') {
+                    bat = -1;
+                }
+                if (aut_s[0] == '\n') {
+                    aut = -1;
+                }
+                if (cost_s[0] == '\n') {
+                    cost = -1;
+                }
+                else {
+                    bat = atof(bat_s);
+                    aut = atof(aut_s);
+                    cost = atof(cost_s);
+                }*/
+                
+                if (bat_s[0] == '\n') {
+                    bat = -1;
+                }
+                if (aut_s[0] == '\n') {
+                    aut = -1;
+                }
+                if (cost_s[0] == '\n') {
+                    cost = -1;
+                }
+                else {
+                    bat = atof(bat_s);
+                    aut = atof(aut_s);
+                    cost = atof(cost_s);
+                }
+                meios = editRecord_Meio(meios, cod, tipo, bat, aut, cost, loc);
+                red();
+                printf("\n\nRegistration data has been successfully edited!");
+                reset();
+            }
+            else {
+                red();
+                printf("\n\nRecord with id");
+                yellow();
+                printf(" %d ", cod);
+                red();
+                printf("does not exist");
+                printf("\n\nUnable to edit registry data");
+                reset();
+            }
+            pause();
             break;
         case 5:
             // Save the records of type Client
@@ -624,8 +747,9 @@ int main()
     meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.30, 120, 24.45, "Estela");
     meios = insertNewRecord_Meio(meios, 3, "Mota", 21.80, 201, 57.45, "Beiriz");
 
-    clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 
-        729164537, 753.56, "pedro@gmail.com", "pc123456789");
+    clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 729164537, 753.56, "pedro@gmail.com", "123");
+        
+    clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "andre@gmail.com", "456");
 
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
 

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#pragma region Structs
+
 // Creation of data structs
 
 struct Date
@@ -51,7 +53,11 @@ typedef struct Gerente_Registo
 	struct registo* next;
 } Manager;
 
+#pragma endregion
+
 // Creation of functions for manipulating records
+
+#pragma region Insert_Functions
 
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
@@ -66,6 +72,9 @@ Client* insertNewRecord_Client(Client* start, int id, char name[100],
 Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
 	int bd, int bm, int by, int phn, char email[50], char pass[50]);
 
+#pragma endregion
+
+#pragma region Exist_Functions
 
 // Function that checks whether or not a certain record of type Meio already exists
 int existRecord_Meio(Meio* start, int cod);
@@ -76,6 +85,9 @@ int existRecord_Client(Client* start, int id);
 // Function that checks whether or not a certain record of type Manager already exists
 int existRecord_Manager(Manager* start, int id);
 
+#pragma endregion
+
+#pragma region List_Functions
 
 // Function that lists records of type Meio in the console
 void listRecords_Meio(Meio* start);
@@ -86,6 +98,9 @@ void listRecords_Client(Client* start);
 // Function that lists records of type Manager in the console
 void listRecords_Manager(Manager* start);
 
+#pragma endregion
+
+#pragma region Remove_Functions
 
 // Function that removes a record of type Meio from it's code
 Meio* removeRecord_Meio(Meio* start, int cod);
@@ -96,6 +111,9 @@ Client* removeRecord_Client(Client* start, int id);
 // Function that removes a record of type Manager from it's id
 Manager* removeRecord_Manager(Manager* start, int id);
 
+#pragma endregion
+
+#pragma region Edit_Functions
 
 // 
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
@@ -110,6 +128,9 @@ Client* editRecord_Client(Client* start, int id, char name[100],
 Manager* editRecord_Manager(Manager* start, int id, char name[100], int bd, 
 	int bm, int by, int phn, char email[50], char pass[50]);
 
+#pragma endregion
+
+#pragma region Save_Functions
 
 // Function that saves records of type Meio in a text file
 int saveRecords_Meio(Meio* start);
@@ -120,6 +141,9 @@ int saveRecords_Client(Client* start);
 // Function that saves records of type Manager in a text file
 int saveRecords_Manager(Manager* start);
 
+#pragma endregion
+
+#pragma region Read_Functions
 
 // Function that reads records of type Meio from a text file
 Meio* readrecords_Meio();
@@ -130,6 +154,9 @@ Meio* readrecords_Client();
 // Function that reads records of type Manager from a text file
 Meio* readrecords_Manager();
 
+#pragma endregion
+
+#pragma region Menu_Functions
 
 // The main menu function, where the user can log itself in in his account
 int showMenu(Meio* meios, Client* clients, Manager* managers);
@@ -143,6 +170,9 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
 // The main menu function, where the manager can log itself in in his account
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
 
+#pragma endregion
+
+#pragma region Login_Functions
 
 // Function that allows to login to Client account
 int login_Client(Client* start, char email[50], char pass[50]);
@@ -150,6 +180,9 @@ int login_Client(Client* start, char email[50], char pass[50]);
 // Function that allows to login to Manager account
 int login_Manager(Manager* start, char email[50], char pass[50]);
 
+#pragma endregion
+
+#pragma region Auxiliar_Functions
 
 void red();
 void yellow();
@@ -161,3 +194,5 @@ void clear();
 void flushstdin(void);
 
 void pause();
+
+#pragma endregion

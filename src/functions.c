@@ -5,6 +5,8 @@
 #include "header.h"
 
 
+#pragma region Auxiliar_Functions
+
 void red() { printf("\033[1;31m"); }
 void yellow() { printf("\033[1;33m"); }
 void green() { printf("\033[0;32m"); }
@@ -31,6 +33,8 @@ void pause() {
 
 // %[^\n] sem s Gets, para permitir valor nulo
 // %[^;] sem s, para permitir ler um dado do .txt
+
+#pragma endregion
 
 #pragma region Meios_Related_Functions
 
@@ -247,9 +251,9 @@ int existRecord_Client(Client* start, int id) {
 
 void listRecords_Client(Client* start) {
     while (start != NULL) {      
-        printf("\n|     %d %s %d-%d-%d %d %d %s %d %f %s %s   |", start->id, start->name, start->birthDate.day, 
-        start->birthDate.month, start->birthDate.year, start->phoneNumber, start->address, 
-        start->nif, start->balance, start->email, start->password);
+        printf("\n|     %d %s %d-%d-%d %d %d %s %d %f %s %s   |", start->id, start->name, 
+        start->birthDate.day, start->birthDate.month, start->birthDate.year, start->phoneNumber, 
+        start->address, start->nif, start->balance, start->email);
         start = start->next;
     }
 }
