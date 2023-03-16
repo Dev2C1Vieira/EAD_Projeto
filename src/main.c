@@ -309,20 +309,6 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             scanf("%d", &op);
             flushstdin();
             reset();
-            printf("\n|     1. Insert a new record of type Meio!");
-            printf("\t2. List the records of type Meio!     |");
-            printf("\n|     3. Remove a record of type Meio!");
-            printf("\t\t4. Edit a record of type Meio!        |");
-            printf("\n|     5. Save the records of type Meio!");
-            printf("\t\t6. Read the records of type Meio!     |");
-            printf("\n|     7. Return to Main Menu.                                                         |");
-            printf("\n+-------------------------------------------------------------------------------------+");
-            red();
-            printf("\n\n  Option: ");
-            reset();
-            scanf("%d", &op);
-            flushstdin();
-            reset();*/
         } while (op < 1 || op > 7);
         clear();
         switch (op)
@@ -426,6 +412,11 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
                 fgets(loc, sizeof loc, stdin);
                 printf(" ");
                 
+                //meios = consultarDados(meios, id);
+                //if (aut = null) aut = meios->aut;
+                //Create consulting function
+
+
                 /*//https://stackoverflow.com/questions/30220691/how-to-get-empty-input-or-only-enter-in-c - LINK for stackoverflow
 
                 if (bat_s[0] == '\n') {
@@ -491,7 +482,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 6:
             // Read the records of type Meio
-            meios = readRecords_Meio();
+            meios = readrecords_Meio();
             yellow();
             printf("The records were successfully read!");
             reset();
@@ -506,9 +497,9 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
 }
 
 int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers) {
-    int op = 1, cod;
-    char tipo[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
-    float bat, aut, cost;
+    int op = 1, id, phn, nif, bd, bm, by;
+    char name[50], addr[50], email[50], pass[50];
+    float balance;
 
     while (1)
     {
@@ -550,37 +541,55 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             yellow();
             printf("Enter the needed information!\n\n");
             reset();
-            printf("Enter the code of the new record: ");
-            scanf("%d", &cod);
-            printf("Enter the type of the new record: ");
-            getstring(tipo);
-            printf("Enter the battery of the new record: ");
-            scanf("%f", &bat);
+            printf("Enter your id number: ");
+            scanf("%d", &id);
             flushstdin();
-            printf("Enter the autonomy of the new record: ");
-            scanf("%f", &aut);
+            printf("Enter the name you want to be displayed: ");
+            getstring(name);
+            printf("Enter your birthdate (dd-mm-yyyy): ");
+            scanf("%d-%d-%d", &bd, &bm, &by);
             flushstdin();
-            printf("Enter the cost of the new record: ");
-            scanf("%f", &cost);
+            printf("Enter your phone number: ");
+            scanf("%d", &phn);
             flushstdin();
-            printf("Enter the location of the new record: ");
-            getstring(loc);
-            if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, cod, tipo, bat, aut, cost, loc);
+            printf("Enter your address: ");
+            getstring(addr);
+            printf("Enter your nif: ");
+            scanf("%d", &nif);
+            flushstdin();
+            printf("Enter your balance: ");
+            scanf("%.2f", &balance);
+            flushstdin();
+            printf("Enter your email: ");
+            getstring(email);
+            printf("Enter your password: ");
+            getstring(pass);
+            if (!existRecord_Client(clients, id)) {
+                clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
                 red();
-                printf("\n\nNew registered record!");
+                printf("\n\nYour registration was successful!");
                 reset();
             }
             else {
                 red();
-                printf("\n\nCan't insert the new record");
+                printf("\n\nYour registration was unsuccessful.");
                 reset();
             }
             pause();
             break;
         case 2:
             // List the records of type Client
-            
+            red();
+            printf("\nTable containing the information of the records of type Client.\n");
+            // Table Construction
+            yellow();
+            printf("\n+--------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS      NIF          BALANCE             EMAIL                      |");
+            printf("\n+--------------------------------------------------------------------------------------------------------------------------------------------+");
+            reset();
+            listRecords_Client(clients);
+            printf("\n+--------------------------------------------------------------------------------------------------------------------------------------------+");
+            pause();
             break;
         case 3:
             // Remove a record of type Client

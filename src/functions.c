@@ -32,6 +32,8 @@ void pause() {
 // %[^\n] sem s Gets, para permitir valor nulo
 // %[^;] sem s, para permitir ler um dado do .txt
 
+#pragma region Meios_Related_Functions
+
 // Functions related to records of type Meio
 
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
@@ -184,7 +186,7 @@ int saveRecords_Meio(Meio* start)
 }
 
 // Unfinished
-Meio* readdrecords_Meio() {
+Meio* readrecords_Meio() {
     int code;
     float bat, aut, cost;
     char type[50], loc[50];
@@ -204,6 +206,10 @@ Meio* readdrecords_Meio() {
     }
     return(meios);
 }
+
+#pragma endregion
+
+#pragma region Clients_Related_Functions
 
 // Functions related to records of type Client
 
@@ -316,14 +322,14 @@ int saveRecords_Client(Client* start)
     else return(0);
 }
 
-Meio* readdrecords_Client() {
+Meio* readrecords_Client() {
     int id, phn, nif, bd, bm, by;
     float balance;
     char name[50], addr[50], email[50], pass[20];
 
     FILE* fp = fopen("../data/Records_Client.txt","r");
 
-    Meio* meios = NULL;
+    Client* client = NULL;
     
     if (fp != NULL) {
         char line[1024];
@@ -331,13 +337,17 @@ Meio* readdrecords_Client() {
         {
             sscanf(line, "%d;%[^;];%d-%d-%d;%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", &id, 
             name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass);
-            meios = insertNewRecord_Meio(meios, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+            client = insertNewRecord_Client(client, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
         }
         fclose(fp);
     }
-    return(meios);
+    return(client);
 }
 
+
+#pragma endregion
+
+#pragma region Managers_Related_Functions
 
 // Functions related to records of type Manager
 
@@ -414,3 +424,4 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
     return(0);
 }
 
+#pragma endregion

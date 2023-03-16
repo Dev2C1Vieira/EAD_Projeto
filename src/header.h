@@ -122,13 +122,13 @@ int saveRecords_Manager(Manager* start);
 
 
 // Function that reads records of type Meio from a text file
-Meio* readdrecords_Meio();
+Meio* readrecords_Meio();
 
 // Function that reads records of type Client from a text file
-Meio* readdrecords_Client();
+Meio* readrecords_Client();
 
 // Function that reads records of type Manager from a text file
-Meio* readdrecords_Manager();
+Meio* readrecords_Manager();
 
 
 // The main menu function, where the user can log itself in in his account
