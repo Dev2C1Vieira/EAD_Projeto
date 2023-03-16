@@ -250,12 +250,13 @@ int existRecord_Client(Client* start, int id) {
 }
 
 void listRecords_Client(Client* start) {
-    while (start != NULL) {      
-        printf("\n|     %d %s %d-%d-%d %d %d %s %d %f %s %s   |", start->id, start->name, 
-        start->birthDate.day, start->birthDate.month, start->birthDate.year, start->phoneNumber, 
-        start->address, start->nif, start->balance, start->email);
-        start = start->next;
+    while (start != NULL) {
+        printf("\n|    %-7d %-20s %-0d-%-0d-%-9d %-18d %-40s %-15d %-13.2f %-22s     |", start->id, start->name,
+            start->birthDate.day, start->birthDate.month, start->birthDate.year, 
+            start->phoneNumber, start->address, start->nif, start->balance, start->email);
+            start = start->next;
     }
+    
 }
 
 Client* removeRecord_Client(Client* start, int id) {
@@ -315,7 +316,7 @@ int saveRecords_Client(Client* start)
         Client* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%d-%d-%d;%d;%d;%s;%d;%f;%s;%s\n", aux->id, aux->name, aux->birthDate.day, 
+            fprintf(fp, "%d;%s;%d-%d-%d;%d;%s;%d;%f;%s;%s\n", aux->id, aux->name, aux->birthDate.day, 
             aux->birthDate.month, aux->birthDate.year, aux->phoneNumber, aux->address, 
             aux->nif, aux->balance, aux->email, aux->password);
             aux = aux->next;
@@ -339,7 +340,7 @@ Meio* readrecords_Client() {
         char line[1024];
         while (fgets(line, sizeof(line), fp))
         {
-            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", &id, 
+            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", &id, 
             name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass);
             client = insertNewRecord_Client(client, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
         }
