@@ -4,11 +4,30 @@
 #include <string.h>
 #include "header.h"
 
+
+#pragma region Global_Variables
+
+// This global variable allows the logged in client ID to be retained for booking purposes
+int globalID_Client = 0;
+
+// This global variable allows the logged in manager ID to be retained for managing purposes
+int globalID_Manager = 0;
+
+// This global variable allows the logged in client Name to be retained for booking purposes
+const char* globalName_Client;
+
+// This global variable allows the logged in manager Name to be retained for booking purposes
+const char* globalName_Manager;
+
+#pragma endregion
+
 void getstring(char str[]) {
     do {
         gets(str);
     } while (strlen(str) == 0);
 }
+
+#pragma region Menu_Functions
 
 int showMenu(Meio* meios, Client* clients, Manager* managers) {
     int op = 1;
@@ -63,7 +82,10 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
                     printf("\n\nPlease try again...");
                     reset();
                 }
-                else showSubMenu_Manager(meios, clients, managers);
+                else {
+                    globalID_Manager = searchID_Manager(managers, email, pass);
+                    showSubMenu_Manager(meios, clients, managers);
+                }
                 pause();
             }
             break;
@@ -76,7 +98,9 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
 }
 
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
-    int op = 1;
+    int op = 1, cod;
+
+    globalName_Client = searchName_Client(clients, globalID_Client);
 
     while (1)
     {
@@ -87,10 +111,12 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             red();
             printf("  --------- Wellcome to the Booking Menu ---------\n");
             reset();
-            if (op < 1 || op > 6)
-            {
+            if (op < 1 || op > 6) {
+                red(); 
                 printf("\n  Invalid Option! [1-7]\n");
             }
+            reset();
+            printf("\n  Hello, %s\n", globalName_Client);
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
             reset();
@@ -132,6 +158,38 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             pause();
             break;
         case 2:
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the code of the mean you want to Book: ");
+            scanf("%d", &cod);
+            if (!existRecord_Meio(meios, cod)) {
+                red();
+                printf("\n\nThe mean with code");
+                yellow();
+                printf(" %d ", cod);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to book the mean!");
+                reset();
+            }
+            else {
+                if (!isMeioBooked(meios, cod)) {
+                    // call booking function
+                }
+                else {
+                    red();
+                    printf("\n\nThe mean with code");
+                    yellow();
+                    printf(" %d ", cod);
+                    reset();
+                    red();
+                    printf("is already booked");
+                    printf("\n\nUnable to book the mean!");
+                    reset();
+                }
+            }
             break;
         case 3:
             break;
@@ -184,17 +242,30 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
         switch (op)
         {
         case 1:
-            yellow();
-            printf("Enter the needed information!\n\n");
-            reset();
-            printf("Enter your email: ");
-            getstring(email);
-            printf("Enter your password: ");
-            getstring(pass);
-            if (!login_Client(clients, email, pass)) {
-                printf("Your information is incorrect");
+            while (1)
+            {
+                clear();
+                yellow();
+                printf("Enter the needed information!\n\n");
+                reset();
+                printf("Enter your email: ");
+                getstring(email);
+                printf("Enter your password: ");
+                getstring(pass);
+                if (!login_Client(clients, email, pass)) {
+                    red();
+                    printf("\nYour information is incorrect!");
+                    printf("\n\nPlease try again...");
+                    reset();
+                }
+                else {
+                    globalID_Client = searchID_Client(clients, email, pass);
+                    showSubMenu_Client(meios, clients, managers);
+                    
+                }
+                pause();
             }
-            else showSubMenu_Client(meios, clients, managers);
+            
             break;
         case 2:
             // Insert a new record of type Client
@@ -760,6 +831,8 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
         }
     }
 }
+
+#pragma endregion
 
 int main()
 {

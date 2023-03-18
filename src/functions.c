@@ -267,15 +267,25 @@ int countRecords_Client(Client* start) {
     return(counter);
 }
 
-int searchID_Client(Client* start, char email[50], char pass[50]) {
+const int searchID_Client(Client* start, char email[50], char pass[50]) {
     while (start != NULL)
     {
-        if ((strcpy(start->email, email) == 0) && (strcpy(start->password, pass) == 0)) {
+        if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) {
             return(start->id);
         }
         start = start->next;
     }
     return(0);
+}
+
+const char* searchName_Client(Client* start, int id) {
+    while (start != NULL) {
+        if (start->id == id) {
+            return(start->name);
+        }
+        start = start->next;
+    }
+    return("NULL");
 }
 
 int existRecord_Client(Client* start, int id) {
@@ -386,6 +396,14 @@ Meio* readrecords_Client() {
     return(client);
 }
 
+int login_Client(Client* start, char email[50], char pass[50]) {
+    while (start != NULL) {
+        if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) return(1);
+        start = start->next;
+    }
+    return(0);
+}
+
 
 #pragma endregion
 
@@ -422,7 +440,7 @@ int countRecords_Manager(Manager* start) {
     return(counter);
 }
 
-int searchID_Manager(Manager* start, char email[50], char pass[50]) {
+const int searchID_Manager(Manager* start, char email[50], char pass[50]) {
     while (start != NULL)
     {
         if ((strcpy(start->email, email) == 0) && (strcpy(start->password, pass) == 0)) {
@@ -431,6 +449,16 @@ int searchID_Manager(Manager* start, char email[50], char pass[50]) {
         start = start->next;
     }
     return(0);
+}
+
+const char* searchName_Manager(Manager* start, int id) {
+    while (start != NULL) {
+        if (start->id == id) {
+            return(start->name);
+        }
+        start = start->next;
+    }
+    return("There is no name, which matches the given id");
 }
 
 int existRecord_Manager(Manager* start, int id) {
@@ -470,14 +498,6 @@ int saveRecords_Manager(Manager* start)
     else return(0);
 }
 
-int login_Client(Client* start, char email[50], char pass[50]) {
-    while (start != NULL) {
-        if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) return(1);
-        start = start->next;
-    }
-    return(0);
-}
-
 int login_Manager(Manager* start, char email[50], char pass[50]) {
     while (start != NULL) {
         if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) return(1);
@@ -507,6 +527,17 @@ resMeios bookReservationsLast(resMeios start, void *meio, void *client) {
 	prev->next = aux;
 
 	return(start);
+}
+
+int isMeioBooked(Meio* start, int code) {
+    while (start != NULL) {
+        if (existRecord_Meio(start, code)) {
+            if (start->status == 1) return(1);
+            else return(0);
+        }
+        start = start->next;
+    }
+    return(0);
 }
 
 #pragma endregion

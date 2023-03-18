@@ -23,7 +23,7 @@ typedef struct Mobilidade_Registo
 	float autonomy;
 	float cost;
 	char location[50];
-	int status;
+	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked 
 	struct registo* next;
 } Meio;
 
@@ -54,12 +54,10 @@ typedef struct Gerente_Registo
 	struct registo* next;
 } Manager;
 
-
 typedef struct Reservations_Meios
 {
 	void *meio; // pointer to the meios struct
 	void *client; // pointer to the clients struct
-	int book; // if 0, then it is unbooked. If 1 then it is reserved.
 	struct registo *next;
 } *resMeios, SResMeios;
 
@@ -97,6 +95,8 @@ int countRecords_Manager(Manager* start);
 #pragma region Booking_Functions
 
 resMeios bookReservationsLast(resMeios start, void *meio, void *client);
+
+int isMeioBooked(Meio* start, int code);
 
 #pragma endregion
 
@@ -200,9 +200,17 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
 
 #pragma region search_ID_Functions
 
-int searchID_Client(Client* start, char email[50], char pass[50]);
+const int searchID_Client(Client* start, char email[50], char pass[50]);
 
-int searchID_Manager(Manager* start, char email[50], char pass[50]);
+const int searchID_Manager(Manager* start, char email[50], char pass[50]);
+
+#pragma endregion
+
+#pragma region search_Name_Functions
+
+const char* searchName_Client(Client* start, int id);
+
+const char* searchName_Manager(Manager* start, int id);
 
 #pragma endregion
 
