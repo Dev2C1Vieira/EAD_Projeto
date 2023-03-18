@@ -41,7 +41,7 @@ void pause() {
 // Functions related to records of type Meio
 
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, char loc[50]) {
+	float bat, float aut, float cost, int status, char loc[50]) {
     if (!existRecord_Meio(start, code)) {
         Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
         if (meio != NULL) {
@@ -50,6 +50,7 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50],
             meio->battery = bat;
             meio->autonomy = aut;
             meio->cost = cost;
+            meio->status = status;
             strcpy(meio->location, loc);
             meio->next = start;
             return(meio);
@@ -57,6 +58,15 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50],
     }
     else return(start);
     //saveRecords_Meio(start);
+}
+
+int countRecords_Meio(Meio* start) {
+    int counter = 0;
+    while (start != NULL) {
+        start = start->next;
+        counter++;
+    }
+    return(counter);
 }
 
 int existRecord_Meio(Meio* start, int code) {
@@ -69,8 +79,15 @@ int existRecord_Meio(Meio* start, int code) {
 
 void listRecords_Meio(Meio* start) {
     while (start != NULL) {
-        printf("\n|     %-8d %-20s %-12.2f %-14.2f %-10.2f %-15s   |", start->code, start->type, start->battery,
-            start->autonomy, start->cost, start->location);
+        if (start->status == 0) {
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
+                start->battery, start->autonomy, start->cost, "Por Reservar", start->location);
+                
+        }
+        else if (start->status == 1){
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
+                start->battery, start->autonomy, start->cost, "Reservado", start->location);
+        }
         start = start->next;
     }
 }
@@ -204,7 +221,7 @@ Meio* readrecords_Meio() {
         while (fgets(line, sizeof(line), fp))
         {
             sscanf(line, "%d;%[^;];%f;%f;%f;%[^\n]\n", &code, type, &bat, &aut, &cost, loc);
-            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, loc);
+            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, 0, loc);
         }
         fclose(fp);
     }
@@ -239,6 +256,26 @@ Client* insertNewRecord_Client(Client* start, int id, char name[100],
         }
     }
     else return(start);
+}
+
+int countRecords_Client(Client* start) {
+    int counter = 0;
+    while (start != NULL) {
+        start = start->next;
+        counter++;
+    }
+    return(counter);
+}
+
+int searchID_Client(Client* start, char email[50], char pass[50]) {
+    while (start != NULL)
+    {
+        if ((strcpy(start->email, email) == 0) && (strcpy(start->password, pass) == 0)) {
+            return(start->id);
+        }
+        start = start->next;
+    }
+    return(0);
 }
 
 int existRecord_Client(Client* start, int id) {
@@ -376,6 +413,26 @@ Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
     else return(start);
 }
 
+int countRecords_Manager(Manager* start) {
+    int counter = 0;
+    while (start != NULL) {
+        start = start->next;
+        counter++;
+    }
+    return(counter);
+}
+
+int searchID_Manager(Manager* start, char email[50], char pass[50]) {
+    while (start != NULL)
+    {
+        if ((strcpy(start->email, email) == 0) && (strcpy(start->password, pass) == 0)) {
+            return(start->id);
+        }
+        start = start->next;
+    }
+    return(0);
+}
+
 int existRecord_Manager(Manager* start, int id) {
     while (start != NULL) {
         if (start->id == id) return(1);
@@ -427,6 +484,29 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
         start = start->next;
     }
     return(0);
+}
+
+#pragma endregion
+
+#pragma region Booking_Related_Functions
+
+resMeios bookReservationsLast(resMeios start, void *meio, void *client) {
+	resMeios aux, prev;
+
+	aux = (resMeios)malloc(sizeof(SResMeios));
+	aux->meio = meio;
+	aux->client = client;
+	aux->next = NULL;
+
+	if (start == NULL) {
+		return(aux);
+	}
+
+	for (prev = start; prev->next != NULL; prev = prev->next);
+
+	prev->next = aux;
+
+	return(start);
 }
 
 #pragma endregion

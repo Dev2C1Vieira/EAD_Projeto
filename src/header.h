@@ -23,6 +23,7 @@ typedef struct Mobilidade_Registo
 	float autonomy;
 	float cost;
 	char location[50];
+	int status;
 	struct registo* next;
 } Meio;
 
@@ -53,6 +54,15 @@ typedef struct Gerente_Registo
 	struct registo* next;
 } Manager;
 
+
+typedef struct Reservations_Meios
+{
+	void *meio; // pointer to the meios struct
+	void *client; // pointer to the clients struct
+	int book; // if 0, then it is unbooked. If 1 then it is reserved.
+	struct registo *next;
+} *resMeios, SResMeios;
+
 #pragma endregion
 
 // Creation of functions for manipulating records
@@ -61,7 +71,7 @@ typedef struct Gerente_Registo
 
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, char loc[50]);
+	float bat, float aut, float cost, int status, char loc[50]);
 
 // Function that inserts a new record of type Client
 Client* insertNewRecord_Client(Client* start, int id, char name[100],
@@ -71,6 +81,22 @@ Client* insertNewRecord_Client(Client* start, int id, char name[100],
 // Function that inserts a new record of type Manager
 Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
 	int bd, int bm, int by, int phn, char email[50], char pass[50]);
+
+#pragma endregion
+
+#pragma region Count_Records_Functions
+
+int countRecords_Meio(Meio* start);
+
+int countRecords_Client(Client* start);
+
+int countRecords_Manager(Manager* start);
+
+#pragma endregion
+
+#pragma region Booking_Functions
+
+resMeios bookReservationsLast(resMeios start, void *meio, void *client);
 
 #pragma endregion
 
@@ -169,6 +195,14 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
 
 // The main menu function, where the manager can log itself in in his account
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
+
+#pragma endregion
+
+#pragma region search_ID_Functions
+
+int searchID_Client(Client* start, char email[50], char pass[50]);
+
+int searchID_Manager(Manager* start, char email[50], char pass[50]);
 
 #pragma endregion
 

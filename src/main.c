@@ -85,44 +85,63 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             clear();
             reset();
             red();
-            printf("  --------- Wellcome to the Client Menu ---------\n");
+            printf("  --------- Wellcome to the Booking Menu ---------\n");
             reset();
             if (op < 1 || op > 6)
             {
-                printf("\n  Invalid Option! [1-3]\n");
+                printf("\n  Invalid Option! [1-7]\n");
             }
+            yellow();
             printf("\n  Here you need to choose the option you want to run\n");
-            printf("\n  1. Insert a new record of type Meio!");
-            printf("\n  2. List the records of type Meio!");
-            printf("\n  3. Insert a new record of type Meio!");
-            printf("\n  4. Insert a new record of type Meio!");
-            printf("\n  5. Insert a new client!");
-            printf("\n  6. Return to Main Menu.");
+            reset();
+            printf("\n  +-------------------------------------------+");
+            printf("\n  |  1. List the means of transport!          |");
+            printf("\n  |  2. Book a means of transport!            |");
+            printf("\n  |  3. Stop booking a means of transport!    |");
+            printf("\n  |  4. list my booked means of transport!    |");
+            printf("\n  |  5. Save reservations!                    |");
+            printf("\n  |  6. Read reservations!                    |");
+            printf("\n  |  7. Return to Main Menu.                  |");
+            printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n  Option: ");
             reset();
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 6);
+        } while (op < 1 || op > 7);
         clear();
         switch (op)
         {
         case 1:
-            //showSubMenu_Client();
+            red();
+            printf("\nTable containing the information of the records of type Meio.\n");
+            // Table Construction
+            yellow();
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            reset();
+            listRecords_Meio(meios);
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of records of type Meios:");
+            red();
+            // this function return the amount of records in the Linked List Meios
+            printf(" %d", countRecords_Meio(meios));
+            reset();
+            pause();
             break;
         case 2:
-            //showSubMenu_Manager();
             break;
         case 3:
-            clear();
-            showMenu(meios, clients, managers);
             break;
         case 4:
             break;
         case 5:
             break;
         case 6:
+            break;
+        case 7:
             clear();
             showMenu(meios, clients, managers);
             break;
@@ -334,7 +353,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, loc);
+                meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, loc);
                 red();
                 printf("\n\nNew registered record!");
                 reset();
@@ -358,12 +377,12 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
             yellow();
-            printf("\n+--------------------------------------------------------------------------------------------+");
-            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      LOCATION           |");
-            printf("\n+--------------------------------------------------------------------------------------------+");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
             reset();
             listRecords_Meio(meios);
-            printf("\n+--------------------------------------------------------------------------------------------+");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
             pause();
             break;
         case 3:
@@ -747,16 +766,19 @@ int main()
     Meio* meios = NULL; // Empty Linked List of type Meio
     Client* clients = NULL; // Empty Linked List of type Client
     Manager* managers = NULL; // Empty Linked List of type Manager
+    resMeios reservations = NULL; // Empty Linked List of type Reservations
     
-    meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180, 36.45, "Amorim");
-    meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.30, 120, 24.45, "Estela");
-    meios = insertNewRecord_Meio(meios, 3, "Mota", 21.80, 201, 57.45, "Beiriz");
+    meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180, 36.45, 0, "Amorim");
+    meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.30, 120, 24.45, 1, "Estela");
+    meios = insertNewRecord_Meio(meios, 3, "Mota", 21.80, 201, 57.45, 0, "Beiriz");
 
-    clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 729164537, 753.56, "pedro@gmail.com", "123");
+    clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 729164537, 753.56, "ola", "123");
         
-    clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "andre@gmail.com", "456");
+    clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "adeus", "123");
 
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
+
+    //reservations = bookReservationsLast(reservations);
 
     showMenu(meios, clients, managers);
 
