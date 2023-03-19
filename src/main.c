@@ -7,20 +7,41 @@
 
 #pragma region Global_Variables
 
+/**
+ * @brief 
+ * 
+ */
 // This global variable allows the logged in client ID to be retained for booking purposes
 int globalID_Client = 0;
 
+/**
+ * @brief 
+ * 
+ */
 // This global variable allows the logged in manager ID to be retained for managing purposes
 int globalID_Manager = 0;
 
+/**
+ * @brief 
+ * 
+ */
 // This global variable allows the logged in client Name to be retained for booking purposes
 const char* globalName_Client;
 
+/**
+ * @brief 
+ * 
+ */
 // This global variable allows the logged in manager Name to be retained for booking purposes
 const char* globalName_Manager;
 
 #pragma endregion
 
+/**
+ * @brief 
+ * 
+ * @param str 
+ */
 // this functions is needed to read a string in case it is not empty
 void getstring(char str[]) {
     do {
@@ -30,6 +51,14 @@ void getstring(char str[]) {
 
 #pragma region Menu_Functions
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 int showMenu(Meio* meios, Client* clients, Manager* managers) {
     int op = 1;
     char email[50], pass[50];
@@ -99,6 +128,14 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, cod;
 
@@ -276,6 +313,14 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
@@ -387,6 +432,14 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
     int op = 1;
 
@@ -433,6 +486,14 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, cod;
     char type[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
@@ -668,6 +729,14 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
@@ -908,25 +977,65 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
 
 int main()
 {
+    /**
+     * @brief 
+     * 
+     */
     Meio* meios = NULL; // Empty Linked List of type Meio
+    /**
+     * @brief 
+     * 
+     */
     Client* clients = NULL; // Empty Linked List of type Client
+    /**
+     * @brief 
+     * 
+     */
     Manager* managers = NULL; // Empty Linked List of type Manager
     //resMeios resmeios = NULL; // Empty Linked List of type Reservations
     
+    /**
+     * @brief 
+     * 
+     */
     meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180.29, 36.45, 0, 0, "Amorim");
+    /**
+     * @brief 
+     * 
+     */
     meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.71, 120.43, 24.45, 0, 0, "Estela");
+    /**
+     * @brief 
+     * 
+     */
     meios = insertNewRecord_Meio(meios, 3, "Mota", 21.88, 201.1, 57.45, 0, 0, "Beiriz");
 
+    /**
+     * @brief 
+     * 
+     */
     clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 729164537, 753.56, "ola", "123");
-        
+    
+    /**
+     * @brief 
+     * 
+     */
     clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "adeus", "123");
 
+    /**
+     * @brief 
+     * 
+     */
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
 
     //meios = readrecords_Meio();
 
     //clients = readrecords_Client();
 
+    /**
+     * @brief Construct a new show Menu object
+     * 
+     */
     showMenu(meios, clients, managers);
 
     return(0);

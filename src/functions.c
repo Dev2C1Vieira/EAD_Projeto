@@ -7,18 +7,50 @@
 
 #pragma region Auxiliar_Functions
 
+/**
+ * @brief 
+ * 
+ */
 void red() { printf("\033[1;31m"); }
+/**
+ * @brief 
+ * 
+ */
 void yellow() { printf("\033[1;33m"); }
+/**
+ * @brief 
+ * 
+ */
 void green() { printf("\033[0;32m"); }
+/**
+ * @brief 
+ * 
+ */
 void blue() { printf("\033[0;34m"); }
+/**
+ * @brief 
+ * 
+ */
 void reset() { printf("\033[0m"); }
+/**
+ * @brief 
+ * 
+ */
 void clear() { system("cls || clear"); }
 
+/**
+ * @brief 
+ * 
+ */
 void flushstdin(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
+/**
+ * @brief 
+ * 
+ */
 void pause() {
     flushstdin();
     fflush(stdin);
@@ -40,6 +72,21 @@ void pause() {
 
 // Functions related to records of type Meio
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @param type 
+ * @param bat 
+ * @param aut 
+ * @param cost 
+ * @param idclient 
+ * @param status 
+ * @param loc 
+ * @return Meio* 
+ */
+// inserts a new records in the Meio linked list
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat, 
     float aut, float cost, int idclient, int status, char loc[50]) { // here is included the need parameters
     if (!existRecord_Meio(start, code)) { // checks if the new records doesn't already exist
@@ -59,6 +106,13 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat,
     else return(start); // returns the linked list untouched
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
+// count the number of records in the Meio linked list
 int countRecords_Meio(Meio* start) {
     int counter = 0;
     while (start != NULL) { // goes through the linked list until it finds the last record
@@ -68,6 +122,14 @@ int countRecords_Meio(Meio* start) {
     return(counter); // return the incrementing variable
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @return int 
+ */
+// verifies if the Meio record exists or not
 int existRecord_Meio(Meio* start, int code) {
     while (start != NULL) { /// goes through the linked list until it finds the last record
         // checks if the record that is being checked is the same as the record represented by the given id
@@ -77,6 +139,12 @@ int existRecord_Meio(Meio* start, int code) {
     return(0); // return 0 if any record of the linked list is the same as the one being requested
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ */
+// lists the informations of the records in the console
 void listRecords_Meio(Meio* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
@@ -93,6 +161,14 @@ void listRecords_Meio(Meio* start) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @return Meio* 
+ */
+// removes the Meio record from the linked list
 Meio* removeRecord_Meio(Meio* start, int code) {
     Meio *prev = start, *now = start, *aux;
 
@@ -118,6 +194,19 @@ Meio* removeRecord_Meio(Meio* start, int code) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @param type 
+ * @param bat 
+ * @param aut 
+ * @param cost 
+ * @param loc 
+ * @return Meio* 
+ */
+// edits the information of the Meio record on the linked list
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
 	float bat, float aut, float cost, char loc[50]) {
     /*int code_v;
@@ -189,6 +278,13 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
     else return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
+// saves the content of the Meio linked list in the "Records_Meio" text file
 int saveRecords_Meio(Meio* start)
 {
     // this C code opens a file called "Registros_Medio.txt" 
@@ -212,6 +308,12 @@ int saveRecords_Meio(Meio* start)
     return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @return Meio* 
+ */
+// reads the content of the "Records_Meio" and gives it to the Meio linked list
 Meio* readrecords_Meio() {
     int code, idclient, status;
     float bat, aut, cost;
@@ -246,6 +348,23 @@ Meio* readrecords_Meio() {
 
 // Functions related to records of type Client
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @param name 
+ * @param bd 
+ * @param bm 
+ * @param by 
+ * @param phn 
+ * @param addr 
+ * @param nif 
+ * @param balance 
+ * @param email 
+ * @param pass 
+ * @return Client* 
+ */
 // inserts a new records in the Client linked list
 Client* insertNewRecord_Client(Client* start, int id, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
@@ -274,6 +393,12 @@ Client* insertNewRecord_Client(Client* start, int id, char name[100],
     else return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
 // count the number of records in the Client linked list
 int countRecords_Client(Client* start) {
     int counter = 0;
@@ -284,6 +409,14 @@ int countRecords_Client(Client* start) {
     return(counter);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param email 
+ * @param pass 
+ * @return const int 
+ */
 // return the id of the client by searching the record containing the email and pass given
 const int searchID_Client(Client* start, char email[50], char pass[50]) {
     while (start != NULL)
@@ -296,6 +429,13 @@ const int searchID_Client(Client* start, char email[50], char pass[50]) {
     return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return const char* 
+ */
 // return the name of the client by searching the record containing the given id
 const char* searchName_Client(Client* start, int id) {
     while (start != NULL) {
@@ -307,6 +447,13 @@ const char* searchName_Client(Client* start, int id) {
     return("NULL");
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return int 
+ */
 // verifies if the client record exists or not
 int existRecord_Client(Client* start, int id) {
     while (start != NULL) {
@@ -316,6 +463,11 @@ int existRecord_Client(Client* start, int id) {
     return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ */
 // lists the informations of the records in the console
 void listRecords_Client(Client* start) {
     while (start != NULL) {
@@ -327,6 +479,13 @@ void listRecords_Client(Client* start) {
     
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return Client* 
+ */
 // removes the client record from the linked list
 Client* removeRecord_Client(Client* start, int id) {
     Client *prev = start, *now = start, *aux;
@@ -351,6 +510,23 @@ Client* removeRecord_Client(Client* start, int id) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @param name 
+ * @param bd 
+ * @param bm 
+ * @param by 
+ * @param phn 
+ * @param addr 
+ * @param nif 
+ * @param balance 
+ * @param email 
+ * @param pass 
+ * @return Client* 
+ */
 // edits the information of the client record on the linked list
 Client* editRecord_Client(Client* start, int id, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
@@ -378,6 +554,12 @@ Client* editRecord_Client(Client* start, int id, char name[100],
     else return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
 // saves the content of the Client linked list in the "Records_Client" text file
 int saveRecords_Client(Client* start)
 {
@@ -399,6 +581,11 @@ int saveRecords_Client(Client* start)
     else return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @return Meio* 
+ */
 // reads the content of the "Records_Client" and gives it to the Client linked list
 Meio* readrecords_Client() {
     int id, phn, nif, bd, bm, by;
@@ -422,6 +609,14 @@ Meio* readrecords_Client() {
     return(client);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param email 
+ * @param pass 
+ * @return int 
+ */
 // log in to the account whose registration corresponds to the indicated email and pass
 int login_Client(Client* start, char email[50], char pass[50]) {
     while (start != NULL) {
@@ -438,6 +633,20 @@ int login_Client(Client* start, char email[50], char pass[50]) {
 
 // Functions related to records of type Manager
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @param name 
+ * @param bd 
+ * @param bm 
+ * @param by 
+ * @param phn 
+ * @param email 
+ * @param pass 
+ * @return Manager* 
+ */
 // inserts a new records in the Manager linked list
 Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
     int bd, int bm, int by, int phn, char email[50], char pass[50]) {
@@ -459,6 +668,12 @@ Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
     else return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
 // count the number of records in the Manager linked list
 int countRecords_Manager(Manager* start) {
     int counter = 0;
@@ -469,6 +684,14 @@ int countRecords_Manager(Manager* start) {
     return(counter);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param email 
+ * @param pass 
+ * @return const int 
+ */
 // return the id of the manager by searching the record containing the email and pass given
 const int searchID_Manager(Manager* start, char email[50], char pass[50]) {
     while (start != NULL)
@@ -481,6 +704,13 @@ const int searchID_Manager(Manager* start, char email[50], char pass[50]) {
     return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return const char* 
+ */
 // return the name of the manager by searching the record containing the given id
 const char* searchName_Manager(Manager* start, int id) {
     while (start != NULL) {
@@ -492,6 +722,13 @@ const char* searchName_Manager(Manager* start, int id) {
     return("There is no name, which matches the given id");
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return int 
+ */
 // verifies if the manager record exists or not
 int existRecord_Manager(Manager* start, int id) {
     while (start != NULL) {
@@ -501,6 +738,11 @@ int existRecord_Manager(Manager* start, int id) {
     return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ */
 // lists the informations of the records in the console
 void listRecords_Manager(Manager* start) {
     while (start != NULL) {
@@ -511,6 +753,12 @@ void listRecords_Manager(Manager* start) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
 // saves the content of the Manager linked list in the "Records_Manager" text file
 int saveRecords_Manager(Manager* start)
 {
@@ -532,6 +780,14 @@ int saveRecords_Manager(Manager* start)
     else return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param email 
+ * @param pass 
+ * @return int 
+ */
 // log in to the account whose registration corresponds to the indicated email and pass
 int login_Manager(Manager* start, char email[50], char pass[50]) {
     while (start != NULL) {
@@ -545,6 +801,13 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
 
 #pragma region Booking_Related_Functions
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @return int 
+ */
 // checks if a record is booked or not
 int isMeioBooked(Meio* start, int code) {
     while (start != NULL) { // goes through the linked list until it finds the last record
@@ -558,6 +821,14 @@ int isMeioBooked(Meio* start, int code) {
     return(0);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @param idclient 
+ * @return Meio* 
+ */
 // books the record, by changing the record status to 1
 Meio* bookMeio(Meio* start, int code, int idclient) {
     Meio* aux = start; // creates a new linked list and initializes it with the first Meio linked list record
@@ -575,6 +846,13 @@ Meio* bookMeio(Meio* start, int code, int idclient) {
     else return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @return Meio* 
+ */
 // cancels the reservation of the record, by changing the record status to 0
 Meio* cancelbookMeio(Meio* start, int code) {
     Meio* aux = start; // creates a new linked list and initializes it with the first Meio linked list record
@@ -592,6 +870,12 @@ Meio* cancelbookMeio(Meio* start, int code) {
     else return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param idclient 
+ */
 // lists all the records from the Meio linked list but only those booked by the logged in client
 void listBookingRecords(Meio* start, int idclient) {
     while (start != NULL) { // goes through the linked list until it finds the last record
@@ -607,6 +891,13 @@ void listBookingRecords(Meio* start, int idclient) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param idclient 
+ * @return int 
+ */
 // counts the ammount of records that the logged in client booked
 int countRecords_Book(Meio* start, int idclient) {
     int counter = 0; // creation of an incrementation variable
