@@ -3,15 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #pragma region Structs
 
 // Creation of data structs
 
+// this struct serves to store a record in date format
 struct Date
 {
-	int day;
-	int month;
-	int year;
+	int day; // This is the day field 
+	int month; // This is the month field
+	int year; // This is the year field
 };
 
 // Creating the Meio data struct
@@ -19,77 +21,76 @@ typedef struct Mobilidade_Registo
 {
 	int code; // This is the code that identifies Electric Mobility
 	char type[50]; // Idifify the type of Electric Mobility
-	float battery;
-	float autonomy;
-	float cost;
-	char location[50];
+	float battery; // Idifify the battery of the Electric Mobility
+	float autonomy; // Idifify the autonomy of the Electric Mobility
+	float cost; // Idifify the cost of the Electric Mobility
+	char location[50]; // Idifify the location of the Electric Mobility
 	int idClient; // auxiliar way to identify who booked the mean of transport
 	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked 
-	struct registo* next;
+	struct registo* next; // Points to the next record in the Meio linked list
 } Meio;
 
 // Creating the Client data struct
 typedef struct Cliente_Registo
 {
-	int id; // Code that identifies the client
-	char name[100];
-	struct Date birthDate;
-	int phoneNumber;
-	char address[100];
-	int nif;
-	float balance;
-	char email[50];
-	char password[20];
-	struct registo* next;
+	int id; // This is the id field that identifies the client
+	char name[100]; // This is the name field that identifies the client
+	struct Date birthDate; // This is the birth date field that identifies the client
+	int phoneNumber; // This is the phone number field that identifies the client
+	char address[100]; // This is the address field that identifies the client
+	int nif; // This is the nif field that identifies the client
+	float balance; // This is the balance field that identifies the client
+	char email[50]; // This is the email field that identifies the client
+	char password[20]; // This is the password field that identifies the client
+	struct registo* next; // Points to the next record in the Client linked list
 } Client;
 
 // Creating the Manager data struct
 typedef struct Gerente_Registo
 {
-	int id; // Code identifying the manager
-	char name[100];
-	struct Date birthDate;
-	int phoneNumber;
-	char email[50];
-	char password[20];
-	struct registo* next;
+	int id; // This is the id field that identifies the manager
+	char name[100]; // This is the name field that identifies the manager
+	struct Date birthDate; // This is the birth date field that identifies the manager
+	int phoneNumber; // This is the phone number field that identifies the manager
+	char email[50]; // This is the email field that identifies the manager
+	char password[20]; // This is the password field that identifies the manager
+	struct registo* next; // Points to the next record in the Manager linked list
 } Manager;
-
-/*typedef struct Reservations_Meios
-{
-	void *meio; // pointer to the meios struct
-	void *client; // pointer to the clients struct
-	struct registo *next;
-} *resMeios, SResMeios;*/
 
 #pragma endregion
 
-// Creation of functions for manipulating records
+// Creation of the functions that manipulate records
 
 #pragma region Insert_Functions
 
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, int idclient, int status, char loc[50]);
+	float bat, float aut, float cost, int idclient, int status, char loc[50]); // here is included the need parameters
 
 // Function that inserts a new record of type Client
 Client* insertNewRecord_Client(Client* start, int id, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
-	float balance, char email[50], char pass[50]);
+	float balance, char email[50], char pass[50]); // here is included the need parameters
 
 // Function that inserts a new record of type Manager
 Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
-	int bd, int bm, int by, int phn, char email[50], char pass[50]);
+	int bd, int bm, int by, int phn, char email[50], char pass[50]); // here is included the need parameters
 
 #pragma endregion
 
 #pragma region Count_Records_Functions
 
+// this function return the amount of records present in the Meio linked list 
 int countRecords_Meio(Meio* start);
 
+// this function return the amount of records present in the Client linked list 
 int countRecords_Client(Client* start);
 
+// this function return the amount of records present in the Manager linked list 
 int countRecords_Manager(Manager* start);
+
+// this function return the amount of records present in the Meio linked list, but only about a specific client
+int countRecords_Book(Meio* start, int idclient);
 
 #pragma endregion
 
@@ -97,11 +98,17 @@ int countRecords_Manager(Manager* start);
 
 //resMeios bookReservationsLast(resMeios start, void *meio, void *client);
 
+// this function goes through the linked list and checks if a certain record indicated by the user is already reserved
 int isMeioBooked(Meio* start, int code);
 
+// this function scrolls through the linked list and reserves the record indicated by the user
 Meio* bookMeio(Meio* start, int code, int idclient);
 
+// this function scrolls through the linked list and cancels the reservation of the record indicated by the user
 Meio* cancelbookMeio(Meio* start, int code);
+
+// this function goes through the linked list, and lists the records that were reserved by the client that is logged in
+void listBookingRecords(Meio* start, int idclient);
 
 #pragma endregion
 
@@ -120,13 +127,13 @@ int existRecord_Manager(Manager* start, int id);
 
 #pragma region List_Functions
 
-// Function that lists records of type Meio in the console
+// this function traverses the Meio linked list and lists the records present in it
 void listRecords_Meio(Meio* start);
 
-// Function that lists records of type Client in the console
+// this function traverses the Client linked list and lists the records present in it
 void listRecords_Client(Client* start);
 
-// Function that lists records of type Manager in the console
+// this function traverses the Manager linked list and lists the records present in it
 void listRecords_Manager(Manager* start);
 
 #pragma endregion
@@ -146,18 +153,18 @@ Manager* removeRecord_Manager(Manager* start, int id);
 
 #pragma region Edit_Functions
 
-// 
+// this function goes through the Meio linked list and edits the record data that contains the code indicated by the user
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, char loc[50]);
+	float bat, float aut, float cost, char loc[50]); // here is included the need parameters
 
-//
+// this function goes through the Client linked list and edits the record data that contains the code indicated by the user
 Client* editRecord_Client(Client* start, int id, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
-	float balance, char email[50], char pass[50]);
+	float balance, char email[50], char pass[50]); // here is included the need parameters
 
-//
+// this function goes through the Manager linked list and edits the record data that contains the code indicated by the user
 Manager* editRecord_Manager(Manager* start, int id, char name[100], int bd, 
-	int bm, int by, int phn, char email[50], char pass[50]);
+	int bm, int by, int phn, char email[50], char pass[50]); // here is included the need parameters
 
 #pragma endregion
 
@@ -189,38 +196,42 @@ Meio* readrecords_Manager();
 
 #pragma region Menu_Functions
 
-// The main menu function, where the user can log itself in in his account
+// this main menu that allows the user to indicate their status in order to be able to login to their respective account
 int showMenu(Meio* meios, Client* clients, Manager* managers);
 
-// The sub menu function, where the client can handle records of type Meio
+// this client menu that allows the client to manipulate the records of reservations of Means
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* manager);
 
-// The sub-sub menu function, where the cliente can log itself in in his account
+// this client sub menu that allows the client to log in if he already has one, or to create one otherwise
 int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
 
-// The main menu function, where the manager can log itself in in his account
+// this manager menu that allows the manager to choose if he wants to manipulate Meio records or Clients records
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
 
-// 
+// this client menu that allows the manager to manipulate the records of reservations of Means
 int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers);
 
-// 
+// this client menu that allows the manager to manipulate the records of Clients
 int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers);
 
 #pragma endregion
 
 #pragma region search_ID_Functions
 
+// this function goes through the Client linked list and return the client id which is represented by the email and password used to login
 const int searchID_Client(Client* start, char email[50], char pass[50]);
 
+// this function goes through the Manager linked list and return the manager id which is represented by the email and password used to login
 const int searchID_Manager(Manager* start, char email[50], char pass[50]);
 
 #pragma endregion
 
 #pragma region search_Name_Functions
 
+// this function goes through the Client linked list and return the client name which is represented by id of the client logged in
 const char* searchName_Client(Client* start, int id);
 
+// this function goes through the Manager linked list and return the client name which is represented by id of the manager logged in
 const char* searchName_Manager(Manager* start, int id);
 
 #pragma endregion
@@ -237,15 +248,15 @@ int login_Manager(Manager* start, char email[50], char pass[50]);
 
 #pragma region Auxiliar_Functions
 
-void red();
-void yellow();
-void green();
-void blue();
-void reset();
-void clear();
+void red(); // a function that changes the font color to red
+void yellow(); // a function that changes the font color to yellow
+void green(); // a function that changes the font color to green
+void blue(); // a function that changes the font color to blue
+void reset(); // a function that return the font color to it's original font
+void clear(); // a function that clears all the information present in the console
 
-void flushstdin(void);
+void flushstdin(void); // a function that clears the keyboard buffer
 
-void pause();
+void pause(); // a function that interrupts the program until a random key is pressed by the user
 
 #pragma endregion

@@ -21,6 +21,7 @@ const char* globalName_Manager;
 
 #pragma endregion
 
+// this functions is needed to read a string in case it is not empty
 void getstring(char str[]) {
     do {
         gets(str);
@@ -83,6 +84,7 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
                     reset();
                 }
                 else {
+                    // keeping the manager id in a global variable to use it later
                     globalID_Manager = searchID_Manager(managers, email, pass);
                     showSubMenu_Manager(meios, clients, managers);
                 }
@@ -127,7 +129,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("\n  |  4. list my booked means of transport!    |");
             printf("\n  |  5. Save reservations!                    |");
             printf("\n  |  6. Read reservations!                    |");
-            printf("\n  |  7. Return to Main Menu.                  |");
+            printf("\n  |  7. Return to Client Login Menu.          |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n  Option: ");
@@ -226,14 +228,49 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             pause();
             break;
         case 4:
+            red();
+            printf("\nTable containing the information of the records of type Meio.\n");
+            // Table Construction
+            yellow();
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            reset();
+            listBookingRecords(meios, globalID_Client);
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of records of type Meios:");
+            red();
+            // this function return the amount of records in the Linked List Meios
+            printf(" %d", countRecords_Book(meios, globalID_Client));
+            reset();
+            pause();
             break;
         case 5:
+            // Save the reservations of type Meio
+            if (!saveRecords_Meio(meios)) {
+                red();
+                printf("Unable to save reservations!");
+                reset();
+            }
+            else {
+                saveRecords_Meio(meios);
+                yellow();
+                printf("Reservations have been saved successfully!");
+                reset();
+            }
+            pause();
             break;
         case 6:
+            // Read the records of type Meio
+            meios = readrecords_Meio();
+            yellow();
+            printf("The reservations were successfully read!");
+            reset();
+            pause();
             break;
         case 7:
             clear();
-            showMenu(meios, clients, managers);
+            showSubSubMenu_Client(meios, clients, managers);
             break;
         }
     }
@@ -291,6 +328,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                     reset();
                 }
                 else {
+                    // keeping the client id in a global variable to use it later
                     globalID_Client = searchID_Client(clients, email, pass);
                     showSubMenu_Client(meios, clients, managers);
                     
@@ -457,6 +495,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
                 meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, 0, loc);
+                saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
                 reset();
@@ -699,6 +738,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             getstring(pass);
             if (!existRecord_Client(clients, id)) {
                 clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                saveRecords_Client(clients);
                 red();
                 printf("\n\nNew client registred!!");
                 reset();
@@ -841,7 +881,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
                 reset();
             }
             else {
-                saveRecords_Meio(clients);
+                saveRecords_Client(clients);
                 yellow();
                 printf("Records have been saved successfully!");
                 reset();
@@ -882,6 +922,10 @@ int main()
     clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "adeus", "123");
 
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
+
+    //meios = readrecords_Meio();
+
+    //clients = readrecords_Client();
 
     showMenu(meios, clients, managers);
 
