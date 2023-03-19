@@ -23,6 +23,7 @@ typedef struct Mobilidade_Registo
 	float autonomy;
 	float cost;
 	char location[50];
+	int idClient; // auxiliar way to identify who booked the mean of transport
 	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked 
 	struct registo* next;
 } Meio;
@@ -54,12 +55,12 @@ typedef struct Gerente_Registo
 	struct registo* next;
 } Manager;
 
-typedef struct Reservations_Meios
+/*typedef struct Reservations_Meios
 {
 	void *meio; // pointer to the meios struct
 	void *client; // pointer to the clients struct
 	struct registo *next;
-} *resMeios, SResMeios;
+} *resMeios, SResMeios;*/
 
 #pragma endregion
 
@@ -69,7 +70,7 @@ typedef struct Reservations_Meios
 
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, int status, char loc[50]);
+	float bat, float aut, float cost, int idclient, int status, char loc[50]);
 
 // Function that inserts a new record of type Client
 Client* insertNewRecord_Client(Client* start, int id, char name[100],
@@ -94,9 +95,13 @@ int countRecords_Manager(Manager* start);
 
 #pragma region Booking_Functions
 
-resMeios bookReservationsLast(resMeios start, void *meio, void *client);
+//resMeios bookReservationsLast(resMeios start, void *meio, void *client);
 
 int isMeioBooked(Meio* start, int code);
+
+Meio* bookMeio(Meio* start, int code, int idclient);
+
+Meio* cancelbookMeio(Meio* start, int code);
 
 #pragma endregion
 
@@ -188,13 +193,19 @@ Meio* readrecords_Manager();
 int showMenu(Meio* meios, Client* clients, Manager* managers);
 
 // The sub menu function, where the client can handle records of type Meio
-int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
+int showSubMenu_Client(Meio* meios, Client* clients, Manager* manager);
 
 // The sub-sub menu function, where the cliente can log itself in in his account
 int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
 
 // The main menu function, where the manager can log itself in in his account
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
+
+// 
+int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers);
+
+// 
+int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers);
 
 #pragma endregion
 

@@ -176,7 +176,10 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             }
             else {
                 if (!isMeioBooked(meios, cod)) {
-                    // call booking function
+                    meios = bookMeio(meios, cod, globalID_Client);
+                    red();
+                    printf("\n\nReservation made successfully");
+                    reset();
                 }
                 else {
                     red();
@@ -190,8 +193,37 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                     reset();
                 }
             }
+            pause();
             break;
         case 3:
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the code the mean you want to remove: ");
+            scanf("%d", &cod);
+            if (!existRecord_Meio(meios, cod)) {
+                red();
+                printf("\n\nThe mean with code");
+                yellow();
+                printf(" %d ", cod);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to remove the mean!");
+                reset();
+            }
+            else {
+                meios = cancelbookMeio(meios, cod);
+                red();
+                printf("\n\nA mean containing the code");
+                yellow();
+                printf(" %d ", cod);
+                reset();
+                red();
+                printf("was successfully unbooked!");
+                reset();
+            }
+            pause();
             break;
         case 4:
             break;
@@ -424,7 +456,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, loc);
+                meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, 0, loc);
                 red();
                 printf("\n\nNew registered record!");
                 reset();
@@ -839,19 +871,17 @@ int main()
     Meio* meios = NULL; // Empty Linked List of type Meio
     Client* clients = NULL; // Empty Linked List of type Client
     Manager* managers = NULL; // Empty Linked List of type Manager
-    resMeios reservations = NULL; // Empty Linked List of type Reservations
+    //resMeios resmeios = NULL; // Empty Linked List of type Reservations
     
-    meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180, 36.45, 0, "Amorim");
-    meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.30, 120, 24.45, 1, "Estela");
-    meios = insertNewRecord_Meio(meios, 3, "Mota", 21.80, 201, 57.45, 0, "Beiriz");
+    meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180.29, 36.45, 0, 0, "Amorim");
+    meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.71, 120.43, 24.45, 0, 0, "Estela");
+    meios = insertNewRecord_Meio(meios, 3, "Mota", 21.88, 201.1, 57.45, 0, 0, "Beiriz");
 
     clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 729164537, 753.56, "ola", "123");
         
     clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "adeus", "123");
 
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
-
-    //reservations = bookReservationsLast(reservations);
 
     showMenu(meios, clients, managers);
 

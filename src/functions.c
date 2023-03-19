@@ -40,8 +40,8 @@ void pause() {
 
 // Functions related to records of type Meio
 
-Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, int status, char loc[50]) {
+Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat, 
+    float aut, float cost, int idclient, int status, char loc[50]) {
     if (!existRecord_Meio(start, code)) {
         Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
         if (meio != NULL) {
@@ -50,6 +50,7 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50],
             meio->battery = bat;
             meio->autonomy = aut;
             meio->cost = cost;
+            meio->idClient = idclient;
             meio->status = status;
             strcpy(meio->location, loc);
             meio->next = start;
@@ -57,7 +58,6 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50],
         }
     }
     else return(start);
-    //saveRecords_Meio(start);
 }
 
 int countRecords_Meio(Meio* start) {
@@ -82,7 +82,6 @@ void listRecords_Meio(Meio* start) {
         if (start->status == 0) {
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
                 start->battery, start->autonomy, start->cost, "Por Reservar", start->location);
-                
         }
         else if (start->status == 1){
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
@@ -117,7 +116,7 @@ Meio* removeRecord_Meio(Meio* start, int code) {
 
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
 	float bat, float aut, float cost, char loc[50]) {
-        int code_v;
+    int code_v;
     char type_v[50], loc_v[50];
     float bat_v, aut_v, cost_v;
 
@@ -181,6 +180,7 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
                 strcpy(aux->location, loc);
                 return(aux);
             }
+            aux = aux->next;
         }
     }
     else return(start);
@@ -195,8 +195,8 @@ int saveRecords_Meio(Meio* start)
         Meio* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%f;%f;%f;%s\n", aux->code, aux->type, aux->battery, 
-                aux->autonomy, aux->cost, aux->location);
+            fprintf(fp, "%d;%s;%f;%f;%f;%d;%d;%s\n", aux->code, aux->type, aux->battery, 
+                aux->autonomy, aux->cost, aux->idClient, aux->status, aux->location);
             aux = aux->next;
         }
         fclose(fp);
@@ -208,7 +208,7 @@ int saveRecords_Meio(Meio* start)
 
 // Unfinished
 Meio* readrecords_Meio() {
-    int code;
+    int code, idclient, status;
     float bat, aut, cost;
     char type[50], loc[50];
 
@@ -220,8 +220,8 @@ Meio* readrecords_Meio() {
         char line[1024];
         while (fgets(line, sizeof(line), fp))
         {
-            sscanf(line, "%d;%[^;];%f;%f;%f;%[^\n]\n", &code, type, &bat, &aut, &cost, loc);
-            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, 0, loc);
+            sscanf(line, "%d;%[^;];%f;%f;%f;%d;%d;%[^\n]\n", &code, type, &bat, &aut, &cost, &idclient, &status, loc);
+            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, idclient, status, loc);
         }
         fclose(fp);
     }
@@ -349,6 +349,7 @@ Client* editRecord_Client(Client* start, int id, char name[100],
                 strcpy(aux->password, pass);
                 return(aux);
             }
+            aux = aux->next;
         }
     }
     else return(start);
@@ -510,34 +511,44 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
 
 #pragma region Booking_Related_Functions
 
-resMeios bookReservationsLast(resMeios start, void *meio, void *client) {
-	resMeios aux, prev;
-
-	aux = (resMeios)malloc(sizeof(SResMeios));
-	aux->meio = meio;
-	aux->client = client;
-	aux->next = NULL;
-
-	if (start == NULL) {
-		return(aux);
-	}
-
-	for (prev = start; prev->next != NULL; prev = prev->next);
-
-	prev->next = aux;
-
-	return(start);
-}
-
 int isMeioBooked(Meio* start, int code) {
     while (start != NULL) {
-        if (existRecord_Meio(start, code)) {
+        if (start->code == code) {
             if (start->status == 1) return(1);
-            else return(0);
         }
         start = start->next;
     }
     return(0);
+}
+
+Meio* bookMeio(Meio* start, int code, int idclient) {
+    Meio* aux = start;
+    if (existRecord_Meio(aux, code)) {
+        while (aux != NULL) {
+            if (aux->code == code) {       
+                aux->status = 1;
+                aux->idClient = idclient;
+                return(aux);
+            }
+            aux = aux->next;
+        }
+    }
+    else return(start);
+}
+
+Meio* cancelbookMeio(Meio* start, int code) {
+    Meio* aux = start;
+    if (existRecord_Meio(aux, code)) {
+        while (aux != NULL) {
+            if (aux->code == code) {       
+                aux->status = 0;
+                aux->idClient = 0;
+                return(aux);
+            }
+            aux = aux->next;
+        }
+    }
+    else return(start);
 }
 
 #pragma endregion
