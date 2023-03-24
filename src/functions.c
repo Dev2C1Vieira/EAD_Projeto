@@ -95,7 +95,10 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat,
         // and stores the address of the allocated memory in the middle variable.
         if (meio != NULL) {
             meio->code = code; // here the value of the parameter code is assigned in the respective field of the new record.
-            strcpy(meio->type, type); // // here the value of the parameter type is assigned in the respective field of the new record.
+            strcpy(meio->type, type); // here the value of the parameter type is assigned in the respective field of the new record.
+            meio->battery = bat; // here the value of the parameter bat is assigned in the respective field of the new record.
+            meio->autonomy = aut; // here the value of the parameter aut is assigned in the respective field of the new record.
+            meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
             meio->idClient = idclient; // here the value of the parameter idclient is assigned in the respective field of the new record.
             meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
             strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
@@ -270,12 +273,11 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
                 aux->autonomy = aut;
                 aux->cost = cost;
                 strcpy(aux->location, loc);
-                return(aux);
             }
             aux = aux->next;
         }
     }
-    else return(start);
+    return(start);
 }
 
 /**
@@ -546,12 +548,11 @@ Client* editRecord_Client(Client* start, int id, char name[100],
                 aux->balance = balance;
                 strcpy(aux->email, email);
                 strcpy(aux->password, pass);
-                return(aux);
             }
             aux = aux->next;
         }
     }
-    else return(start);
+    return(start);
 }
 
 /**
@@ -838,12 +839,11 @@ Meio* bookMeio(Meio* start, int code, int idclient) {
                 // the fields receive the new data given by parameter
                 aux->status = 1;
                 aux->idClient = idclient;
-                return(aux); // returns the new linked list with the respective change
             }
             aux = aux->next; // moves to the next record
         }
     }
-    else return(start);
+    return(start);
 }
 
 /**
@@ -862,12 +862,11 @@ Meio* cancelbookMeio(Meio* start, int code) {
                 // the fields receive the new data given by parameter
                 aux->status = 0;
                 aux->idClient = 0;
-                return(aux); // returns the new linked list with the respective change
             }
             aux = aux->next; // moves to the next record
         }
     }
-    else return(start);
+    return(start);
 }
 
 /**

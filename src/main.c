@@ -556,7 +556,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
                 meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, 0, loc);
-                saveRecords_Meio(meios);
+                //saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
                 reset();
@@ -576,6 +576,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 2:
             // List the records of type Meio
+            //meios = readrecords_Meio(meios);
             red();
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
@@ -994,43 +995,11 @@ int main()
     Manager* managers = NULL; // Empty Linked List of type Manager
     //resMeios resmeios = NULL; // Empty Linked List of type Reservations
     
-    /**
-     * @brief 
-     * 
-     */
-    meios = insertNewRecord_Meio(meios, 1, "Bicicleta", 27.30, 180.29, 36.45, 0, 0, "Amorim");
-    /**
-     * @brief 
-     * 
-     */
-    meios = insertNewRecord_Meio(meios, 2, "Trotinete", 16.71, 120.43, 24.45, 0, 0, "Estela");
-    /**
-     * @brief 
-     * 
-     */
-    meios = insertNewRecord_Meio(meios, 3, "Mota", 21.88, 201.1, 57.45, 0, 0, "Beiriz");
-
-    /**
-     * @brief 
-     * 
-     */
-    clients = insertNewRecord_Client(clients, 1, "Pedro Carvalho", 10, 01, 2002, 911678261, "Rua das Flores, 76 Amorim", 729164537, 753.56, "ola", "123");
-    
-    /**
-     * @brief 
-     * 
-     */
-    clients = insertNewRecord_Client(clients, 2, "Andre Carvalho", 10, 02, 2001, 453946374, "Rua dos Asdrubels, 93 Macieira", 729164537, 753.56, "adeus", "123");
-
-    /**
-     * @brief 
-     * 
-     */
     managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
+    
+    meios = readrecords_Meio();
 
-    //meios = readrecords_Meio();
-
-    //clients = readrecords_Client();
+    clients = readrecords_Client();
 
     /**
      * @brief Construct a new show Menu object
