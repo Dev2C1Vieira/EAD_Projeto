@@ -556,7 +556,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
                 meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, 0, loc);
-                //saveRecords_Meio(meios);
+                saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
                 reset();
