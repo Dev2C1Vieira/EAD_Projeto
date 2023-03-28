@@ -473,7 +473,7 @@ int existRecord_Client(Client* start, int id) {
 // lists the informations of the records in the console
 void listRecords_Client(Client* start) {
     while (start != NULL) {
-        printf("\n|    %-7d %-20s %-0d-%-0d-%-9d %-18d %-40s %-15d %-13.2f %-22s     |", start->id, start->name,
+        printf("\n|    %-7d %-20s %-0d-%-0d-%-9d %-18d %-40s %-15d %-13.2f %-24s     |", start->id, start->name,
             start->birthDate.day, start->birthDate.month, start->birthDate.year, 
             start->phoneNumber, start->address, start->nif, start->balance, start->email);
             start = start->next;
