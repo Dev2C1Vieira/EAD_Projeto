@@ -155,7 +155,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                 printf("\n  Invalid Option! [1-7]\n");
             }
             reset();
-            printf("\n  Hello, %s\n", globalName_Client);
+            printf("\n  Hello, %s.\n", globalName_Client);
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
             reset();
@@ -252,15 +252,27 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                 reset();
             }
             else {
-                meios = cancelbookMeio(meios, cod);
-                red();
-                printf("\n\nA mean containing the code");
-                yellow();
-                printf(" %d ", cod);
-                reset();
-                red();
-                printf("was successfully unbooked!");
-                reset();
+                if (!isMeioMineToBook(meios, cod, globalID_Client)) {
+                    yellow();
+                    printf("\n\nYou can't unbook this Mean because it is booked under some other client name.");
+                    printf("\n\nSorry for the inconvenience!");
+                    red();
+                    printf("\n\nUnable to unbook the mean!");
+                    reset();
+                }
+                else {
+                    meios = cancelbookMeio(meios, cod, globalID_Client);
+                    red();
+                    printf("\n\nA mean containing the code");
+                    yellow();
+                    printf(" %d ", cod);
+                    reset();
+                    red();
+                    printf("was successfully unbooked!");
+                    reset();
+
+                //printf("You can't unbook this Mean because it is booked under some other client name.\n Sorry for bothering!");
+                }
             }
             pause();
             break;

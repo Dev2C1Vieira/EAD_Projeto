@@ -805,6 +805,21 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
 /**
  * @brief 
  * 
+ * @return int 
+ */
+int isMeioMineToBook(Meio* start, int code, int idclient) {
+    while (start != NULL) {
+        if (start->code == code) {
+            if (start->idClient == idclient) return(1);
+        }
+        start = start->next;
+    }
+    return(0);
+}
+
+/**
+ * @brief 
+ * 
  * @param start 
  * @param code 
  * @return int 
@@ -854,16 +869,18 @@ Meio* bookMeio(Meio* start, int code, int idclient) {
  * @return Meio* 
  */
 // cancels the reservation of the record, by changing the record status to 0
-Meio* cancelbookMeio(Meio* start, int code) {
+Meio* cancelbookMeio(Meio* start, int code, int idclient) {
     Meio* aux = start; // creates a new linked list and initializes it with the first Meio linked list record
     if (existRecord_Meio(aux, code)) { // checks if the record exists so that it can or not be booked
-        while (aux != NULL) { // goes through the linked list until it finds the last record
-            if (aux->code == code) { // finds the record containing the given record
-                // the fields receive the new data given by parameter
-                aux->status = 0;
-                aux->idClient = 0;
+        if (isMeioMineToBook(start, code, idclient)) {
+            while (aux != NULL) { // goes through the linked list until it finds the last record
+                if (aux->code == code) { // finds the record containing the given record
+                    // the fields receive the new data given by parameter
+                    aux->status = 0;
+                    aux->idClient = 0;
+                }
+                aux = aux->next; // moves to the next record
             }
-            aux = aux->next; // moves to the next record
         }
     }
     return(start);

@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #pragma region Structs
 
 // Creation of data structs
@@ -189,6 +188,17 @@ int countRecords_Book(Meio* start, int idclient);
  * 
  * @param start 
  * @param code 
+ * @param idclient 
+ * @return int 
+ */
+// this function is used to check if the Meio belongs to the client who is trying to cancel the reservation.
+int isMeioMineToBook(Meio* start, int code, int idclient);
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
  * @return int 
  */
 // this function goes through the linked list and checks if a certain record indicated by the user is already reserved
@@ -213,7 +223,7 @@ Meio* bookMeio(Meio* start, int code, int idclient);
  * @return Meio* 
  */
 // this function scrolls through the linked list and cancels the reservation of the record indicated by the user
-Meio* cancelbookMeio(Meio* start, int code);
+Meio* cancelbookMeio(Meio* start, int code, int idclient);
 
 /**
  * @brief 
