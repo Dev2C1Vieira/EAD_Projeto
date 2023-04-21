@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #pragma region Structs
 
 // Creation of data structs
@@ -76,6 +77,16 @@ typedef struct Gerente_Registo
 
 // Creation of the functions that manipulate records
 
+#pragma region Get_Last_ID
+
+int getLastMeioCode(Meio* start);
+
+int getLastClientID(Client* start);
+
+int getLastManagerID(Manager* start);
+
+#pragma endregion
+
 #pragma region Insert_Functions
 
 /**
@@ -93,7 +104,7 @@ typedef struct Gerente_Registo
  * @return Meio* 
  */
 // Function that inserts a new record of type Meio
-Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], 
+Meio* insertNewRecord_Meio(Meio* start, char type[50], 
 	float bat, float aut, float cost, int idclient, int status, char loc[50]); // here is included the need parameters
 
 /**
@@ -114,7 +125,7 @@ Meio* insertNewRecord_Meio(Meio* start, int code, char type[50],
  * @return Client* 
  */
 // Function that inserts a new record of type Client
-Client* insertNewRecord_Client(Client* start, int id, char name[100],
+Client* insertNewRecord_Client(Client* start, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
 	float balance, char email[50], char pass[50]); // here is included the need parameters
 
@@ -133,7 +144,7 @@ Client* insertNewRecord_Client(Client* start, int id, char name[100],
  * @return Manager* 
  */
 // Function that inserts a new record of type Manager
-Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
+Manager* insertNewRecord_Manager(Manager* start, char name[100],
 	int bd, int bm, int by, int phn, char email[50], char pass[50]); // here is included the need parameters
 
 #pragma endregion
@@ -224,6 +235,14 @@ Meio* bookMeio(Meio* start, int code, int idclient);
  */
 // this function scrolls through the linked list and cancels the reservation of the record indicated by the user
 Meio* cancelbookMeio(Meio* start, int code, int idclient);
+
+/**
+ * @brief
+ * 
+ * @param start
+*/
+// this function traverses the Meio linked list and lists the non booked records present in it
+void listNonBookingRecords(Meio* start);
 
 /**
  * @brief 

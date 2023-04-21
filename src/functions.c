@@ -72,6 +72,22 @@ void pause() {
 
 // Functions related to records of type Meio
 
+int getLastMeioCode(Meio* start) {
+    if (start == NULL) {
+        // the list is empty, so there is no id to increment, so return 0.
+        return(0);
+    }
+    else {
+        // scrolls through the list to the last record
+        Meio* last = start;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        // returns the code of the last record, so it can be incremented
+        return(last->code);
+    }
+}
+
 /**
  * @brief 
  * 
@@ -87,26 +103,39 @@ void pause() {
  * @return Meio* 
  */
 // inserts a new records in the Meio linked list
-Meio* insertNewRecord_Meio(Meio* start, int code, char type[50], float bat, 
-    float aut, float cost, int idclient, int status, char loc[50]) { // here is included the need parameters
-    if (!existRecord_Meio(start, code)) { // checks if the new records doesn't already exist
-        Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
-        // this line of code dynamically allocates memory for a new struct object Mobilidade_Registro 
-        // and stores the address of the allocated memory in the middle variable.
-        if (meio != NULL) {
-            meio->code = code; // here the value of the parameter code is assigned in the respective field of the new record.
-            strcpy(meio->type, type); // here the value of the parameter type is assigned in the respective field of the new record.
-            meio->battery = bat; // here the value of the parameter bat is assigned in the respective field of the new record.
-            meio->autonomy = aut; // here the value of the parameter aut is assigned in the respective field of the new record.
-            meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
-            meio->idClient = idclient; // here the value of the parameter idclient is assigned in the respective field of the new record.
-            meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
-            strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
-            meio->next = start; // here the 'next' field of the new record is pointing to the record that used to be the last one
-            return(meio); // return the new record of the linked list
+Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat, 
+    float aut, float cost, int idclient, int status, char loc[50]) { // here is included the needed parameters
+    
+    int lastCode = getLastMeioCode(start);
+    Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
+    // this line of code dynamically allocates memory for a new struct object Mobilidade_Registro 
+    // and stores the address of the allocated memory in the middle variable.
+    if (meio != NULL) {
+        meio->code = (lastCode)+1; // here the value of the parameter code is assigned in the respective field of the new record.
+        strcpy(meio->type, type); // here the value of the parameter type is assigned in the respective field of the new record.
+        meio->battery = bat; // here the value of the parameter bat is assigned in the respective field of the new record.
+        meio->autonomy = aut; // here the value of the parameter aut is assigned in the respective field of the new record.
+        meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
+        meio->idClient = idclient; // here the value of the parameter idclient is assigned in the respective field of the new record.
+        meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
+        strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
+        meio->next = NULL; // here the 'next' field of the new record is pointing to the record that used to be the last one
+    
+        if (start == NULL) {
+            // the list is empty, so the new record will be the first record
+            start = meio;
         }
+        else {
+            // scrolls through the list to the last record
+            Meio* current = start;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            // adds the new record to the end of the list
+            current->next = meio;
+        }
+        return(start); 
     }
-    else return(start); // returns the linked list untouched
 }
 
 /**
@@ -336,7 +365,7 @@ Meio* readrecords_Meio() {
         {
             // returns the information of each record and gives them to the linked list
             sscanf(line, "%d;%[^;];%f;%f;%f;%d;%d;%[^\n]\n", &code, type, &bat, &aut, &cost, &idclient, &status, loc);
-            meios = insertNewRecord_Meio(meios, code, type, bat, aut, cost, idclient, status, loc);
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, idclient, status, loc);
             // insert the records in the linked list
         }
         fclose(fp);
@@ -349,6 +378,22 @@ Meio* readrecords_Meio() {
 #pragma region Clients_Related_Functions
 
 // Functions related to records of type Client
+
+int getLastClientID(Client* start) {
+    if (start == NULL) {
+        // the list is empty, so there is no id to increment, so return 0.
+        return(0);
+    }
+    else {
+        // scrolls through the list to the last record
+        Client* last = start;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        // returns the code of the last record, so it can be incremented
+        return(last->id);
+    }
+}
 
 /**
  * @brief 
@@ -368,31 +413,41 @@ Meio* readrecords_Meio() {
  * @return Client* 
  */
 // inserts a new records in the Client linked list
-Client* insertNewRecord_Client(Client* start, int id, char name[100],
+Client* insertNewRecord_Client(Client* start, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
-	float balance, char email[50], char pass[50]) { // here is included the need parameters
-    if (!existRecord_Client(start, id)) { // checks if the new records doesn't already exist
-        Client* client = malloc(sizeof(struct Cliente_Registo));
-        // this line of code dynamically allocates memory for a new struct object Mobilidade_Registro 
-        // and stores the address of the allocated memory in the middle variable.
-        // the given parameters are given to the respective record fields
-        if (client != NULL) {
-            client->id = id;
-            strcpy(client->name, name);
-            client->birthDate.day = bd;
-            client->birthDate.month = bm;
-            client->birthDate.year = by;
-            client->phoneNumber = phn;
-            strcpy(client->address, addr);
-            client->nif = nif;
-            client->balance = balance;
-            strcpy(client->email, email);
-            strcpy(client->password, pass);
-            client->next = start;
-            return(client);
+	float balance, char email[50], char pass[50]) { // here is included the needed parameters
+    
+    int lastID = getLastClientID(start);
+    Client* client = malloc(sizeof(struct Cliente_Registo));
+    if (client != NULL) {
+        client->id = (lastID)+1;
+        strcpy(client->name, name);
+        client->birthDate.day = bd;
+        client->birthDate.month = bm;
+        client->birthDate.year = by;
+        client->phoneNumber = phn;
+        strcpy(client->address, addr);
+        client->nif = nif;
+        client->balance = balance;
+        strcpy(client->email, email);
+        strcpy(client->password, pass);
+        client->next = NULL;
+        
+        if (start == NULL) {
+            // the list is empty, so the new record will be the first record
+            start = client;
         }
+        else {
+            // scrolls through the list to the last record
+            Client* current = start;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            // adds the new record to the end of the list
+            current->next = client;
+        }
+        return(start);
     }
-    else return(start);
 }
 
 /**
@@ -603,7 +658,7 @@ Meio* readrecords_Client() {
         {
             sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", &id, 
             name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass);
-            client = insertNewRecord_Client(client, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+            client = insertNewRecord_Client(client, name, bd, bm, by, phn, addr, nif, balance, email, pass);
         }
         fclose(fp);
     }
@@ -634,6 +689,22 @@ int login_Client(Client* start, char email[50], char pass[50]) {
 
 // Functions related to records of type Manager
 
+int getLastManagerID(Manager* start) {
+    if (start == NULL) {
+        // the list is empty, so there is no id to increment, so return 0.
+        return(0);
+    }
+    else {
+        // scrolls through the list to the last record
+        Manager* last = start;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        // returns the code of the last record, so it can be incremented
+        return(last->id);
+    }
+}
+
 /**
  * @brief 
  * 
@@ -649,24 +720,37 @@ int login_Client(Client* start, char email[50], char pass[50]) {
  * @return Manager* 
  */
 // inserts a new records in the Manager linked list
-Manager* insertNewRecord_Manager(Manager* start, int id, char name[100],
+Manager* insertNewRecord_Manager(Manager* start, char name[100],
     int bd, int bm, int by, int phn, char email[50], char pass[50]) {
-    if (!existRecord_Manager(start, id)) {
-        Manager* manager = malloc(sizeof(struct Gerente_Registo));
-        if (manager != NULL) {
-            manager->id = id;
-            strcpy(manager->name, name);
-            manager->birthDate.day = bd;
-            manager->birthDate.month = bm;
-            manager->birthDate.year = by;
-            manager->phoneNumber = phn;
-            strcpy(manager->email, email);
-            strcpy(manager->password, pass);
-            manager->next = start;
-            return(manager);
+    
+    int lastID = getLastManagerID(start);
+    Manager* manager = malloc(sizeof(struct Gerente_Registo));
+    if (manager != NULL) {
+        manager->id = (lastID)+1;
+        strcpy(manager->name, name);
+        manager->birthDate.day = bd;
+        manager->birthDate.month = bm;
+        manager->birthDate.year = by;
+        manager->phoneNumber = phn;
+        strcpy(manager->email, email);
+        strcpy(manager->password, pass);
+        manager->next = NULL;
+        if (start == NULL) {
+            // 
+            start = manager;
         }
+        else {
+            // 
+            Manager* current = start;
+            while (current->next != NULL)
+            {
+                current->next = manager;
+            }
+            // 
+            current->next = manager;
+        }
+        return(start);
     }
-    else return(start);
 }
 
 /**
@@ -884,6 +968,25 @@ Meio* cancelbookMeio(Meio* start, int code, int idclient) {
         }
     }
     return(start);
+}
+
+//
+void listNonBookingRecords(Meio* start) {
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->status != 1) {
+            if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
+                start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
+                // prints the informations of the record in the console
+            }
+            else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
+                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
+                    // prints the informations of the record in the console
+            }
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
+    }
 }
 
 /**

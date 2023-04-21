@@ -164,9 +164,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("\n  |  2. Book a means of transport!            |");
             printf("\n  |  3. Stop booking a means of transport!    |");
             printf("\n  |  4. list my booked means of transport!    |");
-            printf("\n  |  5. Save reservations!                    |");
-            printf("\n  |  6. Read reservations!                    |");
-            printf("\n  |  7. Return to Client Login Menu.          |");
+            printf("\n  |  5. Return to Client Login Menu.          |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n  Option: ");
@@ -187,7 +185,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
             printf("\n+------------------------------------------------------------------------------------------------------------+");
             reset();
-            listRecords_Meio(meios);
+            listNonBookingRecords(meios);
             printf("\n+------------------------------------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of records of type Meios:");
             red();
@@ -216,6 +214,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             else {
                 if (!isMeioBooked(meios, cod)) {
                     meios = bookMeio(meios, cod, globalID_Client);
+                    saveRecords_Meio(meios);
                     red();
                     printf("\n\nReservation made successfully");
                     reset();
@@ -262,6 +261,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                 }
                 else {
                     meios = cancelbookMeio(meios, cod, globalID_Client);
+                    saveRecords_Meio(meios);
                     red();
                     printf("\n\nA mean containing the code");
                     yellow();
@@ -294,7 +294,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             reset();
             pause();
             break;
-        case 5:
+        /*case 5:
             // Save the reservations of type Meio
             if (!saveRecords_Meio(meios)) {
                 red();
@@ -316,8 +316,8 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("The reservations were successfully read!");
             reset();
             pause();
-            break;
-        case 7:
+            break;*/
+        case 5:
             clear();
             showSubSubMenu_Client(meios, clients, managers);
             break;
@@ -399,9 +399,6 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             yellow();
             printf("Enter the needed information!\n\n");
             reset();
-            printf("Enter your id number: ");
-            scanf("%d", &id);
-            flushstdin();
             printf("Enter the name you want to be displayed: ");
             getstring(name);
             printf("Enter your birthdate (dd-mm-yyyy): ");
@@ -423,7 +420,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("Enter your password: ");
             getstring(pass);
             if (!existRecord_Client(clients, id)) {
-                clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass);
                 red();
                 printf("\n\nYour registration was successful!");
                 reset();
@@ -532,9 +529,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("\n  |  2. List the records of type Meio!      |");
             printf("\n  |  3. Remove a record of type Meio!       |");
             printf("\n  |  4. Edit a record of type Meio!         |");
-            printf("\n  |  5. Save the records of type Meio!      |");
-            printf("\n  |  6. Read the records of type Meio       |");
-            printf("\n  |  7. Return to Main Menu.                |");
+            printf("\n  |  5. Return to Main Menu.                |");
             printf("\n  +-----------------------------------------+");
             red();
             printf("\n\n    Choose an Option: ");
@@ -551,8 +546,6 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             yellow();
             printf("Enter the needed information!\n\n");
             reset();
-            printf("Enter the code of the new record: ");
-            scanf("%d", &cod);
             printf("Enter the type of the new record: ");
             getstring(type);
             printf("Enter the battery of the new record: ");
@@ -567,7 +560,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, cod, type, bat, aut, cost, 0, 0, loc);
+                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, 0, 0, loc);
                 saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
@@ -621,6 +614,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             }
             else {
                 meios = removeRecord_Meio(meios, cod);
+                saveRecords_Meio(meios);
                 red();
                 printf("\n\nA record containing the code");
                 yellow();
@@ -695,6 +689,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
                 }*/
                 
                 meios = editRecord_Meio(meios, cod, type, bat, aut, cost, loc);
+                saveRecords_Meio(meios);
                 red();
                 printf("\n\nRegistration data has been successfully edited!");
                 reset();
@@ -711,7 +706,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             }
             pause();
             break;
-        case 5:
+        /*case 5:
             // Save the records of type Meio
             if (!saveRecords_Meio(meios)) {
                 red();
@@ -733,8 +728,8 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("The records were successfully read!");
             reset();
             pause();
-            break;
-        case 7:
+            break;*/
+        case 5:
             clear();
             showSubMenu_Manager(meios, clients, managers);
             break;
@@ -776,9 +771,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             printf("\n  |  2. List the records of type Client!      |");
             printf("\n  |  3. Remove a record of type Client!       |");
             printf("\n  |  4. Edit a record of type Client!         |");
-            printf("\n  |  5. Save the records of type Client!      |");
-            printf("\n  |  6. Read the records of type Client       |");
-            printf("\n  |  7. Return to Main Menu.                  |");
+            printf("\n  |  5. Return to Main Menu.                  |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n    Choose an Option: ");
@@ -795,9 +788,6 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             yellow();
             printf("Enter the needed information!\n\n");
             reset();
-            printf("Enter your id number: ");
-            scanf("%d", &id);
-            flushstdin();
             printf("Enter the name you want to be displayed: ");
             getstring(name);
             printf("Enter your birthdate (dd-mm-yyyy): ");
@@ -819,7 +809,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             printf("Enter your password: ");
             getstring(pass);
             if (!existRecord_Client(clients, id)) {
-                clients = insertNewRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass);
                 saveRecords_Client(clients);
                 red();
                 printf("\n\nNew client registred!!");
@@ -872,6 +862,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             }
             else {
                 clients = removeRecord_Client(clients, id);
+                saveRecords_Client(clients);
                 red();
                 printf("\n\nA client containing the code");
                 yellow();
@@ -939,6 +930,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
                 }*/
                 
                 clients = editRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                saveRecords_Client(clients);
                 red();
                 printf("\n\nRegistration data has been successfully edited!");
                 reset();
@@ -955,7 +947,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             }
             pause();
             break;
-        case 5:
+        /*case 5:
             // Save the records of type Client
             if (!saveRecords_Client(clients)) {
                 red();
@@ -977,8 +969,8 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             printf("The records were successfully read!");
             reset();
             pause();
-            break;
-        case 7:
+            break;*/
+        case 5:
             clear();
             showSubMenu_Manager(meios, clients, managers);
             break;
@@ -1000,14 +992,11 @@ int main()
      * 
      */
     Client* clients = NULL; // Empty Linked List of type Client
-    /**
-     * @brief 
-     * 
-     */
+
     Manager* managers = NULL; // Empty Linked List of type Manager
     //resMeios resmeios = NULL; // Empty Linked List of type Reservations
     
-    managers = insertNewRecord_Manager(managers, 1, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
+    managers = insertNewRecord_Manager(managers, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
 
     meios = readrecords_Meio();
 
