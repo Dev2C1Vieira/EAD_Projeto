@@ -320,7 +320,7 @@ int saveRecords_Meio(Meio* start)
 {
     // this C code opens a file called "Registros_Medio.txt" 
     // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
-    FILE* fp = fopen("../data/Records_Meio.txt", "w");
+    FILE* fp = fopen("../data/Text_Files/Records_Meio.txt", "w");
     // checks if the file is empty or not
     if (fp != NULL)
     {
@@ -351,7 +351,7 @@ Meio* readrecords_Meio() {
     char type[50], loc[50];
     // creating variables to keep the information of the records in the text file
 
-    FILE* fp = fopen("../data/Records_Meio.txt","r"); // opens the "Records_Meio" text file
+    FILE* fp = fopen("../data/Text_Files/Records_Meio.txt","r"); // opens the "Records_Meio" text file
 
     Meio* meios = NULL; // creates a new NULL linked list
     
@@ -619,7 +619,7 @@ Client* editRecord_Client(Client* start, int id, char name[100],
 // saves the content of the Client linked list in the "Records_Client" text file
 int saveRecords_Client(Client* start)
 {
-    FILE* fp = fopen("../data/Records_Client.txt", "w");
+    FILE* fp = fopen("../data/Text_Files/Records_Client.txt", "w");
 
     if (fp != NULL)
     {
@@ -643,12 +643,12 @@ int saveRecords_Client(Client* start)
  * @return Meio* 
  */
 // reads the content of the "Records_Client" and gives it to the Client linked list
-Meio* readrecords_Client() {
+Client* readrecords_Client() {
     int id, phn, nif, bd, bm, by;
     float balance;
     char name[50], addr[50], email[50], pass[20];
 
-    FILE* fp = fopen("../data/Records_Client.txt","r");
+    FILE* fp = fopen("../data/Text_Files/Records_Client.txt","r");
 
     Client* client = NULL;
     
@@ -847,7 +847,7 @@ void listRecords_Manager(Manager* start) {
 // saves the content of the Manager linked list in the "Records_Manager" text file
 int saveRecords_Manager(Manager* start)
 {
-    FILE* fp = fopen("Data/Records_Manager.txt", "w");
+    FILE* fp = fopen("Data/Text_Files/Records_Manager.txt", "w");
 
     if (fp != NULL)
     {
@@ -863,6 +863,33 @@ int saveRecords_Manager(Manager* start)
         return(1);
     }
     else return(0);
+}
+
+/**
+ * @brief 
+ * 
+ * @return Meio* 
+ */
+// reads the content of the "Records_Client" and gives it to the Client linked list
+Manager* readrecords_Manager() {
+    int id, phn, bd, bm, by;
+    char name[50], email[50], pass[20];
+
+    FILE* fp = fopen("../data/Text_Files/Records_Manager.txt","r");
+
+    Manager* manager = NULL;
+    
+    if (fp != NULL) {
+        char line[1024];
+        while (fgets(line, sizeof(line), fp))
+        {
+            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%[^\n]\n", 
+            &id, name, &bd, &bm, &by, &phn, email, pass);
+            manager = insertNewRecord_Manager(manager, name, bd, bm, by, phn, email, pass);
+        }
+        fclose(fp);
+    }
+    return(manager);
 }
 
 /**

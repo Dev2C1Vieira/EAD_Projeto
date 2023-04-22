@@ -1,3 +1,2 @@
 1;Pedro Carvalho;14-1-2000;918263745;Rua dos Abilios, 53 Amorim;728463725;728.429993;pedro.carvalho@gmail.com;123
 2;Joao Mineiro;11-5-1998;836473836;Rua dos Trabalhadores, 53 Terroso;736483746;536.340027;mineiro.joao@gmail.com;321
-3;AAA;10-12-1212;1;1;1;1.000000;1;1

@@ -77,10 +77,31 @@ typedef struct Gerente_Registo
 
 #pragma region Get_Last_ID
 
+/**
+ * @brief Get the Last Meio Code object
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
 int getLastMeioCode(Meio* start);
 
+/**
+ * @brief Get the Last Client ID object
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
 int getLastClientID(Client* start);
 
+/**
+ * @brief Get the Last Manager ID object
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
 int getLastManagerID(Manager* start);
 
 #pragma endregion
@@ -456,7 +477,7 @@ Meio* readrecords_Meio();
  * @return Meio* 
  */
 // Function that reads records of type Client from a text file
-Meio* readrecords_Client();
+Client* readrecords_Client();
 
 /**
  * @brief 
@@ -464,7 +485,7 @@ Meio* readrecords_Client();
  * @return Meio* 
  */
 // Function that reads records of type Manager from a text file
-Meio* readrecords_Manager();
+Manager* readrecords_Manager();
 
 #pragma endregion
 
@@ -590,9 +611,25 @@ const char* searchName_Manager(Manager* start, int id);
 
 #pragma region Loop_Login_Functions
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 // 
 int loop_Client_Login(Meio* meios, Client* clients, Manager* managers);
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
 //
 int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers);
 

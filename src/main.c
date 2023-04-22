@@ -1044,26 +1044,49 @@ int main()
      * @brief 
      * 
      */
-    Meio* meios = NULL; // Empty Linked List of type Meio
+    // Empty Linked List of type Meio
+    Meio* meios = NULL;
+    
     /**
      * @brief 
      * 
      */
-    Client* clients = NULL; // Empty Linked List of type Client
+    // Empty Linked List of type Client
+    Client* clients = NULL;
 
-    Manager* managers = NULL; // Empty Linked List of type Manager
-    //resMeios resmeios = NULL; // Empty Linked List of type Reservations
+    /**
+     * @brief 
+     * 
+     */
+    // Empty Linked List of type Manager
+    Manager* managers = NULL;
     
-    managers = insertNewRecord_Manager(managers, "Tiago Silva", 05, 11, 1989, 827625413, "ola", "123");
-
+    /**
+     * @brief 
+     * 
+     */
+    //
     meios = readrecords_Meio();
 
+    /**
+     * @brief 
+     * 
+     */
+    //
     clients = readrecords_Client();
+
+    /**
+     * @brief 
+     * 
+     */
+    //
+    managers = readrecords_Manager();
 
     /**
      * @brief Construct a new show Menu object
      * 
      */
+    //
     showMenu(meios, clients, managers);
 
     return(0);
