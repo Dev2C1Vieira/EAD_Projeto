@@ -75,8 +75,6 @@ typedef struct Gerente_Registo
 
 #pragma endregion
 
-// Creation of the functions that manipulate records
-
 #pragma region Get_Last_ID
 
 int getLastMeioCode(Meio* start);
@@ -587,6 +585,16 @@ const char* searchName_Client(Client* start, int id);
  */
 // this function goes through the Manager linked list and return the client name which is represented by id of the manager logged in
 const char* searchName_Manager(Manager* start, int id);
+
+#pragma endregion
+
+#pragma region Loop_Login_Functions
+
+// 
+int loop_Client_Login(Meio* meios, Client* clients, Manager* managers);
+
+//
+int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers);
 
 #pragma endregion
 
