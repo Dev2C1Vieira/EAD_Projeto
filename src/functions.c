@@ -72,6 +72,13 @@ void pause() {
 
 // Functions related to records of type Meio
 
+/**
+ * @brief Get the Last Meio Code object
+ * 
+ * @param start 
+ * @return int 
+ */
+// this function returns the code of the last record, present in the linked list.
 int getLastMeioCode(Meio* start) {
     if (start == NULL) {
         // the list is empty, so there is no id to increment, so return 0.
@@ -379,6 +386,13 @@ Meio* readrecords_Meio() {
 
 // Functions related to records of type Client
 
+/**
+ * @brief Get the Last Client I D object
+ * 
+ * @param start 
+ * @return int 
+ */
+// this function returns the id of the last record, present in the linked list.
 int getLastClientID(Client* start) {
     if (start == NULL) {
         // the list is empty, so there is no id to increment, so return 0.
@@ -682,13 +696,19 @@ int login_Client(Client* start, char email[50], char pass[50]) {
     return(0);
 }
 
-
 #pragma endregion
 
 #pragma region Managers_Related_Functions
 
 // Functions related to records of type Manager
 
+/**
+ * @brief Get the Last Manager I D object
+ * 
+ * @param start 
+ * @return int 
+ */
+// this function returns the id of the last record, present in the linked list.
 int getLastManagerID(Manager* start) {
     if (start == NULL) {
         // the list is empty, so there is no id to increment, so return 0.
@@ -918,6 +938,7 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
  * 
  * @return int 
  */
+// 
 int isMeioMineToBook(Meio* start, int code, int idclient) {
     while (start != NULL) {
         if (start->code == code) {
@@ -997,6 +1018,11 @@ Meio* cancelbookMeio(Meio* start, int code, int idclient) {
     return(start);
 }
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ */
 //
 void listNonBookingRecords(Meio* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record

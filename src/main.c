@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include "header.h"
 
 
@@ -55,6 +57,15 @@ void getstring(char str[]) {
 
 #pragma region Loop_Login_Functions
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
+// 
 int loop_Client_Login(Meio* meios, Client* clients, Manager* managers) {
     int id, phn, nif, bd, bm, by;
     char op[0], name[50], addr[50], email[50], pass[50];
@@ -103,6 +114,15 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @return int 
+ */
+// 
 int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers) {
     char op[0], email[50], pass[50];
 
@@ -161,6 +181,7 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers) {
  * @param managers 
  * @return int 
  */
+// 
 int showMenu(Meio* meios, Client* clients, Manager* managers) {
     int op = 1;
     
@@ -215,6 +236,7 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
  * @param managers 
  * @return int 
  */
+// 
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, cod;
 
@@ -412,6 +434,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
  * @param managers 
  * @return int 
  */
+// 
 int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
     int op = 1;
     int id, phn, nif, bd, bm, by;
@@ -505,6 +528,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
  * @param managers 
  * @return int 
  */
+// 
 int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
     int op = 1;
 
@@ -559,6 +583,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
  * @param managers 
  * @return int 
  */
+// 
 int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, cod;
     char type[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
@@ -801,6 +826,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
  * @param managers 
  * @return int 
  */
+// 
 int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers) {
     int op = 1, id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
