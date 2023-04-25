@@ -111,3 +111,22 @@ Meio* readrecords_Meio() {
     }
     return(meios);
 }
+
+// Outro exemplo
+Meio* readrecords_Meio() {
+    FILE* fp = fopen("../data/Binary_Files/Records_Meio.bin","rb");
+
+    Meio* meios = NULL; // creates a new NULL linked list
+
+    if (fp != NULL) { // checks if the binary file is empty
+        Meio current;
+        while (fread(&current, sizeof(Meio), 1, fp) == 1) {
+
+            // insert the record into the linked list
+            meios = insertNewRecord_Meio(meios, current.type, current.battery, current.autonomy, 
+                current.cost, current.idClient, current.status, current.location);
+        }
+        fclose(fp);
+    }
+    return(meios);
+}

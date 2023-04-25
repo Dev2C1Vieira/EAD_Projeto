@@ -251,9 +251,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             red();
             printf("  --------- Wellcome to the Booking Menu ---------\n");
             reset();
-            if (op < 1 || op > 6) {
+            if (op < 1 || op > 5) {
                 red(); 
-                printf("\n  Invalid Option! [1-7]\n");
+                printf("\n  Invalid Option! [1-5]\n");
             }
             reset();
             printf("\n  Hello, %s.\n", globalName_Client);
@@ -273,7 +273,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 7);
+        } while (op < 1 || op > 5);
         clear();
         switch (op)
         {
@@ -598,9 +598,9 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             red();
             printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
             reset();
-            if (op < 1 || op > 7)
+            if (op < 1 || op > 5)
             {
-                printf("\nInvalid Option! [1-7]\n");
+                printf("\nInvalid Option! [1-5]\n");
             }
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
@@ -618,7 +618,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 7);
+        } while (op < 1 || op > 5);
         clear();
         switch (op)
         {
@@ -841,9 +841,9 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             red();
             printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
             reset();
-            if (op < 1 || op > 7)
+            if (op < 1 || op > 5)
             {
-                printf("\nInvalid Option! [1-7]\n");
+                printf("\nInvalid Option! [1-5]\n");
             }
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
@@ -861,7 +861,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 7);
+        } while (op < 1 || op > 5);
         clear();
         switch (op)
         {
