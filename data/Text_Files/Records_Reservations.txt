@@ -1,2 +1,3 @@
 1;1;Bicicleta;1;Pedro Carvalho
 2;3;Mota;1;Pedro Carvalho
+3;2;Trotinete;2;Joao Mineiro

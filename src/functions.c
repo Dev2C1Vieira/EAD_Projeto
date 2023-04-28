@@ -1253,7 +1253,7 @@ resMeios* readrecords_Book(Meio* meio, Client* client) {
         while (fgets(line, sizeof(line), fp))
         {
             // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%d;%[^;];%d;%[^\n]\n", id, idMeio, typeMeio, idClient, nameClient);
+            sscanf(line, "%d;%d;%[^;];%d;%[^\n]\n", &id, &idMeio, typeMeio, &idClient, nameClient);
             res = bookMeio(res, idMeio, idClient, meio, client);
             // insert the records in the linked list
         }
