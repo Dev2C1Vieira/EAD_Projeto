@@ -112,7 +112,7 @@ Meio* readrecords_Meio() {
     return(meios);
 }
 
-// Outro exemplo
+// Outro exemplo para arquivos binarios
 Meio* readrecords_Meio() {
     FILE* fp = fopen("../data/Binary_Files/Records_Meio.bin","rb");
 

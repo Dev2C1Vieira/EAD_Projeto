@@ -66,7 +66,7 @@ void getstring(char str[]) {
  * @return int 
  */
 // 
-int loop_Client_Login(Meio* meios, Client* clients, Manager* managers) {
+int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int id, phn, nif, bd, bm, by;
     char op[0], name[50], addr[50], email[50], pass[50];
     float balance;
@@ -98,10 +98,10 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers) {
                 }
                 else {
                     if (op[0] == 'y') { // Compare first character of op with 'y'
-                        loop_Client_Login(meios, clients, managers);
+                        loop_Client_Login(meios, clients, managers, resmeios);
                     }
                     else {
-                        showSubSubMenu_Client(meios, clients, managers);
+                        showSubSubMenu_Client(meios, clients, managers, resmeios);
                     }
                 }
             } while (((!(op[0] == 'y')) && (!(op[0] == 'n'))));
@@ -109,7 +109,7 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers) {
         else {
             // keeping the client id in a global variable to use it later
             globalID_Client = searchID_Client(clients, email, pass);
-            showSubMenu_Client(meios, clients, managers);        
+            showSubMenu_Client(meios, clients, managers, resmeios);        
         }
     }
 }
@@ -123,7 +123,7 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers) {
+int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     char op[0], email[50], pass[50];
 
     while (1)
@@ -153,10 +153,10 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers) {
                 }
                 else {
                     if (op[0] == 'y') { // Compare first character of op with 'y'
-                        loop_Manager_Login(meios, clients, managers);
+                        loop_Manager_Login(meios, clients, managers, resmeios);
                     }
                     else {
-                        showMenu(meios, clients, managers);
+                        showMenu(meios, clients, managers, resmeios);
                     }
                 }
             } while (((!(op[0] == 'y')) && (!(op[0] == 'n'))));
@@ -164,7 +164,7 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers) {
         else {
             // keeping the manager id in a global variable to use it later
             globalID_Manager = searchID_Manager(managers, email, pass);
-            showSubMenu_Manager(meios, clients, managers);
+            showSubMenu_Manager(meios, clients, managers, resmeios);
         }
     }
 }
@@ -182,7 +182,7 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int showMenu(Meio* meios, Client* clients, Manager* managers) {
+int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1;
     
     while (1)
@@ -215,10 +215,10 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
         switch (op)
         {
         case 1:
-            showSubSubMenu_Client(meios, clients, managers);
+            showSubSubMenu_Client(meios, clients, managers, resmeios);
             break;
         case 2:
-            loop_Manager_Login(meios, clients, managers);
+            loop_Manager_Login(meios, clients, managers, resmeios);
             break;  
         case 3:
             exit(0); // stdlib archive
@@ -237,8 +237,8 @@ int showMenu(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
-    int op = 1, cod;
+int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+    int op = 1, cod, id;
 
     globalName_Client = searchName_Client(clients, globalID_Client);
 
@@ -291,7 +291,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("\n\nTotal sum of records of type Meios:");
             red();
             // this function return the amount of records in the Linked List Meios
-            printf(" %d", countRecords_Meio(meios));
+            printf(" %d\n", countRecords_Meio(meios));
             reset();
             pause();
             break;
@@ -314,8 +314,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             }
             else {
                 if (!isMeioBooked(meios, cod)) {
-                    meios = bookMeio(meios, cod, globalID_Client);
+                    resmeios = bookMeio(resmeios, cod, globalID_Client, meios, clients);
                     saveRecords_Meio(meios);
+                    saveRecords_Book(resmeios);
                     red();
                     printf("\n\nReservation made successfully");
                     reset();
@@ -338,21 +339,21 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             yellow();
             printf("Enter the needed information!\n\n");
             reset();
-            printf("Enter the code the mean you want to remove: ");
-            scanf("%d", &cod);
-            if (!existRecord_Meio(meios, cod)) {
+            printf("Enter the id of the reservation you want to unbook: ");
+            scanf("%d", &id);
+            if (!existRecord_Booked(resmeios, id)) {
                 red();
-                printf("\n\nThe mean with code");
+                printf("\n\nThe reservation with the id");
                 yellow();
-                printf(" %d ", cod);
+                printf(" %d ", id);
                 reset();
                 red();
                 printf("doesn't exist!");
-                printf("\n\nUnable to remove the mean!");
+                printf("\n\nUnable to unbook the mean!");
                 reset();
             }
             else {
-                if (!isMeioMineToBook(meios, cod, globalID_Client)) {
+                if (!isMeioMineToUnbook(resmeios, id, globalID_Client)) {
                     yellow();
                     printf("\n\nYou can't unbook this Mean because it is booked under some other client name.");
                     printf("\n\nSorry for the inconvenience!");
@@ -361,8 +362,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                     reset();
                 }
                 else {
-                    meios = cancelbookMeio(meios, cod, globalID_Client);
+                    resmeios = cancelbookMeio(resmeios, id);
                     saveRecords_Meio(meios);
+                    saveRecords_Book(resmeios);
                     red();
                     printf("\n\nA mean containing the code");
                     yellow();
@@ -371,8 +373,6 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
                     red();
                     printf("was successfully unbooked!");
                     reset();
-
-                //printf("You can't unbook this Mean because it is booked under some other client name.\n Sorry for bothering!");
                 }
             }
             pause();
@@ -382,16 +382,16 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
             yellow();
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
-            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n+---------------------------------------------------------------------------------+");
+            printf("\n|     RESID      MEIOCODE      MEIOTYPE        CLIENTSID       CLIENTSNAME        |");
+            printf("\n+---------------------------------------------------------------------------------+");
             reset();
-            listBookingRecords(meios, globalID_Client);
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            listClientBookingRecords(resmeios, globalID_Client);
+            printf("\n+---------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of records of type Meios:");
             red();
             // this function return the amount of records in the Linked List Meios
-            printf(" %d", countRecords_Book(meios, globalID_Client));
+            printf(" %d", countRecords_Book(resmeios, globalID_Client));
             reset();
             pause();
             break;
@@ -420,7 +420,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             break;*/
         case 5:
             clear();
-            showSubSubMenu_Client(meios, clients, managers);
+            showSubSubMenu_Client(meios, clients, managers, resmeios);
             break;
         }
     }
@@ -435,7 +435,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
+int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1;
     int id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
@@ -471,7 +471,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
         switch (op)
         {
         case 1:
-            loop_Client_Login(meios, clients, managers);
+            loop_Client_Login(meios, clients, managers, resmeios);
             break;
         case 2:
             // Insert a new record of type Client
@@ -513,7 +513,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 3:
             clear();
-            showMenu(meios, clients, managers);
+            showMenu(meios, clients, managers, resmeios);
             break;
         }
         
@@ -529,7 +529,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
+int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1;
 
     while (1)
@@ -562,14 +562,14 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
         switch (op)
         {
         case 1:
-            showSubMenu_Manager_Meios(meios, clients, managers);
+            showSubMenu_Manager_Meios(meios, clients, managers, resmeios);
             break;
         case 2:
-            showSubMenu_Manager_Clients(meios, clients, managers);
+            showSubMenu_Manager_Clients(meios, clients, managers, resmeios);
             break;
         case 3:
             clear();
-            showMenu(meios, clients, managers);
+            showMenu(meios, clients, managers, resmeios);
             break;
         }
     }
@@ -584,7 +584,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
+int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1, cod;
     char type[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
     float bat, aut, cost;
@@ -641,7 +641,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, 0, 0, loc);
+                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, 0, loc);
                 saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
@@ -662,7 +662,6 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             break;
         case 2:
             // List the records of type Meio
-            //meios = readrecords_Meio(meios);
             red();
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
@@ -812,7 +811,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
             break;*/
         case 5:
             clear();
-            showSubMenu_Manager(meios, clients, managers);
+            showSubMenu_Manager(meios, clients, managers, resmeios);
             break;
         }
     }
@@ -827,7 +826,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers) {
  * @return int 
  */
 // 
-int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers) {
+int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1, id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
     float balance;
@@ -916,12 +915,12 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             printf("\nTable containing the information of the records of type Client.\n");
             // Table Construction
             yellow();
-            printf("\n+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-            printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS                                  NIF             BALANCE       EMAIL                        |");
-            printf("\n+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS                                  NIF             BALANCE       EMAIL                              PASSWORD            |");
+            printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
             reset();
             listRecords_Client(clients);
-            printf("\n+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
             pause();
             break;
         case 3:
@@ -1054,7 +1053,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers)
             break;*/
         case 5:
             clear();
-            showSubMenu_Manager(meios, clients, managers);
+            showSubMenu_Manager(meios, clients, managers, resmeios);
             break;
         }
     }
@@ -1086,6 +1085,13 @@ int main()
      */
     // Empty Linked List of type Manager
     Manager* managers = NULL;
+
+    /**
+     * @brief 
+     * 
+     */
+    //
+    resMeios* resmeios = NULL;
     
     /**
      * @brief 
@@ -1109,11 +1115,18 @@ int main()
     managers = readrecords_Manager();
 
     /**
+     * @brief 
+     * 
+     */
+    // 
+    resmeios = readrecords_Book(meios, clients);
+
+    /**
      * @brief Construct a new show Menu object
      * 
      */
     //
-    showMenu(meios, clients, managers);
+    showMenu(meios, clients, managers, resmeios);
 
     return(0);
 }

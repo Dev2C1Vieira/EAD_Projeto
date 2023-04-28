@@ -111,7 +111,7 @@ int getLastMeioCode(Meio* start) {
  */
 // inserts a new records in the Meio linked list
 Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat, 
-    float aut, float cost, int idclient, int status, char loc[50]) { // here is included the needed parameters
+    float aut, float cost, int status, char loc[50]) { // here is included the needed parameters
     
     int lastCode = getLastMeioCode(start);
     Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
@@ -123,7 +123,7 @@ Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat,
         meio->battery = bat; // here the value of the parameter bat is assigned in the respective field of the new record.
         meio->autonomy = aut; // here the value of the parameter aut is assigned in the respective field of the new record.
         meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
-        meio->idClient = idclient; // here the value of the parameter idclient is assigned in the respective field of the new record.
+        //meio->idClient = idclient; // here the value of the parameter idclient is assigned in the respective field of the new record.
         meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
         strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
         meio->next = NULL; // here the 'next' field of the new record is pointing to the record that used to be the last one
@@ -325,7 +325,7 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
 // saves the content of the Meio linked list in the "Records_Meio" text file
 int saveRecords_Meio(Meio* start)
 {
-    // this C code opens a file called "Registros_Medio.txt" 
+    // this C code opens a file called "Records_Meio.txt" 
     // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
     FILE* fp = fopen("../data/Text_Files/Records_Meio.txt", "w");
     // checks if the file is empty or not
@@ -335,8 +335,8 @@ int saveRecords_Meio(Meio* start)
         while (aux != NULL)
         {
             // saves in the text file each field of a respective record separated by ';'
-            fprintf(fp, "%d;%s;%f;%f;%f;%d;%d;%s\n", aux->code, aux->type, aux->battery, 
-                aux->autonomy, aux->cost, aux->idClient, aux->status, aux->location);
+            fprintf(fp, "%d;%s;%f;%f;%f;%d;%s\n", aux->code, aux->type, aux->battery, 
+                aux->autonomy, aux->cost, aux->status, aux->location);
             aux = aux->next; // moves to the next record
         }
         fclose(fp); // closes the text file
@@ -371,8 +371,8 @@ Meio* readrecords_Meio() {
         while (fgets(line, sizeof(line), fp))
         {
             // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%[^;];%f;%f;%f;%d;%d;%[^\n]\n", &code, type, &bat, &aut, &cost, &idclient, &status, loc);
-            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, idclient, status, loc);
+            sscanf(line, "%d;%[^;];%f;%f;%f;%d;%[^\n]\n", &code, type, &bat, &aut, &cost, &status, loc);
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, status, loc);
             // insert the records in the linked list
         }
         fclose(fp);
@@ -542,9 +542,10 @@ int existRecord_Client(Client* start, int id) {
 // lists the informations of the records in the console
 void listRecords_Client(Client* start) {
     while (start != NULL) {
-        printf("\n|    %-7d %-20s %-0d-%-0d-%-9d %-18d %-40s %-15d %-13.2f %-24s     |", start->id, start->name,
-            start->birthDate.day, start->birthDate.month, start->birthDate.year, 
-            start->phoneNumber, start->address, start->nif, start->balance, start->email);
+        printf("\n|     %-7d %-20s %-0d-%-0d-%-9d %-18d %-40s %-15d %-13.2f %-34s %-15s     |", 
+            start->id, start->name, start->birthDate.day, start->birthDate.month, 
+            start->birthDate.year, start->phoneNumber, start->address, start->nif, 
+            start->balance, start->email, start->password);
             start = start->next;
     }
     
@@ -934,17 +935,40 @@ int login_Manager(Manager* start, char email[50], char pass[50]) {
 #pragma region Booking_Related_Functions
 
 /**
+ * @brief Get the Last Res I D object
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
+int getLastResID(resMeios* head) {
+    if (head == NULL) {
+        // the list is empty, so there is no id to increment, so return 0.
+        return(0);
+    }
+    else {
+        // scrolls through the list to the last record
+        resMeios* last = head;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        // returns the code of the last record, so it can be incremented
+        return(last->id);
+    }
+}
+
+/**
  * @brief 
  * 
  * @return int 
  */
 // 
-int isMeioMineToBook(Meio* start, int code, int idclient) {
-    while (start != NULL) {
-        if (start->code == code) {
-            if (start->idClient == idclient) return(1);
+int isMeioMineToUnbook(resMeios* head, int id, int idclient) {
+    while (head != NULL) {
+        if (head->id == id) {
+            if (head->clients->id == idclient) return(1);
         }
-        start = start->next;
+        head = head->next;
     }
     return(0);
 }
@@ -957,16 +981,71 @@ int isMeioMineToBook(Meio* start, int code, int idclient) {
  * @return int 
  */
 // checks if a record is booked or not
-int isMeioBooked(Meio* start, int code) {
-    while (start != NULL) { // goes through the linked list until it finds the last record
-        if (start->code == code) { // finds the record containing the given record
-            if (start->status == 1) return(1); // checks if the records status is 1
+int isMeioBooked(Meio* head, int code) {
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if (head->code == code) { // finds the record containing the given record
+            if (head->status == 1) return(1); // checks if the records status is 1
             // if so it return 1 so that the program knows that this record is now booked
             // and can't be booked no more, until it's reservation is canceled by it's clients
         }
-        start = start->next; // moves to the next record
+        head = head->next; // moves to the next record
     }
     return(0);
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return int 
+ */
+//
+int existRecord_Booked(resMeios* head, int id) {
+    while (head != NULL) { /// goes through the linked list until it finds the last record
+        // checks if the record that is being checked is the same as the record represented by the given id
+        if (head->id == id) return(1); // return 1 if a record of the linked list is the same as the one being requested
+        head = head->next; // the record being read by the loop and passed to the next record
+    }
+    return(0); // return 0 if any record of the linked list is the same as the one being requested
+}
+
+/**
+ * @brief Get the Meio By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Meio* 
+ */
+// 
+Meio* getMeioByIndex(Meio* head, int index) {
+    Meio* current = head;
+    while (current != NULL) {
+        if (current->code == index) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL; // returns NULL if no record is found with the given code
+}
+
+/**
+ * @brief Get the Client By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Client* 
+ */
+// 
+Client* getClientByIndex(Client* head, int index) {
+    Client* current = head;
+    while (current != NULL) {
+        if (current->id == index) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL; // returns NULL if no record is found with the given code
 }
 
 /**
@@ -978,19 +1057,47 @@ int isMeioBooked(Meio* start, int code) {
  * @return Meio* 
  */
 // books the record, by changing the record status to 1
-Meio* bookMeio(Meio* start, int code, int idclient) {
-    Meio* aux = start; // creates a new linked list and initializes it with the first Meio linked list record
-    if (existRecord_Meio(aux, code)) { // checks if the record exists so that it can or not be booked
-        while (aux != NULL) { // goes through the linked list until it finds the last record
-            if (aux->code == code) {  // finds the record containing the given code
-                // the fields receive the new data given by parameter
-                aux->status = 1;
-                aux->idClient = idclient;
-            }
-            aux = aux->next; // moves to the next record
-        }
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients /*struct periodTime perTime*/) {
+
+    // Procura pelo registro desejado na lista ligada Meio
+    Meio* meio = getMeioByIndex(meios, idMeio);
+    // 
+    Client* client = getClientByIndex(clients, idClient);
+    // 
+    int lastID = getLastResID(head);
+
+    if (meio == NULL) {
+        printf("Meio not found.\n");
+        return(head);
     }
-    return(start);
+    if (client == NULL) {
+        printf("Client not found.\n");
+        return(head);
+    }
+
+    // Criar a nova reserva
+    resMeios* newRes = (resMeios*)malloc(sizeof(resMeios));
+    newRes->id = (lastID)+1;
+    newRes->meios = meio;
+    newRes->clients = client;
+    //newRes->perTime = perTime;
+    newRes->next = NULL;
+
+    // updates the 'status' field of Meio to 1, so now it becomes booked
+    meio->status = 1;
+
+    // Add the new reservation to the ResMeios linked list
+    if (head == NULL) {
+        head = newRes;
+    } else {
+        resMeios* current = head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newRes;
+    }
+
+    return(head);
 }
 
 /**
@@ -1001,21 +1108,32 @@ Meio* bookMeio(Meio* start, int code, int idclient) {
  * @return Meio* 
  */
 // cancels the reservation of the record, by changing the record status to 0
-Meio* cancelbookMeio(Meio* start, int code, int idclient) {
-    Meio* aux = start; // creates a new linked list and initializes it with the first Meio linked list record
-    if (existRecord_Meio(aux, code)) { // checks if the record exists so that it can or not be booked
-        if (isMeioMineToBook(start, code, idclient)) {
-            while (aux != NULL) { // goes through the linked list until it finds the last record
-                if (aux->code == code) { // finds the record containing the given record
-                    // the fields receive the new data given by parameter
-                    aux->status = 0;
-                    aux->idClient = 0;
-                }
-                aux = aux->next; // moves to the next record
-            }
-        }
+resMeios* cancelbookMeio(resMeios* head, int id) {
+    
+    if (head == NULL) {
+        printf("The reservation list is empty.\n");
+        return head;
     }
-    return(start);
+    
+    resMeios* current = head;
+    resMeios* prev = NULL;
+    while (current != NULL) {
+        if (current->id == id) { // find the reservation you want to cancel
+            if (prev == NULL) { // if the reservation to be canceled is at the beginning of the list
+                head = current->next;
+            } 
+            else {
+                prev->next = current->next;
+            }
+            // updates the 'status' field of Meio to 0, so it is now available for booking
+            current->meios->status = 0;
+            free(current); // frees the memory allocated by the canceled reservation
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+    return head;
 }
 
 /**
@@ -1024,21 +1142,21 @@ Meio* cancelbookMeio(Meio* start, int code, int idclient) {
  * @param start 
  */
 //
-void listNonBookingRecords(Meio* start) {
-    while (start != NULL) { // goes through the linked list until it finds the last record
-        if (start->status != 1) {
-            if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
-                start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
+void listNonBookingRecords(Meio* head) {
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if (head->status != 1) {
+            if (head->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", head->code, head->type, 
+                head->battery, head->autonomy, head->cost, "Por Reservar", head->location); 
                 // prints the informations of the record in the console
             }
-            else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
-                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
-                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
+            else if (head->status == 1){ // verifies if the record status is 0 then it is yet to be booked
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", head->code, head->type, 
+                    head->battery, head->autonomy, head->cost, "Reservado", head->location);
                     // prints the informations of the record in the console
             }
         }
-        start = start->next; // the record being read by the loop and passed to the next record
+        head = head->next; // the record being read by the loop and passed to the next record
     }
 }
 
@@ -1049,17 +1167,15 @@ void listNonBookingRecords(Meio* start) {
  * @param idclient 
  */
 // lists all the records from the Meio linked list but only those booked by the logged in client
-void listBookingRecords(Meio* start, int idclient) {
-    while (start != NULL) { // goes through the linked list until it finds the last record
-        if (start->idClient == idclient) { // finds the record containing the given id 
-        // but only if it's was booked by the logged in client
-            if (start->status == 1) { // checks if the record status is indeed booked
-                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
-                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
-                // lists the information of the records in the console
-            }
+void listClientBookingRecords(resMeios* head, int idclient) {
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if ((head->meios->status == 1) && (head->clients->id == idclient)) { // finds the record containing the given id 
+            // but only if it's was booked by the logged in client
+            printf("\n|     %-10d %-15d %-20s %8d %-20s   |", head->id, head->meios->code, head->meios->type,
+                    head->clients->id, head->clients->name);
+            // lists the information of the records in the console
         }
-        start = start->next;
+        head = head->next;
     }
 }
 
@@ -1071,17 +1187,79 @@ void listBookingRecords(Meio* start, int idclient) {
  * @return int 
  */
 // counts the ammount of records that the logged in client booked
-int countRecords_Book(Meio* start, int idclient) {
+int countRecords_Book(resMeios* head, int idclient) {
     int counter = 0; // creation of an incrementation variable
-    while (start != NULL) { // goes through the linked list until it finds the last record
-        if (start->idClient == idclient) { // finds the record containing the given client id
-            if (start->status == 1) { // checks if the record status is indeed booked
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if (head->clients->id == idclient) { // finds the record containing the given client id
+            if (head->meios->status == 1) { // checks if the record status is indeed booked
                 counter++; // increments the incrementation variable
             }
         }
-        start = start->next; // moves to the next record
+        head = head->next; // moves to the next record
     }
     return(counter); // returns the incrementation variable
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
+int saveRecords_Book(resMeios* head) {
+    // this C code opens a file called "Records_Reservations.txt" 
+    // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
+    FILE* fp = fopen("../data/Text_Files/Records_Reservations.txt", "w");
+    // checks if the file is empty or not
+    if (fp != NULL)
+    {
+        resMeios* aux = head;
+        while (aux != NULL)
+        {
+            // saves in the text file each field of a respective record separated by ';'
+            fprintf(fp, "%d;%d;%s;%d;%s\n", aux->id, aux->meios->code, aux->meios->type, 
+                aux->clients->id, aux->clients->name);
+            aux = aux->next; // moves to the next record
+        }
+        fclose(fp); // closes the text file
+        return(1);
+    }
+    
+    return(0);
+}
+
+/**
+ * @brief 
+ * 
+ * @return resMeios* 
+ */
+//
+resMeios* readrecords_Book(Meio* meio, Client* client) {
+    int id, idMeio, idClient;
+    char typeMeio[50], nameClient[50];
+    // creating variables to keep the information of the records in the text file
+
+    FILE* fp = fopen("../data/Text_Files/Records_Reservations.txt","r"); // opens the "Records_Meio" text file
+
+    resMeios* res = NULL; // creates a new NULL linked list
+    
+    if (fp != NULL) { // checks if the text file is empty
+        char line[1024];
+        // the fgets function is used to read a line of text from a file and store it in a character buffer. 
+        // the first argument is a pointer to the buffer that will store the line read.
+        // the second argument is the buffer size. In this case, sizeof(line) returns the size of the line buffer in bytes.
+        // the third argument is a pointer to the file from which the line is to be read.
+        while (fgets(line, sizeof(line), fp))
+        {
+            // returns the information of each record and gives them to the linked list
+            sscanf(line, "%d;%d;%[^;];%d;%[^\n]\n", id, idMeio, typeMeio, idClient, nameClient);
+            res = bookMeio(res, idMeio, idClient, meio, client);
+            // insert the records in the linked list
+        }
+        fclose(fp);
+    }
+    return(res);
 }
 
 #pragma endregion

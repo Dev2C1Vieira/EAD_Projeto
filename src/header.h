@@ -12,12 +12,30 @@
  * @brief 
  * 
  */
-// this struct serves to store a record in date format
-struct Date
+// this struct serves to store a record in birth date format
+struct BirthDate
 {
 	int day; // This is the day field 
 	int month; // This is the month field
 	int year; // This is the year field
+};
+
+// this struct serves to store a record in date format
+struct date
+{
+  int day, month, year;
+};
+
+// this struct serves to store a record in time format
+struct time
+{
+  int hour, min;
+};
+
+struct periodTime
+{
+	struct date startDate, finishDate;
+	struct time startTime, finishTime;
 };
 
 /**
@@ -33,9 +51,9 @@ typedef struct Mobilidade_Registo
 	float autonomy; // Idifify the autonomy of the Electric Mobility
 	float cost; // Idifify the cost of the Electric Mobility
 	char location[50]; // Idifify the location of the Electric Mobility
-	int idClient; // auxiliar way to identify who booked the mean of transport
+	//int idClient; // auxiliar way to identify who booked the mean of transport
 	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked 
-	struct registo* next; // Points to the next record in the Meio linked list
+	struct Mobilidade_Registo* next; // Points to the next record in the Meio linked list
 } Meio;
 
 /**
@@ -47,14 +65,14 @@ typedef struct Cliente_Registo
 {
 	int id; // This is the id field that identifies the client
 	char name[100]; // This is the name field that identifies the client
-	struct Date birthDate; // This is the birth date field that identifies the client
+	struct BirthDate birthDate; // This is the birth date field that identifies the client
 	int phoneNumber; // This is the phone number field that identifies the client
 	char address[100]; // This is the address field that identifies the client
 	int nif; // This is the nif field that identifies the client
 	float balance; // This is the balance field that identifies the client
 	char email[50]; // This is the email field that identifies the client
 	char password[20]; // This is the password field that identifies the client
-	struct registo* next; // Points to the next record in the Client linked list
+	struct Cliente_Registo* next; // Points to the next record in the Client linked list
 } Client;
 
 /**
@@ -66,12 +84,21 @@ typedef struct Gerente_Registo
 {
 	int id; // This is the id field that identifies the manager
 	char name[100]; // This is the name field that identifies the manager
-	struct Date birthDate; // This is the birth date field that identifies the manager
+	struct BirthDate birthDate; // This is the birth date field that identifies the manager
 	int phoneNumber; // This is the phone number field that identifies the manager
 	char email[50]; // This is the email field that identifies the manager
 	char password[20]; // This is the password field that identifies the manager
-	struct registo* next; // Points to the next record in the Manager linked list
+	struct Gerente_Registo* next; // Points to the next record in the Manager linked list
 } Manager;
+
+typedef struct ResMeios
+{
+	int id;
+    Meio *meios;
+    Client *clients;
+	struct periodTime perTime;
+    struct Reserva *next;
+} resMeios;
 
 #pragma endregion
 
@@ -124,7 +151,7 @@ int getLastManagerID(Manager* start);
  */
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, char type[50], 
-	float bat, float aut, float cost, int idclient, int status, char loc[50]); // here is included the need parameters
+	float bat, float aut, float cost, int status, char loc[50]); // here is included the need parameters
 
 /**
  * @brief 
@@ -205,13 +232,46 @@ int countRecords_Manager(Manager* start);
  * @return int 
  */
 // this function return the amount of records present in the Meio linked list, but only about a specific client
-int countRecords_Book(Meio* start, int idclient);
+int countRecords_Book(resMeios* head, int idclient);
+
+#pragma endregion
+
+#pragma region Query_Records
+
+/**
+ * @brief Get the Meio By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Meio* 
+ */
+// 
+Meio* getMeioByIndex(Meio* head, int index);
+
+/**
+ * @brief Get the Client By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Client* 
+ */
+// 
+Client* getClientByIndex(Client* head, int index);
 
 #pragma endregion
 
 #pragma region Booking_Functions
 
 //resMeios bookReservationsLast(resMeios start, void *meio, void *client);
+
+/**
+ * @brief Get the Last Res I D object
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
+int getLastResID(resMeios* head);
 
 /**
  * @brief 
@@ -222,7 +282,7 @@ int countRecords_Book(Meio* start, int idclient);
  * @return int 
  */
 // this function is used to check if the Meio belongs to the client who is trying to cancel the reservation.
-int isMeioMineToBook(Meio* start, int code, int idclient);
+int isMeioMineToUnbook(resMeios* head, int id, int idclient);
 
 /**
  * @brief 
@@ -232,7 +292,7 @@ int isMeioMineToBook(Meio* start, int code, int idclient);
  * @return int 
  */
 // this function goes through the linked list and checks if a certain record indicated by the user is already reserved
-int isMeioBooked(Meio* start, int code);
+int isMeioBooked(Meio* head, int code);
 
 /**
  * @brief 
@@ -243,7 +303,7 @@ int isMeioBooked(Meio* start, int code);
  * @return Meio* 
  */
 // this function scrolls through the linked list and reserves the record indicated by the user
-Meio* bookMeio(Meio* start, int code, int idclient);
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients /*struct periodTime perTime*/);
 
 /**
  * @brief 
@@ -253,7 +313,7 @@ Meio* bookMeio(Meio* start, int code, int idclient);
  * @return Meio* 
  */
 // this function scrolls through the linked list and cancels the reservation of the record indicated by the user
-Meio* cancelbookMeio(Meio* start, int code, int idclient);
+resMeios* cancelbookMeio(resMeios* start, int id);
 
 /**
  * @brief
@@ -261,7 +321,7 @@ Meio* cancelbookMeio(Meio* start, int code, int idclient);
  * @param start
 */
 // this function traverses the Meio linked list and lists the non booked records present in it
-void listNonBookingRecords(Meio* start);
+void listNonBookingRecords(Meio* head);
 
 /**
  * @brief 
@@ -270,7 +330,24 @@ void listNonBookingRecords(Meio* start);
  * @param idclient 
  */
 // this function goes through the linked list, and lists the records that were reserved by the client that is logged in
-void listBookingRecords(Meio* start, int idclient);
+void listClientBookingRecords(resMeios* head, int idclient);
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
+int saveRecords_Book(resMeios* head);
+
+/**
+ * @brief 
+ * 
+ * @return Meio* 
+ */
+// 
+resMeios* readrecords_Book(Meio* meio, Client* client);
 
 #pragma endregion
 
@@ -305,6 +382,16 @@ int existRecord_Client(Client* start, int id);
  */
 // Function that checks whether or not a certain record of type Manager already exists
 int existRecord_Manager(Manager* start, int id);
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return int 
+ */
+// Function that checks whether or not a certain record of type Reservation already exists
+int existRecord_Booked(resMeios* head, int id);
 
 #pragma endregion
 
@@ -500,7 +587,7 @@ Manager* readrecords_Manager();
  * @return int 
  */
 // this main menu that allows the user to indicate their status in order to be able to login to their respective account
-int showMenu(Meio* meios, Client* clients, Manager* managers);
+int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 /**
  * @brief 
@@ -511,7 +598,7 @@ int showMenu(Meio* meios, Client* clients, Manager* managers);
  * @return int 
  */
 // this client menu that allows the client to manipulate the records of reservations of Means
-int showSubMenu_Client(Meio* meios, Client* clients, Manager* manager);
+int showSubMenu_Client(Meio* meios, Client* clients, Manager* manager, resMeios* resmeios);
 
 /**
  * @brief 
@@ -522,7 +609,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* manager);
  * @return int 
  */
 // this client sub menu that allows the client to log in if he already has one, or to create one otherwise
-int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
+int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 /**
  * @brief 
@@ -533,7 +620,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers);
  * @return int 
  */
 // this manager menu that allows the manager to choose if he wants to manipulate Meio records or Clients records
-int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
+int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 /**
  * @brief 
@@ -544,7 +631,7 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers);
  * @return int 
  */
 // this client menu that allows the manager to manipulate the records of reservations of Means
-int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers);
+int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 /**
  * @brief 
@@ -555,7 +642,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers);
  * @return int 
  */
 // this client menu that allows the manager to manipulate the records of Clients
-int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers);
+int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 #pragma endregion
 
@@ -620,7 +707,7 @@ const char* searchName_Manager(Manager* start, int id);
  * @return int 
  */
 // 
-int loop_Client_Login(Meio* meios, Client* clients, Manager* managers);
+int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 /**
  * @brief 
@@ -631,7 +718,7 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers);
  * @return int 
  */
 //
-int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers);
+int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 #pragma endregion
 
