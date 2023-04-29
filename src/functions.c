@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "header.h"
 
 
@@ -65,6 +66,36 @@ void pause() {
 
 // %[^\n] sem s Gets, para permitir valor nulo
 // %[^;] sem s, para permitir ler um dado do .txt
+
+#pragma endregion
+
+#pragma region System_Date_Time
+
+/**
+ * @brief Get the Current Date object
+ * 
+ * @return struct date 
+ */
+// 
+struct date getCurrentDate() {
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct date d = {tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900};
+    return(d);
+}
+
+/**
+ * @brief Get the Current Time object
+ * 
+ * @return struct time 
+ */
+// 
+struct time getCurrentTime() {
+    time_t t = time(NULL);
+  struct tm tm = *localtime(&t);
+  struct time time = {tm.tm_hour, tm.tm_min};
+  return(time);
+}
 
 #pragma endregion
 
@@ -1056,8 +1087,9 @@ Client* getClientByIndex(Client* head, int index) {
  * @param idclient 
  * @return Meio* 
  */
-// books the record, by changing the record status to 1
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients /*struct periodTime perTime*/) {
+// creates a new reservation type record, storing your Meio, your Client 
+// and the period in which the reservation took place
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime perTime) {
 
     // Procura pelo registro desejado na lista ligada Meio
     Meio* meio = getMeioByIndex(meios, idMeio);
@@ -1067,20 +1099,24 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
     int lastID = getLastResID(head);
 
     if (meio == NULL) {
-        printf("Meio not found.\n");
+        red();
+        printf("\n\tMeio not found.\n");
+        reset();
         return(head);
     }
-    if (client == NULL) {
-        printf("Client not found.\n");
-        return(head);
-    }
+    if (client == NULL) return(head);
 
     // Criar a nova reserva
     resMeios* newRes = (resMeios*)malloc(sizeof(resMeios));
     newRes->id = (lastID)+1;
     newRes->meios = meio;
     newRes->clients = client;
-    //newRes->perTime = perTime;
+    newRes->bookDate = perTime;
+    /*newRes->bookDate.date.day = perTime.date.day;
+    newRes->bookDate.date.month = perTime.date.month;
+    newRes->bookDate.date.year = perTime.date.year;
+    newRes->bookDate.time.hour = perTime.time.hour;
+    newRes->bookDate.time.min = perTime.time.min;*/
     newRes->next = NULL;
 
     // updates the 'status' field of Meio to 1, so now it becomes booked
@@ -1117,6 +1153,7 @@ resMeios* cancelbookMeio(resMeios* head, int id) {
     
     resMeios* current = head;
     resMeios* prev = NULL;
+    //resMeios* after = current->next;
     while (current != NULL) {
         if (current->id == id) { // find the reservation you want to cancel
             if (prev == NULL) { // if the reservation to be canceled is at the beginning of the list
@@ -1128,6 +1165,7 @@ resMeios* cancelbookMeio(resMeios* head, int id) {
             // updates the 'status' field of Meio to 0, so it is now available for booking
             current->meios->status = 0;
             free(current); // frees the memory allocated by the canceled reservation
+            //after->id = current->id;
             return head;
         }
         prev = current;
@@ -1171,8 +1209,11 @@ void listClientBookingRecords(resMeios* head, int idclient) {
     while (head != NULL) { // goes through the linked list until it finds the last record
         if ((head->meios->status == 1) && (head->clients->id == idclient)) { // finds the record containing the given id 
             // but only if it's was booked by the logged in client
-            printf("\n|     %-10d %-15d %-20s %8d %-20s   |", head->id, head->meios->code, head->meios->type,
-                    head->clients->id, head->clients->name);
+            printf("\n|     %-10d %-0d-%-0d-%-9d %-0d:%-9d %-15d %-20s %8d %-20s   |", head->id, 
+                head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,
+                head->bookDate.time.hour, head->bookDate.time.min,
+                head->meios->code, head->meios->type,
+                head->clients->id, head->clients->name);
             // lists the information of the records in the console
         }
         head = head->next;
@@ -1218,7 +1259,10 @@ int saveRecords_Book(resMeios* head) {
         while (aux != NULL)
         {
             // saves in the text file each field of a respective record separated by ';'
-            fprintf(fp, "%d;%d;%s;%d;%s\n", aux->id, aux->meios->code, aux->meios->type, 
+            fprintf(fp, "%d;%d-%d-%d;%d:%d;%d;%s;%d;%s\n", aux->id, 
+                aux->bookDate.date.day, aux->bookDate.date.month, aux->bookDate.date.year,
+                aux->bookDate.time.hour, aux->bookDate.time.min,
+                aux->meios->code, aux->meios->type, 
                 aux->clients->id, aux->clients->name);
             aux = aux->next; // moves to the next record
         }
@@ -1236,9 +1280,11 @@ int saveRecords_Book(resMeios* head) {
  */
 //
 resMeios* readrecords_Book(Meio* meio, Client* client) {
-    int id, idMeio, idClient;
+    int id, dd, dm, dy, th, tm, idMeio, idClient;
     char typeMeio[50], nameClient[50];
     // creating variables to keep the information of the records in the text file
+
+    struct periodDateTime pdt;
 
     FILE* fp = fopen("../data/Text_Files/Records_Reservations.txt","r"); // opens the "Records_Meio" text file
 
@@ -1253,8 +1299,14 @@ resMeios* readrecords_Book(Meio* meio, Client* client) {
         while (fgets(line, sizeof(line), fp))
         {
             // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%d;%[^;];%d;%[^\n]\n", &id, &idMeio, typeMeio, &idClient, nameClient);
-            res = bookMeio(res, idMeio, idClient, meio, client);
+            sscanf(line, "%d;%d-%d-%d;%d:%d;%d;%[^;];%d;%[^\n]\n", &id, 
+                &dd, &dm, &dy, &th, &tm, &idMeio, typeMeio, &idClient, nameClient);
+            pdt.date.day = dd;
+            pdt.date.month = dm;
+            pdt.date.year = dy;
+            pdt.time.hour = th;
+            pdt.time.min = tm;
+            res = bookMeio(res, idMeio, idClient, meio, client, pdt);
             // insert the records in the linked list
         }
         fclose(fp);

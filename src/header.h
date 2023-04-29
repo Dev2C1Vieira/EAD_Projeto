@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 
 #pragma region Structs
@@ -32,10 +33,11 @@ struct time
   int hour, min;
 };
 
-struct periodTime
+// this struct serves to store the date and time when the reservation took place
+struct periodDateTime
 {
-	struct date startDate, finishDate;
-	struct time startTime, finishTime;
+	struct date date;
+	struct time time;
 };
 
 /**
@@ -96,9 +98,30 @@ typedef struct ResMeios
 	int id;
     Meio *meios;
     Client *clients;
-	struct periodTime perTime;
+	struct periodDateTime bookDate;
+	struct periodDateTime unbookDate;
     struct Reserva *next;
 } resMeios;
+
+#pragma endregion
+
+#pragma region System_Date_Time
+
+/**
+ * @brief Get the Current Date object
+ * 
+ * @return struct date 
+ */
+// 
+struct date getCurrentDate();
+
+/**
+ * @brief Get the Current Time object
+ * 
+ * @return struct time 
+ */
+// 
+struct time getCurrentTime();
 
 #pragma endregion
 
@@ -303,7 +326,7 @@ int isMeioBooked(Meio* head, int code);
  * @return Meio* 
  */
 // this function scrolls through the linked list and reserves the record indicated by the user
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients /*struct periodTime perTime*/);
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime perTime);
 
 /**
  * @brief 

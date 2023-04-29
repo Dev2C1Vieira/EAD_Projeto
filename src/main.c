@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include "header.h"
@@ -240,6 +241,13 @@ int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1, cod, id;
 
+    struct periodDateTime pdt;
+    pdt.date = getCurrentDate();
+
+    struct time t = getCurrentTime();
+    pdt.time.hour = t.hour;
+    pdt.time.min = t.min;
+
     globalName_Client = searchName_Client(clients, globalID_Client);
 
     while (1)
@@ -314,7 +322,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             }
             else {
                 if (!isMeioBooked(meios, cod)) {
-                    resmeios = bookMeio(resmeios, cod, globalID_Client, meios, clients);
+                    resmeios = bookMeio(resmeios, cod, globalID_Client, meios, clients, pdt);
                     saveRecords_Meio(meios);
                     saveRecords_Book(resmeios);
                     red();
@@ -382,12 +390,12 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
             yellow();
-            printf("\n+---------------------------------------------------------------------------------+");
-            printf("\n|     RESID      MEIOCODE      MEIOTYPE        CLIENTSID       CLIENTSNAME        |");
-            printf("\n+---------------------------------------------------------------------------------+");
+            printf("\n+--------------------------------------------------------------------------------------------------------+");
+            printf("\n|     RESID       DATE        TIME      MEIOCODE      MEIOTYPE        CLIENTSID       CLIENTSNAME        |");
+            printf("\n+--------------------------------------------------------------------------------------------------------+");
             reset();
             listClientBookingRecords(resmeios, globalID_Client);
-            printf("\n+---------------------------------------------------------------------------------+");
+            printf("\n+--------------------------------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of records of type Meios:");
             red();
             // this function return the amount of records in the Linked List Meios
