@@ -674,12 +674,17 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
             yellow();
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
-            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n+--------------------------------------------------------------------------------------------------------------+");
+            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        STATUS            LOCATION         |");
+            printf("\n+--------------------------------------------------------------------------------------------------------------+");
             reset();
             listRecords_Meio(meios);
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n+--------------------------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of records of type Meios:");
+            red();
+            // this function return the amount of records in the Linked List Meios
+            printf(" %d\n", countRecords_Meio(meios));
+            reset();
             pause();
             break;
         case 3:
@@ -929,6 +934,11 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             reset();
             listRecords_Client(clients);
             printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of records of type Client:");
+            red();
+            // this function return the amount of records in the Linked List Meios
+            printf(" %d\n", countRecords_Client(clients));
+            reset();
             pause();
             break;
         case 3:

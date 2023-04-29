@@ -1,2 +1,1 @@
-1;29-4-2023;13:18;1;Bicicleta;1;Pedro Carvalho
-2;29-4-2023;13:20;3;Mota;1;Pedro Carvalho
+1;29-4-2023;18:11;1;Bicicleta;1;Pedro Carvalho

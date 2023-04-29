@@ -92,9 +92,9 @@ struct date getCurrentDate() {
 // 
 struct time getCurrentTime() {
     time_t t = time(NULL);
-  struct tm tm = *localtime(&t);
-  struct time time = {tm.tm_hour, tm.tm_min};
-  return(time);
+    struct tm tm = *localtime(&t);
+    struct time time = {tm.tm_hour, tm.tm_min};
+    return(time);
 }
 
 #pragma endregion
@@ -218,12 +218,12 @@ int existRecord_Meio(Meio* start, int code) {
 void listRecords_Meio(Meio* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
                 start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
                 // prints the informations of the record in the console
         }
         else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", start->code, start->type, 
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
                 start->battery, start->autonomy, start->cost, "Reservado", start->location);
                 // prints the informations of the record in the console
         }
@@ -573,7 +573,7 @@ int existRecord_Client(Client* start, int id) {
 // lists the informations of the records in the console
 void listRecords_Client(Client* start) {
     while (start != NULL) {
-        printf("\n|     %-7d %-20s %-0d-%-0d-%-9d %-18d %-40s %-15d %-13.2f %-34s %-15s     |", 
+        printf("\n|    %-6d %-21s %-0.02d-%-0.02d-%-8.04d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s     |", 
             start->id, start->name, start->birthDate.day, start->birthDate.month, 
             start->birthDate.year, start->phoneNumber, start->address, start->nif, 
             start->balance, start->email, start->password);
@@ -1209,7 +1209,7 @@ void listClientBookingRecords(resMeios* head, int idclient) {
     while (head != NULL) { // goes through the linked list until it finds the last record
         if ((head->meios->status == 1) && (head->clients->id == idclient)) { // finds the record containing the given id 
             // but only if it's was booked by the logged in client
-            printf("\n|     %-10d %-0d-%-0d-%-9d %-0d:%-9d %-15d %-20s %8d %-20s   |", head->id, 
+            printf("\n|     %-10d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-15d %-20s %8d %-20s   |", head->id, 
                 head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,
                 head->bookDate.time.hour, head->bookDate.time.min,
                 head->meios->code, head->meios->type,
