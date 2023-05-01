@@ -142,7 +142,7 @@ int getLastMeioCode(Meio* start) {
  */
 // inserts a new records in the Meio linked list
 Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat, 
-    float aut, float cost, int status, char loc[50]) { // here is included the needed parameters
+    float aut, float cost, char loc[50], int status) { // here is included the needed parameters
     
     int lastCode = getLastMeioCode(start);
     Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
@@ -154,9 +154,8 @@ Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat,
         meio->battery = bat; // here the value of the parameter bat is assigned in the respective field of the new record.
         meio->autonomy = aut; // here the value of the parameter aut is assigned in the respective field of the new record.
         meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
-        //meio->idClient = idclient; // here the value of the parameter idclient is assigned in the respective field of the new record.
-        meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
         strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
+        meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
         meio->next = NULL; // here the 'next' field of the new record is pointing to the record that used to be the last one
     
         if (start == NULL) {
@@ -403,7 +402,7 @@ Meio* readrecords_Meio() {
         {
             // returns the information of each record and gives them to the linked list
             sscanf(line, "%d;%[^;];%f;%f;%f;%d;%[^\n]\n", &code, type, &bat, &aut, &cost, &status, loc);
-            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, status, loc);
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, status);
             // insert the records in the linked list
         }
         fclose(fp);
@@ -1082,6 +1081,72 @@ Client* getClientByIndex(Client* head, int index) {
 /**
  * @brief 
  * 
+ * @param startDateTime 
+ * @param endDateTime 
+ * @return float 
+ */
+// 
+float returnTimeDiff(struct periodDateTime startDateTime, struct periodDateTime endDateTime) {
+    float timeDiff = 0.0;
+    timeDiff += (endDateTime.date.year - startDateTime.date.year) * 365 * 24; // leap years not taken into account
+    timeDiff += (endDateTime.date.month - startDateTime.date.month) * 30 * 24; // 30 day months
+    timeDiff += (endDateTime.date.day - startDateTime.date.day) * 24; // days
+    timeDiff += (endDateTime.time.hour - startDateTime.time.hour); // months
+    timeDiff += (endDateTime.time.min - startDateTime.time.min) / 60.0; // minutes converted to fraction of hours
+    return(timeDiff);
+}
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @return float 
+ */
+// 
+float calculateTotalCost (resMeios* head, int id) {
+    float timeDiff, costPerHour, totalCost = 0.0;
+
+    while (head != NULL) {
+        if (head->id == id) {
+            timeDiff = returnTimeDiff(head->bookDate, head->unbookDate);
+            costPerHour = head->meios->cost;
+            totalCost = costPerHour * timeDiff;
+            return(totalCost);
+        }
+        head = head->next;
+    }
+    return(0.0);
+}
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @return int 
+ */
+// 
+int canItBeUnbooked(resMeios* head, int id) {
+    float totalCost = 0.0;
+
+    totalCost = calculateTotalCost(head, id);
+
+    while (head != NULL) {
+        if (head->id == id) {
+            if (head->clients->balance >= totalCost) {
+                return(1);
+            }
+            else return(0);
+        }
+        head = head->next;
+    }
+    return(0);
+}
+
+/**
+ * @brief 
+ * 
  * @param start 
  * @param code 
  * @param idclient 
@@ -1089,7 +1154,7 @@ Client* getClientByIndex(Client* head, int index) {
  */
 // creates a new reservation type record, storing your Meio, your Client 
 // and the period in which the reservation took place
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime perTime) {
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime) {
 
     // Procura pelo registro desejado na lista ligada Meio
     Meio* meio = getMeioByIndex(meios, idMeio);
@@ -1111,12 +1176,12 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
     newRes->id = (lastID)+1;
     newRes->meios = meio;
     newRes->clients = client;
-    newRes->bookDate = perTime;
-    /*newRes->bookDate.date.day = perTime.date.day;
-    newRes->bookDate.date.month = perTime.date.month;
-    newRes->bookDate.date.year = perTime.date.year;
-    newRes->bookDate.time.hour = perTime.time.hour;
-    newRes->bookDate.time.min = perTime.time.min;*/
+    newRes->bookDate = startDateTime;
+    /*newRes->bookDate.date.day = startDateTime.date.day;
+    newRes->bookDate.date.month = startDateTime.date.month;
+    newRes->bookDate.date.year = startDateTime.date.year;
+    newRes->bookDate.time.hour = startDateTime.time.hour;
+    newRes->bookDate.time.min = startDateTime.time.min;*/
     newRes->next = NULL;
 
     // updates the 'status' field of Meio to 1, so now it becomes booked
@@ -1144,34 +1209,46 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
  * @return Meio* 
  */
 // cancels the reservation of the record, by changing the record status to 0
-resMeios* cancelbookMeio(resMeios* head, int id) {
+resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTime) {
     
     if (head == NULL) {
+        red();
         printf("The reservation list is empty.\n");
-        return head;
+        reset();
+        return(head);
     }
     
-    resMeios* current = head;
-    resMeios* prev = NULL;
-    //resMeios* after = current->next;
-    while (current != NULL) {
-        if (current->id == id) { // find the reservation you want to cancel
-            if (prev == NULL) { // if the reservation to be canceled is at the beginning of the list
-                head = current->next;
-            } 
-            else {
-                prev->next = current->next;
+    if (canItBeUnbooked(head, id)) {
+        resMeios* current = head;
+        resMeios* prev = NULL;
+        //resMeios* after = current->next;
+        while (current != NULL) {
+            if (current->id == id) { // find the reservation you want to cancel
+                current->unbookDate = endDateTime;
+                if (prev == NULL) { // if the reservation to be canceled is at the beginning of the list
+                    head = current->next;
+                } 
+                else {
+                    prev->next = current->next;
+                }
+                // updates the 'status' field of Meio to 0, so it is now available for booking
+                current->meios->status = 0;
+                current->clients->balance -= calculateTotalCost(head, id);
+                free(current); // frees the memory allocated by the canceled reservation
+                //after->id = current->id;
+                return head;
             }
-            // updates the 'status' field of Meio to 0, so it is now available for booking
-            current->meios->status = 0;
-            free(current); // frees the memory allocated by the canceled reservation
-            //after->id = current->id;
-            return head;
+            prev = current;
+            current = current->next;
         }
-        prev = current;
-        current = current->next;
+        return(head);
     }
-    return head;
+    else {
+        red();
+        printf("\nImpossible to cancel the registration, as you do not have enough balance in your account to complete the operation.\n");
+        printf("\nPlease add amount to your balance.\n");
+        reset();
+    }
 }
 
 /**

@@ -52,9 +52,8 @@ typedef struct Mobilidade_Registo
 	float battery; // Idifify the battery of the Electric Mobility
 	float autonomy; // Idifify the autonomy of the Electric Mobility
 	float cost; // Idifify the cost of the Electric Mobility
-	char location[50]; // Idifify the location of the Electric Mobility
-	//int idClient; // auxiliar way to identify who booked the mean of transport
-	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked 
+	char location[50]; // Idifify the location of the Electric Mobility 
+	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked
 	struct Mobilidade_Registo* next; // Points to the next record in the Meio linked list
 } Meio;
 
@@ -174,7 +173,7 @@ int getLastManagerID(Manager* start);
  */
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, char type[50], 
-	float bat, float aut, float cost, int status, char loc[50]); // here is included the need parameters
+	float bat, float aut, float cost, char loc[50], int status); // here is included the need parameters
 
 /**
  * @brief 
@@ -320,13 +319,43 @@ int isMeioBooked(Meio* head, int code);
 /**
  * @brief 
  * 
+ * @param startDateTime 
+ * @param endDateTime 
+ * @return float 
+ */
+// 
+float returnTimeDiff(struct periodDateTime startDateTime, struct periodDateTime endDateTime);
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @return float 
+ */
+// 
+float calculateTotalCost (resMeios* head, int id);
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @return int 
+ */
+// 
+int canItBeUnbooked(resMeios* head, int id);
+
+/**
+ * @brief 
+ * 
  * @param start 
  * @param code 
  * @param idclient 
  * @return Meio* 
  */
 // this function scrolls through the linked list and reserves the record indicated by the user
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime perTime);
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime);
 
 /**
  * @brief 
@@ -336,7 +365,7 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
  * @return Meio* 
  */
 // this function scrolls through the linked list and cancels the reservation of the record indicated by the user
-resMeios* cancelbookMeio(resMeios* start, int id);
+resMeios* cancelbookMeio(resMeios* start, int id, struct periodDateTime endDateTime);
 
 /**
  * @brief

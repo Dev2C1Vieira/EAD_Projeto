@@ -370,7 +370,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
                     reset();
                 }
                 else {
-                    resmeios = cancelbookMeio(resmeios, id);
+                    resmeios = cancelbookMeio(resmeios, id, pdt);
                     saveRecords_Meio(meios);
                     saveRecords_Book(resmeios);
                     red();
@@ -649,7 +649,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, 0, loc);
+                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0);
                 saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
