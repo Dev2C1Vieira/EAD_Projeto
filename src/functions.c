@@ -1109,10 +1109,16 @@ float calculateTotalCost (resMeios* head, int id) {
 
     while (head != NULL) {
         if (head->id == id) {
-            timeDiff = returnTimeDiff(head->bookDate, head->unbookDate);
             costPerHour = head->meios->cost;
-            totalCost = costPerHour * timeDiff;
+            if (timeDiff <= 1) {
+                totalCost = costPerHour;
+                return(totalCost);
+            }
+            else {
+                timeDiff = returnTimeDiff(head->bookDate, head->unbookDate);
+                totalCost = costPerHour * timeDiff;
             return(totalCost);
+            }
         }
         head = head->next;
     }
@@ -1154,7 +1160,7 @@ int canItBeUnbooked(resMeios* head, int id) {
  */
 // creates a new reservation type record, storing your Meio, your Client 
 // and the period in which the reservation took place
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime) {
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime, int available) {
 
     // Procura pelo registro desejado na lista ligada Meio
     Meio* meio = getMeioByIndex(meios, idMeio);
@@ -1162,6 +1168,8 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
     Client* client = getClientByIndex(clients, idClient);
     // 
     int lastID = getLastResID(head);
+    float totalCost = 0.0;
+    struct periodDateTime finishDateTime;
 
     if (meio == NULL) {
         red();
@@ -1170,18 +1178,22 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
         return(head);
     }
     if (client == NULL) return(head);
+    
+    finishDateTime.date.day = 0;
+    finishDateTime.date.month = 0;
+    finishDateTime.date.year = 0;
+    finishDateTime.time.hour = 0;
+    finishDateTime.time.min = 0;
 
     // Criar a nova reserva
     resMeios* newRes = (resMeios*)malloc(sizeof(resMeios));
     newRes->id = (lastID)+1;
+    newRes->bookDate = startDateTime;
+    newRes->unbookDate = finishDateTime;
     newRes->meios = meio;
     newRes->clients = client;
-    newRes->bookDate = startDateTime;
-    /*newRes->bookDate.date.day = startDateTime.date.day;
-    newRes->bookDate.date.month = startDateTime.date.month;
-    newRes->bookDate.date.year = startDateTime.date.year;
-    newRes->bookDate.time.hour = startDateTime.time.hour;
-    newRes->bookDate.time.min = startDateTime.time.min;*/
+    newRes->totalCost = totalCost;
+    newRes->available = available;
     newRes->next = NULL;
 
     // updates the 'status' field of Meio to 1, so now it becomes booked
@@ -1211,13 +1223,49 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
 // cancels the reservation of the record, by changing the record status to 0
 resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTime) {
     
+    float totalCost = 0.0;
+
     if (head == NULL) {
         red();
         printf("The reservation list is empty.\n");
         reset();
         return(head);
     }
+
+    totalCost = calculateTotalCost(head, id);
+
+    resMeios* aux = head;
     
+    while (aux != NULL) {
+        if (aux->id == id) { // find the reservation you want to cancel
+            aux->unbookDate = endDateTime;
+            aux->totalCost = totalCost;
+            aux->available = 0;
+
+            printf("\n\tTime Diff: %.2f\n", returnTimeDiff(aux->bookDate, aux->unbookDate));
+        }
+        aux = aux->next;
+    }
+    return(head);
+}
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @param endDateTime 
+ * @return resMeios* 
+ */
+// 
+resMeios* deletebookMeio(resMeios* head, int id, struct periodDateTime endDateTime) {
+    if (head == NULL) {
+        red();
+        printf("The reservation list is empty.\n");
+        reset();
+        return(head);
+    }
+
     if (canItBeUnbooked(head, id)) {
         resMeios* current = head;
         resMeios* prev = NULL;
@@ -1259,17 +1307,10 @@ resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTi
 //
 void listNonBookingRecords(Meio* head) {
     while (head != NULL) { // goes through the linked list until it finds the last record
-        if (head->status != 1) {
-            if (head->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", head->code, head->type, 
-                head->battery, head->autonomy, head->cost, "Por Reservar", head->location); 
+        if (head->status == 0) { // verifies if the record status is 0 then it is yet to be booked
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-14.2f %-14s   |", head->code, head->type, 
+                head->battery, head->autonomy, head->cost, head->location); 
                 // prints the informations of the record in the console
-            }
-            else if (head->status == 1){ // verifies if the record status is 0 then it is yet to be booked
-                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-9.2f %-17s %-14s   |", head->code, head->type, 
-                    head->battery, head->autonomy, head->cost, "Reservado", head->location);
-                    // prints the informations of the record in the console
-            }
         }
         head = head->next; // the record being read by the loop and passed to the next record
     }
@@ -1282,19 +1323,58 @@ void listNonBookingRecords(Meio* head) {
  * @param idclient 
  */
 // lists all the records from the Meio linked list but only those booked by the logged in client
-void listClientBookingRecords(resMeios* head, int idclient) {
+void listClientBookingRecords(resMeios* head, int idClient) {
     while (head != NULL) { // goes through the linked list until it finds the last record
-        if ((head->meios->status == 1) && (head->clients->id == idclient)) { // finds the record containing the given id 
+        if ((head->meios->status == 1) && (head->clients->id == idClient) && (head->available == 1)) { // finds the record containing the given id 
             // but only if it's was booked by the logged in client
-            printf("\n|     %-10d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-15d %-20s %8d %-20s   |", head->id, 
+            printf("\n|     %-10d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-20s %-20s %-9.2f   |", head->id, 
                 head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,
-                head->bookDate.time.hour, head->bookDate.time.min,
-                head->meios->code, head->meios->type,
-                head->clients->id, head->clients->name);
+                head->bookDate.time.hour, head->bookDate.time.min, 
+                head->meios->type, head->clients->name, head->meios->cost);
             // lists the information of the records in the console
         }
         head = head->next;
     }
+}
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ */
+// 
+void listCancelledBookingRecords(resMeios* head, int idClient) {
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if ((head->meios->status == 1) && (head->clients->id == idClient) && (head->available == 0)) { // finds the record containing the given id 
+            // but only if it's was booked by the logged in client
+            printf("\n|     %-10d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-20s %-20s %-9.2f %-9.2f   |", head->id, 
+                head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,
+                head->bookDate.time.hour, head->bookDate.time.min, 
+                head->unbookDate.date.day, head->unbookDate.date.month, head->unbookDate.date.year,
+                head->unbookDate.time.hour, head->unbookDate.time.min,
+                head->meios->type, head->clients->name, head->meios->cost, head->totalCost);
+            // lists the information of the records in the console
+        }
+        head = head->next;
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @return int 
+ */
+// 
+int countNonBookingRecords(Meio* head) {
+    int counter = 0; // creation of an incrementation variable
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if (head->status == 0) { // finds the record containing the given client id
+            counter++; // increments the incrementation variable
+        }
+        head = head->next; // moves to the next record
+    }
+    return(counter); // returns the incrementation variable
 }
 
 /**
@@ -1305,11 +1385,32 @@ void listClientBookingRecords(resMeios* head, int idclient) {
  * @return int 
  */
 // counts the ammount of records that the logged in client booked
-int countRecords_Book(resMeios* head, int idclient) {
+int countAvailableRecords_Book(resMeios* head, int idclient) {
+    int counter = 0; // creation of an incrementation variable
+    while (head != NULL) { // goes through the linked list until it finds the last record
+        if ((head->clients->id == idclient) && (head->available == 1)) { // finds the record containing the given client id
+            if (head->meios->status == 1) { // checks if the record status is indeed booked
+                counter++; // increments the incrementation variable
+            }
+        }
+        head = head->next; // moves to the next record
+    }
+    return(counter); // returns the incrementation variable
+}
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param idclient 
+ * @return int 
+ */
+// 
+int countUnavailableRecords_Book(resMeios* head, int idclient) {
     int counter = 0; // creation of an incrementation variable
     while (head != NULL) { // goes through the linked list until it finds the last record
         if (head->clients->id == idclient) { // finds the record containing the given client id
-            if (head->meios->status == 1) { // checks if the record status is indeed booked
+            if ((head->meios->status == 1) && (head->available == 0)) { // checks if the record status is indeed booked
                 counter++; // increments the incrementation variable
             }
         }
@@ -1336,11 +1437,12 @@ int saveRecords_Book(resMeios* head) {
         while (aux != NULL)
         {
             // saves in the text file each field of a respective record separated by ';'
-            fprintf(fp, "%d;%d-%d-%d;%d:%d;%d;%s;%d;%s\n", aux->id, 
+            fprintf(fp, "%d;%.2d-%.2d-%.4d;%.2d:%.2d;%.2d-%.2d-%.4d;%.2d:%.2d;%d;%d;%f;%d\n", aux->id, 
                 aux->bookDate.date.day, aux->bookDate.date.month, aux->bookDate.date.year,
-                aux->bookDate.time.hour, aux->bookDate.time.min,
-                aux->meios->code, aux->meios->type, 
-                aux->clients->id, aux->clients->name);
+                aux->bookDate.time.hour, aux->bookDate.time.min, 
+                aux->unbookDate.date.day, aux->unbookDate.date.month, aux->unbookDate.date.year,
+                aux->unbookDate.time.hour, aux->unbookDate.time.min,
+                aux->meios->code, aux->clients->id, aux->totalCost, aux->available);
             aux = aux->next; // moves to the next record
         }
         fclose(fp); // closes the text file
@@ -1357,11 +1459,14 @@ int saveRecords_Book(resMeios* head) {
  */
 //
 resMeios* readrecords_Book(Meio* meio, Client* client) {
-    int id, dd, dm, dy, th, tm, idMeio, idClient;
-    char typeMeio[50], nameClient[50];
+    int id, idMeio, idClient, available;
+    int sdd, sdm, sdy, sth, stm;
+    int fdd, fdm, fdy, fth, ftm;
+    float totalC;
     // creating variables to keep the information of the records in the text file
 
-    struct periodDateTime pdt;
+    struct periodDateTime spdt;
+    struct periodDateTime fpdt;
 
     FILE* fp = fopen("../data/Text_Files/Records_Reservations.txt","r"); // opens the "Records_Meio" text file
 
@@ -1376,14 +1481,24 @@ resMeios* readrecords_Book(Meio* meio, Client* client) {
         while (fgets(line, sizeof(line), fp))
         {
             // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%d-%d-%d;%d:%d;%d;%[^;];%d;%[^\n]\n", &id, 
-                &dd, &dm, &dy, &th, &tm, &idMeio, typeMeio, &idClient, nameClient);
-            pdt.date.day = dd;
-            pdt.date.month = dm;
-            pdt.date.year = dy;
-            pdt.time.hour = th;
-            pdt.time.min = tm;
-            res = bookMeio(res, idMeio, idClient, meio, client, pdt);
+            sscanf(line, "%d;%d-%d-%d;%d:%d;%d-%d-%d;%d:%d;%d;%d;%f;%d\n", &id, 
+                &sdd, &sdm, &sdy, &sth, &stm, 
+                &fdd, &fdm, &fdy, &fth, &ftm, 
+                &idMeio, &idClient, &totalC);
+
+            spdt.date.day = sdd; // 
+            spdt.date.month = sdm; // 
+            spdt.date.year = sdy; // 
+            spdt.time.hour = sth; // 
+            spdt.time.min = stm; // 
+            
+            /*fpdt.date.day = fdd; // 
+            fpdt.date.month = fdm; // 
+            fpdt.date.year = fdy; // 
+            fpdt.time.hour = fth; // 
+            fpdt.time.min = ftm; // */
+            
+            res = bookMeio(res, idMeio, idClient, meio, client, spdt, available);
             // insert the records in the linked list
         }
         fclose(fp);

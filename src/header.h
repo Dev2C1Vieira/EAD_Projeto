@@ -95,10 +95,12 @@ typedef struct Gerente_Registo
 typedef struct ResMeios
 {
 	int id;
-    Meio *meios;
-    Client *clients;
 	struct periodDateTime bookDate;
 	struct periodDateTime unbookDate;
+    Meio *meios;
+    Client *clients;
+	float totalCost;
+	int available;
     struct Reserva *next;
 } resMeios;
 
@@ -215,6 +217,20 @@ Client* insertNewRecord_Client(Client* start, char name[100],
 Manager* insertNewRecord_Manager(Manager* start, char name[100],
 	int bd, int bm, int by, int phn, char email[50], char pass[50]); // here is included the need parameters
 
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param idMeio 
+ * @param idClient 
+ * @param meios 
+ * @param clients 
+ * @param startDateTime 
+ * @return resMeios* 
+ */
+// this function scrolls through the linked list and reserves the record indicated by the user
+resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime, int available);
+
 #pragma endregion
 
 #pragma region Count_Records_Functions
@@ -249,12 +265,31 @@ int countRecords_Manager(Manager* start);
 /**
  * @brief 
  * 
+ * @param head 
+ * @return int 
+ */
+//
+int countNonBookingRecords(Meio* head);
+
+/**
+ * @brief 
+ * 
  * @param start 
  * @param idclient 
  * @return int 
  */
 // this function return the amount of records present in the Meio linked list, but only about a specific client
-int countRecords_Book(resMeios* head, int idclient);
+int countAvailableRecords_Book(resMeios* head, int idclient);
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param idclient 
+ * @return int 
+ */
+// 
+int countUnavailableRecords_Book(resMeios* head, int idclient);
 
 #pragma endregion
 
@@ -283,8 +318,6 @@ Client* getClientByIndex(Client* head, int index);
 #pragma endregion
 
 #pragma region Booking_Functions
-
-//resMeios bookReservationsLast(resMeios start, void *meio, void *client);
 
 /**
  * @brief Get the Last Res I D object
@@ -345,61 +378,6 @@ float calculateTotalCost (resMeios* head, int id);
  */
 // 
 int canItBeUnbooked(resMeios* head, int id);
-
-/**
- * @brief 
- * 
- * @param start 
- * @param code 
- * @param idclient 
- * @return Meio* 
- */
-// this function scrolls through the linked list and reserves the record indicated by the user
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime);
-
-/**
- * @brief 
- * 
- * @param start 
- * @param code 
- * @return Meio* 
- */
-// this function scrolls through the linked list and cancels the reservation of the record indicated by the user
-resMeios* cancelbookMeio(resMeios* start, int id, struct periodDateTime endDateTime);
-
-/**
- * @brief
- * 
- * @param start
-*/
-// this function traverses the Meio linked list and lists the non booked records present in it
-void listNonBookingRecords(Meio* head);
-
-/**
- * @brief 
- * 
- * @param start 
- * @param idclient 
- */
-// this function goes through the linked list, and lists the records that were reserved by the client that is logged in
-void listClientBookingRecords(resMeios* head, int idclient);
-
-/**
- * @brief 
- * 
- * @param start 
- * @return int 
- */
-// 
-int saveRecords_Book(resMeios* head);
-
-/**
- * @brief 
- * 
- * @return Meio* 
- */
-// 
-resMeios* readrecords_Book(Meio* meio, Client* client);
 
 #pragma endregion
 
@@ -473,6 +451,32 @@ void listRecords_Client(Client* start);
 // this function traverses the Manager linked list and lists the records present in it
 void listRecords_Manager(Manager* start);
 
+/**
+ * @brief 
+ * 
+ * @param head 
+ */
+// this function traverses the Meio linked list and lists the non booked records present in it
+void listNonBookingRecords(Meio* head);
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param idClient 
+ */
+// this function goes through the linked list, and lists the records that were reserved by the client that is logged in
+void listClientBookingRecords(resMeios* head, int idClient);
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param idClient 
+ */
+//
+void listCancelledBookingRecords(resMeios* head, int idClient);
+
 #pragma endregion
 
 #pragma region Remove_Functions
@@ -506,6 +510,18 @@ Client* removeRecord_Client(Client* start, int id);
  */
 // Function that removes a record of type Manager from it's id
 Manager* removeRecord_Manager(Manager* start, int id);
+
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @param endDateTime 
+ * @return resMeios* 
+ */
+// 
+resMeios* deletebookMeio(resMeios* head, int id, struct periodDateTime endDateTime);
+
 
 #pragma endregion
 
@@ -567,6 +583,17 @@ Client* editRecord_Client(Client* start, int id, char name[100],
 Manager* editRecord_Manager(Manager* start, int id, char name[100], int bd, 
 	int bm, int by, int phn, char email[50], char pass[50]); // here is included the need parameters
 
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @param id 
+ * @param endDateTime 
+ * @return resMeios* 
+ */
+// this function scrolls through the linked list and cancels the reservation of the record indicated by the user
+resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTime);
+
 #pragma endregion
 
 #pragma region Save_Functions
@@ -598,6 +625,15 @@ int saveRecords_Client(Client* start);
 // Function that saves records of type Manager in a text file
 int saveRecords_Manager(Manager* start);
 
+/**
+ * @brief 
+ * 
+ * @param head 
+ * @return int 
+ */
+// 
+int saveRecords_Book(resMeios* head);
+
 #pragma endregion
 
 #pragma region Read_Functions
@@ -625,6 +661,16 @@ Client* readrecords_Client();
  */
 // Function that reads records of type Manager from a text file
 Manager* readrecords_Manager();
+
+/**
+ * @brief 
+ * 
+ * @param meio 
+ * @param client 
+ * @return resMeios* 
+ */
+// 
+resMeios* readrecords_Book(Meio* meio, Client* client);
 
 #pragma endregion
 

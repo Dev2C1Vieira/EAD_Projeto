@@ -259,9 +259,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             red();
             printf("  --------- Wellcome to the Booking Menu ---------\n");
             reset();
-            if (op < 1 || op > 5) {
+            if (op < 1 || op > 6) {
                 red(); 
-                printf("\n  Invalid Option! [1-5]\n");
+                printf("\n  Invalid Option! [1-6]\n");
             }
             reset();
             printf("\n  Hello, %s.\n", globalName_Client);
@@ -271,9 +271,10 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             printf("\n  +-------------------------------------------+");
             printf("\n  |  1. List the means of transport!          |");
             printf("\n  |  2. Book a means of transport!            |");
-            printf("\n  |  3. Stop booking a means of transport!    |");
-            printf("\n  |  4. list my booked means of transport!    |");
-            printf("\n  |  5. Return to Client Login Menu.          |");
+            printf("\n  |  3. Cancel a reservation.                 |");
+            printf("\n  |  4. List my available reservations.       |");
+            printf("\n  |  5. List my unavailable reservations.     |");
+            printf("\n  |  6. Return to Client Login Menu.          |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n  Option: ");
@@ -281,25 +282,25 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 5);
+        } while (op < 1 || op > 6);
         clear();
         switch (op)
         {
         case 1:
             red();
-            printf("\nTable containing the information of the records of type Meio.\n");
+            printf("\nTable containing the information of the accessible records.\n");
             // Table Construction
             yellow();
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
-            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST      STATUS          LOCATION           |");
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n+-----------------------------------------------------------------------------------------------+");
+            printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        LOCATION            |");
+            printf("\n+-----------------------------------------------------------------------------------------------+");
             reset();
             listNonBookingRecords(meios);
-            printf("\n+------------------------------------------------------------------------------------------------------------+");
-            printf("\n\nTotal sum of records of type Meios:");
+            printf("\n+-----------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of accessible records:");
             red();
             // this function return the amount of records in the Linked List Meios
-            printf(" %d\n", countRecords_Meio(meios));
+            printf(" %d\n", countNonBookingRecords(meios));
             reset();
             pause();
             break;
@@ -322,7 +323,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             }
             else {
                 if (!isMeioBooked(meios, cod)) {
-                    resmeios = bookMeio(resmeios, cod, globalID_Client, meios, clients, pdt);
+                    resmeios = bookMeio(resmeios, cod, globalID_Client, meios, clients, pdt, 1);
                     saveRecords_Meio(meios);
                     saveRecords_Book(resmeios);
                     red();
@@ -349,6 +350,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             reset();
             printf("Enter the id of the reservation you want to unbook: ");
             scanf("%d", &id);
+            //flushstdin();
             if (!existRecord_Booked(resmeios, id)) {
                 red();
                 printf("\n\nThe reservation with the id");
@@ -387,46 +389,41 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             break;
         case 4:
             red();
-            printf("\nTable containing the information of the records of type Meio.\n");
+            printf("\nTable containing the information of my available reservations.\n");
             // Table Construction
             yellow();
-            printf("\n+--------------------------------------------------------------------------------------------------------+");
-            printf("\n|     RESID       DATE        TIME      MEIOCODE      MEIOTYPE        CLIENTSID       CLIENTSNAME        |");
-            printf("\n+--------------------------------------------------------------------------------------------------------+");
+            printf("\n+---------------------------------------------------------------------------------------------------+");
+            printf("\n|     RESID       STARTDATE        STARTTIME      MEIOTYPE        CLIENTNAME       COST/HOUR        |");
+            printf("\n+---------------------------------------------------------------------------------------------------+");
             reset();
             listClientBookingRecords(resmeios, globalID_Client);
-            printf("\n+--------------------------------------------------------------------------------------------------------+");
-            printf("\n\nTotal sum of records of type Meios:");
+            printf("\n+---------------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of available reservations:");
             red();
             // this function return the amount of records in the Linked List Meios
-            printf(" %d", countRecords_Book(resmeios, globalID_Client));
+            printf(" %d", countAvailableRecords_Book(resmeios, globalID_Client));
             reset();
             pause();
             break;
-        /*case 5:
-            // Save the reservations of type Meio
-            if (!saveRecords_Meio(meios)) {
-                red();
-                printf("Unable to save reservations!");
-                reset();
-            }
-            else {
-                saveRecords_Meio(meios);
-                yellow();
-                printf("Reservations have been saved successfully!");
-                reset();
-            }
+        case 5:
+            red();
+            printf("\nTable containing the information of my unavailable reservations.\n");
+            // Table Construction
+            yellow();
+            printf("\n+---------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n|     RESID       STARTDATE        STARTTIME      ENDDATE     ENDTIME      MEIOTYPE        CLIENTNAME       COST/HOUR        TOTALCOST        |");
+            printf("\n+---------------------------------------------------------------------------------------------------------------------------------------------+");
+            reset();
+            listCancelledBookingRecords(resmeios, globalID_Client);
+            printf("\n+---------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n\nTotal sum of unavailable reservations:");
+            red();
+            // this function return the amount of records in the Linked List Meios
+            printf(" %d", countUnavailableRecords_Book(resmeios, globalID_Client));
+            reset();
             pause();
             break;
         case 6:
-            // Read the records of type Meio
-            meios = readrecords_Meio();
-            yellow();
-            printf("The reservations were successfully read!");
-            reset();
-            pause();
-            break;*/
-        case 5:
             clear();
             showSubSubMenu_Client(meios, clients, managers, resmeios);
             break;
