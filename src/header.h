@@ -229,7 +229,8 @@ Manager* insertNewRecord_Manager(Manager* start, char name[100],
  * @return resMeios* 
  */
 // this function scrolls through the linked list and reserves the record indicated by the user
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime, int available);
+resMeios* bookMeio(resMeios* head, struct periodDateTime startDateTime, struct periodDateTime finishDateTime, 
+	int idMeio, int idClient, Meio* meios, Client* clients, float totalcost, int available);
 
 #pragma endregion
 

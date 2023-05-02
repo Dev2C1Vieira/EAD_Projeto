@@ -241,12 +241,14 @@ int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int op = 1, cod, id;
 
-    struct periodDateTime pdt;
-    pdt.date = getCurrentDate();
+    struct periodDateTime spdt;
+    spdt.date = getCurrentDate();
 
     struct time t = getCurrentTime();
-    pdt.time.hour = t.hour;
-    pdt.time.min = t.min;
+    spdt.time.hour = t.hour;
+    spdt.time.min = t.min;
+
+    struct periodDateTime fpdt;
 
     globalName_Client = searchName_Client(clients, globalID_Client);
 
@@ -310,6 +312,13 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             reset();
             printf("Enter the code of the mean you want to Book: ");
             scanf("%d", &cod);
+
+            fpdt.date.day = 0; // 
+            fpdt.date.month = 0; // 
+            fpdt.date.year = 0; // 
+            fpdt.time.hour = 0; // 
+            fpdt.time.min = 0; // 
+
             if (!existRecord_Meio(meios, cod)) {
                 red();
                 printf("\n\nThe mean with code");
@@ -323,7 +332,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             }
             else {
                 if (!isMeioBooked(meios, cod)) {
-                    resmeios = bookMeio(resmeios, cod, globalID_Client, meios, clients, pdt, 1);
+                    resmeios = bookMeio(resmeios, spdt, fpdt, cod, globalID_Client, meios, clients, 0.0, 1);
                     saveRecords_Meio(meios);
                     saveRecords_Book(resmeios);
                     red();
@@ -372,8 +381,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
                     reset();
                 }
                 else {
-                    resmeios = cancelbookMeio(resmeios, id, pdt);
+                    resmeios = cancelbookMeio(resmeios, id, spdt);
                     saveRecords_Meio(meios);
+                    saveRecords_Client(clients);
                     saveRecords_Book(resmeios);
                     red();
                     printf("\n\nA mean containing the code");

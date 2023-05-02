@@ -1,2 +1,2 @@
-1;Pedro Carvalho;14-1-2000;918263745;Rua dos Abilios, 53 Amorim;728463725;728.429993;ola;123
+1;Pedro Carvalho;14-1-2000;918263745;Rua dos Abilios, 53 Amorim;728463725;704.890015;ola;123
 2;Joao Mineiro;12-6-2001;726382937;Rua dos Astolinetos, 76 Terroso;234987235;825.530029;ola;321

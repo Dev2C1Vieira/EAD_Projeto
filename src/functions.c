@@ -1160,7 +1160,8 @@ int canItBeUnbooked(resMeios* head, int id) {
  */
 // creates a new reservation type record, storing your Meio, your Client 
 // and the period in which the reservation took place
-resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client* clients, struct periodDateTime startDateTime, int available) {
+resMeios* bookMeio(resMeios* head, struct periodDateTime startDateTime, struct periodDateTime finishDateTime, 
+	int idMeio, int idClient, Meio* meios, Client* clients, float totalcost, int available) {
 
     // Procura pelo registro desejado na lista ligada Meio
     Meio* meio = getMeioByIndex(meios, idMeio);
@@ -1168,8 +1169,6 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
     Client* client = getClientByIndex(clients, idClient);
     // 
     int lastID = getLastResID(head);
-    float totalCost = 0.0;
-    struct periodDateTime finishDateTime;
 
     if (meio == NULL) {
         red();
@@ -1178,12 +1177,6 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
         return(head);
     }
     if (client == NULL) return(head);
-    
-    finishDateTime.date.day = 0;
-    finishDateTime.date.month = 0;
-    finishDateTime.date.year = 0;
-    finishDateTime.time.hour = 0;
-    finishDateTime.time.min = 0;
 
     // Criar a nova reserva
     resMeios* newRes = (resMeios*)malloc(sizeof(resMeios));
@@ -1192,7 +1185,7 @@ resMeios* bookMeio(resMeios* head, int idMeio, int idClient, Meio* meios, Client
     newRes->unbookDate = finishDateTime;
     newRes->meios = meio;
     newRes->clients = client;
-    newRes->totalCost = totalCost;
+    newRes->totalCost = totalcost;
     newRes->available = available;
     newRes->next = NULL;
 
@@ -1232,17 +1225,14 @@ resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTi
         return(head);
     }
 
-    totalCost = calculateTotalCost(head, id);
-
     resMeios* aux = head;
     
     while (aux != NULL) {
         if (aux->id == id) { // find the reservation you want to cancel
             aux->unbookDate = endDateTime;
-            aux->totalCost = totalCost;
+            aux->totalCost = calculateTotalCost(aux, id);
+            aux->clients->balance = (aux->clients->balance - aux->totalCost);
             aux->available = 0;
-
-            printf("\n\tTime Diff: %.2f\n", returnTimeDiff(aux->bookDate, aux->unbookDate));
         }
         aux = aux->next;
     }
@@ -1457,8 +1447,8 @@ int saveRecords_Book(resMeios* head) {
  * 
  * @return resMeios* 
  */
-//
-resMeios* readrecords_Book(Meio* meio, Client* client) {
+// Esta a dar erro arranjar
+resMeios* readrecords_Book(Meio* meios, Client* clients) {
     int id, idMeio, idClient, available;
     int sdd, sdm, sdy, sth, stm;
     int fdd, fdm, fdy, fth, ftm;
@@ -1486,19 +1476,21 @@ resMeios* readrecords_Book(Meio* meio, Client* client) {
                 &fdd, &fdm, &fdy, &fth, &ftm, 
                 &idMeio, &idClient, &totalC);
 
+
+
             spdt.date.day = sdd; // 
             spdt.date.month = sdm; // 
             spdt.date.year = sdy; // 
             spdt.time.hour = sth; // 
             spdt.time.min = stm; // 
             
-            /*fpdt.date.day = fdd; // 
+            fpdt.date.day = fdd; // 
             fpdt.date.month = fdm; // 
             fpdt.date.year = fdy; // 
             fpdt.time.hour = fth; // 
-            fpdt.time.min = ftm; // */
+            fpdt.time.min = ftm; //
             
-            res = bookMeio(res, idMeio, idClient, meio, client, spdt, available);
+            res = bookMeio(res, spdt, fpdt, idMeio, idClient, meios, clients, totalC, available);
             // insert the records in the linked list
         }
         fclose(fp);
