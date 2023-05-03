@@ -69,7 +69,7 @@ void getstring(char str[]) {
 // 
 int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
     int id, phn, nif, bd, bm, by;
-    char op[0], name[50], addr[50], email[50], pass[50];
+    char op, name[50], addr[50], email[50], pass[50];
     float balance;
 
     while (1)
@@ -92,20 +92,20 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios*
             {
                 yellow();
                 printf("\n\n  Try Again (y/n): ");
-                getstring(op);
-                if ((!(op[0] == 'y')) && (!(op[0] == 'n'))) {
+                scanf("%s", &op);
+                if ((!(op == 'y')) && (!(op == 'n'))) {
                     clear();
                     printf("\nInvalid Option! [y/n]\n");
                 }
                 else {
-                    if (op[0] == 'y') { // Compare first character of op with 'y'
+                    if (op == 'y') { // Compare first character of op with 'y'
                         loop_Client_Login(meios, clients, managers, resmeios);
                     }
                     else {
                         showSubSubMenu_Client(meios, clients, managers, resmeios);
                     }
                 }
-            } while (((!(op[0] == 'y')) && (!(op[0] == 'n'))));
+            } while (((!(op == 'y')) && (!(op == 'n'))));
         }
         else {
             // keeping the client id in a global variable to use it later
@@ -167,6 +167,319 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios
             globalID_Manager = searchID_Manager(managers, email, pass);
             showSubMenu_Manager(meios, clients, managers, resmeios);
         }
+    }
+}
+
+#pragma endregion
+
+#pragma region Recover_Delete_Records_Menus
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @param resmeios 
+ * @return int 
+ */
+//
+int Manager_Meios_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+    // List the available records of type Meio
+    red();
+    printf("\nTable containing the information of the records of type Meio.\n");
+    reset();
+    printf("\n\nTotal sum of records of type Meios:");
+    red();
+    // this function return the amount of records in the Linked List Meios
+    printf(" %d\n", countUnavailableRecords_Meio(meios));
+    reset();
+    // Table Construction
+    yellow();
+    printf("\n+--------------------------------------------------------------------------------------------------------------+");
+    printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        STATUS            LOCATION         |");
+    printf("\n+--------------------------------------------------------------------------------------------------------------+");
+    reset();
+    listUnavailableRecords_Meio(meios);
+    printf("\n+--------------------------------------------------------------------------------------------------------------+");
+    printf("\n|            1. Delete a Record!           2. Recover a Record!            3. Return to Main Menu.             |");
+    printf("\n+--------------------------------------------------------------------------------------------------------------+");
+    return(1);
+}
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @param resmeios 
+ * @return int 
+ */
+// 
+int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+
+    int cod;
+    char op;
+    while (1) {
+        clear();
+        Manager_Meios_Loop(meios, clients, managers, resmeios);
+        do
+        {
+            red();
+            printf("\n\n    Choose an Option: ");
+            reset();
+            scanf("%s", &op);
+            if (op == '3') {
+                showSubMenu_Manager_Meios(meios, clients, managers, resmeios);
+            }
+
+            if ((!(op == '1')) && (!(op == '2'))) {
+                clear();
+                Manager_Meios_Loop(meios, clients, managers, resmeios);
+                printf("\n\n\tInvalid Option! [1/2]\n");
+            }
+            else {
+                if (op == '1') {
+                    printf("\n\tEnter the code of record you want to delete: ");
+                    scanf("%d", &cod);
+                    if (!existRecord_Meio(meios, cod)) {
+                        red();
+                        printf("\n\n\tThe record with code");
+                        yellow();
+                        printf(" %d ", cod);
+                        reset();
+                        red();
+                        printf("doesn't exist!");
+                        printf("\n\n\tUnable to remove the record!");
+                        reset();
+                    }
+                    else {
+                        if (!isRecordAvailable_Meio(meios, cod)) {
+                            deleteRecord_Meio(meios, cod);
+                            saveRecords_Meio(meios);
+                            red();
+                            printf("\n\n\tA record containing the code");
+                            yellow();
+                            printf(" %d ", cod);
+                            reset();
+                            red();
+                            printf("was successfully deleted!");
+                            reset();
+                        }
+                        else {
+                            red();
+                            printf("\n\n\tThe record with code");
+                            yellow();
+                            printf(" %d ", cod);
+                            reset();
+                            red();
+                            printf("isnt's a removed record!");
+                            printf("\n\n\tUnable to delete the record!");
+                            reset();
+                        }
+                    }
+                    pause();
+                }
+                else {
+                    printf("\n\tEnter the code of record you want to recover: ");
+                    scanf("%d", &cod);
+                    if (!existRecord_Meio(meios, cod)) {
+                        red();
+                        printf("\n\n\tThe record with code");
+                        yellow();
+                        printf(" %d ", cod);
+                        reset();
+                        red();
+                        printf("doesn't exist!");
+                        printf("\n\n\tUnable to recover the record!");
+                        reset();
+                    }
+                    else {
+                        if (!isRecordAvailable_Meio(meios, cod)) {
+                            recoverRecord_Meio(meios, cod);
+                            saveRecords_Meio(meios);
+                            red();
+                            printf("\n\n\tA record containing the code");
+                            yellow();
+                            printf(" %d ", cod);
+                            reset();
+                            red();
+                            printf("was successfully recovered!");
+                            reset();
+                        }
+                        else {
+                            red();
+                            printf("\n\n\tThe record with code");
+                            yellow();
+                            printf(" %d ", cod);
+                            reset();
+                            red();
+                            printf("isnt's a removed record!");
+                            printf("\n\n\tUnable to recover the record!");
+                            reset();
+                        }
+                    }
+                    pause();
+                }
+            }
+        } while (((!(op == '1')) && (!(op == '2'))));
+        
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @param resmeios 
+ * @return int 
+ */
+// 
+int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+    // List the records of type Client
+    red();
+    printf("\nTable containing the information of the records of type Client.\n");
+    reset();
+    printf("\n\nTotal sum of records of type Client:");
+    red();
+    // this function return the amount of records in the Linked List Meios
+    printf(" %d\n", countUnavailableRecords_Client(clients));
+    reset();
+    // Table Construction
+    yellow();
+    printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+    printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS                                  NIF             BALANCE       EMAIL                              PASSWORD            |");
+    printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+    reset();
+    listUnavailableRecords_Client(clients);
+    printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+    printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+    printf("\n|                                1. Delete a Record!                                 2. Recover a Record!                                  3. Return to Main Menu.                                |");
+    printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+    return(1);
+}
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @param resmeios 
+ * @return int 
+ */
+//
+int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+    
+    int id;
+    char op;
+    while (1) {
+        clear();
+        Manager_Clients_Loop(meios, clients, managers, resmeios);
+        do
+        {
+            red();
+            printf("\n\n    Choose an Option: ");
+            reset();
+            scanf("%s", &op);
+            if (op == '3') {
+                showSubMenu_Client(meios, clients, managers, resmeios);
+            }
+
+            if ((!(op == '1')) && (!(op == '2'))) {
+                clear();
+                Manager_Clients_Loop(meios, clients, managers, resmeios);
+                printf("\n\n\tInvalid Option! [1/2]\n");
+            }
+            else {
+                if (op == '1') {
+                    printf("\n\tEnter the id of record you want to delete: ");
+                    scanf("%d", &id);
+                    if (!existRecord_Client(clients, id)) {
+                        red();
+                        printf("\n\n\tThe record with code");
+                        yellow();
+                        printf(" %d ", id);
+                        reset();
+                        red();
+                        printf("doesn't exist!");
+                        printf("\n\n\tUnable to remove the record!");
+                        reset();
+                    }
+                    else {
+                        if (!isRecordAvailable_Meio(clients, id)) {
+                            deleteRecord_Client(clients, id);
+                            saveRecords_Client(clients);
+                            red();
+                            printf("\n\n\tA record containing the id");
+                            yellow();
+                            printf(" %d ", id);
+                            reset();
+                            red();
+                            printf("was successfully deleted!");
+                            reset();
+                        }
+                        else {
+                            red();
+                            printf("\n\n\tThe record with id");
+                            yellow();
+                            printf(" %d ", id);
+                            reset();
+                            red();
+                            printf("isnt's a removed record!");
+                            printf("\n\n\tUnable to delete the record!");
+                            reset();
+                        }
+                    }
+                    pause();
+                }
+                else {
+                    printf("\n\tEnter the id of record you want to recover: ");
+                    scanf("%d", &id);
+                    if (!existRecord_Client(clients, id)) {
+                        red();
+                        printf("\n\n\tThe record with id");
+                        yellow();
+                        printf(" %d ", id);
+                        reset();
+                        red();
+                        printf("doesn't exist!");
+                        printf("\n\n\tUnable to recover the record!");
+                        reset();
+                    }
+                    else {
+                        if (!isRecordAvailable_Client(clients, id)) {
+                            recoverRecord_Client(clients, id);
+                            saveRecords_Client(clients);
+                            red();
+                            printf("\n\n\tA record containing the id");
+                            yellow();
+                            printf(" %d ", id);
+                            reset();
+                            red();
+                            printf("was successfully recovered!");
+                            reset();
+                        }
+                        else {
+                            red();
+                            printf("\n\n\tThe record with id");
+                            yellow();
+                            printf(" %d ", id);
+                            reset();
+                            red();
+                            printf("isnt's a removed record!");
+                            printf("\n\n\tUnable to recover the record!");
+                            reset();
+                        }
+                    }
+                    pause();
+                }
+            }
+        } while (((!(op == '1')) && (!(op == '2'))));
+        
     }
 }
 
@@ -514,7 +827,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMe
             printf("Enter your password: ");
             getstring(pass);
             if (!existRecord_Client(clients, id)) {
-                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
                 red();
                 printf("\n\nYour registration was successful!");
                 reset();
@@ -613,27 +926,28 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             red();
             printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
             reset();
-            if (op < 1 || op > 5)
+            if (op < 1 || op > 6)
             {
-                printf("\nInvalid Option! [1-5]\n");
+                printf("\nInvalid Option! [1-6]\n");
             }
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
             reset();
-            printf("\n  +-----------------------------------------+");
-            printf("\n  |  1. Insert a new record of type Meio!   |");
-            printf("\n  |  2. List the records of type Meio!      |");
-            printf("\n  |  3. Remove a record of type Meio!       |");
-            printf("\n  |  4. Edit a record of type Meio!         |");
-            printf("\n  |  5. Return to Main Menu.                |");
-            printf("\n  +-----------------------------------------+");
+            printf("\n  +-------------------------------------------+");
+            printf("\n  |  1. Insert a new record of type Meio!     |");
+            printf("\n  |  2. List the records of type Meio!        |");
+            printf("\n  |  3. Remove a record of type Meio!         |");
+            printf("\n  |  4. Edit a record of type Meio!           |");
+            printf("\n  |  5. List Meios history                    |");
+            printf("\n  |  6. Return to Main Menu.                  |");
+            printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n    Choose an Option: ");
             reset();
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 5);
+        } while (op < 1 || op > 6);
         clear();
         switch (op)
         {
@@ -656,7 +970,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             printf("Enter the location of the new record: ");
             getstring(loc);
             if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0);
+                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0, 1);
                 saveRecords_Meio(meios);
                 red();
                 printf("\n\nNew registered record!");
@@ -676,7 +990,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             pause();
             break;
         case 2:
-            // List the records of type Meio
+            // List the available records of type Meio
             red();
             printf("\nTable containing the information of the records of type Meio.\n");
             // Table Construction
@@ -685,12 +999,12 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        STATUS            LOCATION         |");
             printf("\n+--------------------------------------------------------------------------------------------------------------+");
             reset();
-            listRecords_Meio(meios);
+            listAvailableRecords_Meio(meios);
             printf("\n+--------------------------------------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of records of type Meios:");
             red();
             // this function return the amount of records in the Linked List Meios
-            printf(" %d\n", countRecords_Meio(meios));
+            printf(" %d\n", countAvailableRecords_Meio(meios));
             reset();
             pause();
             break;
@@ -713,16 +1027,29 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
                 reset();
             }
             else {
-                meios = removeRecord_Meio(meios, cod);
-                saveRecords_Meio(meios);
-                red();
-                printf("\n\nA record containing the code");
-                yellow();
-                printf(" %d ", cod);
-                reset();
-                red();
-                printf("was successfully removed!");
-                reset();
+                if (isRecordAvailable_Meio(meios, cod)) {
+                    meios = removeRecord_Meio(meios, cod);
+                    saveRecords_Meio(meios);
+                    red();
+                    printf("\n\nA record containing the code");
+                    yellow();
+                    printf(" %d ", cod);
+                    reset();
+                    red();
+                    printf("was successfully removed!");
+                    reset();
+                }
+                else {
+                    red();
+                    printf("\n\nThe record with code");
+                    yellow();
+                    printf(" %d ", cod);
+                    reset();
+                    red();
+                    printf("is already unavailable!");
+                    printf("\n\nUnable to remove the record!");
+                    reset();
+                }
             }
             pause();
             break;
@@ -806,30 +1133,11 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             }
             pause();
             break;
-        /*case 5:
-            // Save the records of type Meio
-            if (!saveRecords_Meio(meios)) {
-                red();
-                printf("Unable to save records!");
-                reset();
-            }
-            else {
-                saveRecords_Meio(meios);
-                yellow();
-                printf("Records have been saved successfully!");
-                reset();
-            }
+        case 5:
+            showSubSubMenu_Manager_Meios(meios, clients, managers, resmeios);
             pause();
             break;
         case 6:
-            // Read the records of type Meio
-            meios = readrecords_Meio();
-            yellow();
-            printf("The records were successfully read!");
-            reset();
-            pause();
-            break;*/
-        case 5:
             clear();
             showSubMenu_Manager(meios, clients, managers, resmeios);
             break;
@@ -860,9 +1168,9 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             red();
             printf("  -------- Welcome to the Manager Sub-Menu ---------\n");
             reset();
-            if (op < 1 || op > 5)
+            if (op < 1 || op > 6)
             {
-                printf("\nInvalid Option! [1-5]\n");
+                printf("\nInvalid Option! [1-6]\n");
             }
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
@@ -872,7 +1180,8 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             printf("\n  |  2. List the records of type Client!      |");
             printf("\n  |  3. Remove a record of type Client!       |");
             printf("\n  |  4. Edit a record of type Client!         |");
-            printf("\n  |  5. Return to Main Menu.                  |");
+            printf("\n  |  5. List Client history                   |");
+            printf("\n  |  6. Return to Main Menu.                  |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n    Choose an Option: ");
@@ -880,7 +1189,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 5);
+        } while (op < 1 || op > 6);
         clear();
         switch (op)
         {
@@ -910,7 +1219,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             printf("Enter your password: ");
             getstring(pass);
             if (!existRecord_Client(clients, id)) {
-                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
                 saveRecords_Client(clients);
                 red();
                 printf("\n\nNew client registred!!");
@@ -939,12 +1248,12 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS                                  NIF             BALANCE       EMAIL                              PASSWORD            |");
             printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
             reset();
-            listRecords_Client(clients);
+            listAvailableRecords_Client(clients);
             printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of records of type Client:");
             red();
             // this function return the amount of records in the Linked List Meios
-            printf(" %d\n", countRecords_Client(clients));
+            printf(" %d\n", countAvailableRecords_Client(clients));
             reset();
             pause();
             break;
@@ -1053,30 +1362,11 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             }
             pause();
             break;
-        /*case 5:
-            // Save the records of type Client
-            if (!saveRecords_Client(clients)) {
-                red();
-                printf("Unable to save records!");
-                reset();
-            }
-            else {
-                saveRecords_Client(clients);
-                yellow();
-                printf("Records have been saved successfully!");
-                reset();
-            }
+        case 5:
+            showSubSubMenu_Manager_Clients(meios, clients, managers, resmeios);
             pause();
             break;
         case 6:
-            // Read the records of type Client
-            clients = readrecords_Client();
-            yellow();
-            printf("The records were successfully read!");
-            reset();
-            pause();
-            break;*/
-        case 5:
             clear();
             showSubMenu_Manager(meios, clients, managers, resmeios);
             break;

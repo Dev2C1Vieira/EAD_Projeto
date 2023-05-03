@@ -142,7 +142,7 @@ int getLastMeioCode(Meio* start) {
  */
 // inserts a new records in the Meio linked list
 Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat, 
-    float aut, float cost, char loc[50], int status) { // here is included the needed parameters
+    float aut, float cost, char loc[50], int status, int available) { // here is included the needed parameters
     
     int lastCode = getLastMeioCode(start);
     Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
@@ -156,6 +156,7 @@ Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat,
         meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
         strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
         meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
+        meio->available = available; // 
         meio->next = NULL; // here the 'next' field of the new record is pointing to the record that used to be the last one
     
         if (start == NULL) {
@@ -182,11 +183,31 @@ Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat,
  * @return int 
  */
 // count the number of records in the Meio linked list
-int countRecords_Meio(Meio* start) {
+int countAvailableRecords_Meio(Meio* start) {
     int counter = 0;
     while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 1) {
+            counter++; // the incrementing variable is incremented
+        }
         start = start->next; // the record being read by the loop and passed to the next record
-        counter++; // the incrementing variable is incremented
+    }
+    return(counter); // return the incrementing variable
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
+int countUnavailableRecords_Meio(Meio* start) {
+    int counter = 0;
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 0) {
+            counter++; // the incrementing variable is incremented
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
     }
     return(counter); // return the incrementing variable
 }
@@ -214,17 +235,19 @@ int existRecord_Meio(Meio* start, int code) {
  * @param start 
  */
 // lists the informations of the records in the console
-void listRecords_Meio(Meio* start) {
+void listAvailableRecords_Meio(Meio* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
-        if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
+        if (start->available == 1) {
+            if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
                 start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
                 // prints the informations of the record in the console
-        }
-        else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
-                start->battery, start->autonomy, start->cost, "Reservado", start->location);
-                // prints the informations of the record in the console
+            }
+            else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
+                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
+                    // prints the informations of the record in the console
+            }
         }
         start = start->next; // the record being read by the loop and passed to the next record
     }
@@ -234,11 +257,87 @@ void listRecords_Meio(Meio* start) {
  * @brief 
  * 
  * @param start 
+ */
+// 
+void listUnavailableRecords_Meio(Meio* start) {
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 0) {
+            if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
+                start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
+                // prints the informations of the record in the console
+            }
+            else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
+                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
+                    // prints the informations of the record in the console
+            }
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param cod 
+ * @return int 
+ */
+// 
+int isRecordAvailable_Meio(Meio* start, int code) {
+    while (start != NULL) { /// goes through the linked list until it finds the last record
+        // checks if the record that is being checked is the same as the record represented by the given id
+        if ((start->code == code) && (start->available == 1)) return(1); // return 1 if a record of the linked list is the same as the one being requested
+        start = start->next; // the record being read by the loop and passed to the next record
+    }
+    return(0); // return 0 if any record of the linked list is the same as the one being requested
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
  * @param code 
  * @return Meio* 
  */
-// removes the Meio record from the linked list
+// Updates the 'available' field to 0, so it is now now available for booking.
 Meio* removeRecord_Meio(Meio* start, int code) {
+    
+    Meio* current = start;
+    while (current != NULL) {
+        if (current->code == code) {
+            current->available = 0;
+            break;
+        }
+        current = current->next;
+    }
+    return(start);
+}
+
+// Updates the 'available' field to 1, so it is now available for booking.
+Meio* recoverRecord_Meio(Meio* start, int code) {
+    
+    Meio* current = start;
+    while (current != NULL) {
+        if (current->code == code) {
+            current->available = 1;
+            break;
+        }
+        current = current->next;
+    }
+    return(start);
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param cod 
+ * @return Meio* 
+ */
+// removes the Meio record from the linked list
+Meio* deleteRecord_Meio(Meio* start, int code) {
     Meio *prev = start, *now = start, *aux;
 
     if (now == NULL) return(NULL);
@@ -330,18 +429,17 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
 
     Meio* aux = start; // creates a new linked list and initializes it with the first Client linked list record
     // Setting the new data to the record
-    if (existRecord_Meio(aux, code)) { // verifies if the indicated record exist
-        while (aux != NULL) { // goes through the linked list until it finds the last record
-            if (aux->code == code) { // finds the record containing the given record
-                // the fields receive the new data given by parameter
-                strcpy(aux->type, type);
-                aux->battery = bat;
-                aux->autonomy = aut;
-                aux->cost = cost;
-                strcpy(aux->location, loc);
-            }
-            aux = aux->next;
+    while (aux != NULL) { // goes through the linked list until it finds the last record
+        if (aux->code == code) { // finds the record containing the given record
+            // the fields receive the new data given by parameter
+            strcpy(aux->type, type);
+            aux->battery = bat;
+            aux->autonomy = aut;
+            aux->cost = cost;
+            strcpy(aux->location, loc);
+            break;
         }
+        aux = aux->next;
     }
     return(start);
 }
@@ -365,14 +463,13 @@ int saveRecords_Meio(Meio* start)
         while (aux != NULL)
         {
             // saves in the text file each field of a respective record separated by ';'
-            fprintf(fp, "%d;%s;%f;%f;%f;%d;%s\n", aux->code, aux->type, aux->battery, 
-                aux->autonomy, aux->cost, aux->status, aux->location);
+            fprintf(fp, "%d;%s;%f;%f;%f;%s;%d;%d\n", aux->code, aux->type, aux->battery, 
+                aux->autonomy, aux->cost, aux->location, aux->status, aux->available);
             aux = aux->next; // moves to the next record
         }
         fclose(fp); // closes the text file
         return(1);
     }
-    
     return(0);
 }
 
@@ -383,7 +480,7 @@ int saveRecords_Meio(Meio* start)
  */
 // reads the content of the "Records_Meio" and gives it to the Meio linked list
 Meio* readrecords_Meio() {
-    int code, idclient, status;
+    int code, idclient, status, available;
     float bat, aut, cost;
     char type[50], loc[50];
     // creating variables to keep the information of the records in the text file
@@ -401,8 +498,8 @@ Meio* readrecords_Meio() {
         while (fgets(line, sizeof(line), fp))
         {
             // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%[^;];%f;%f;%f;%d;%[^\n]\n", &code, type, &bat, &aut, &cost, &status, loc);
-            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, status);
+            sscanf(line, "%d;%[^;];%f;%f;%f;%[^;];%d;%d\n", &code, type, &bat, &aut, &cost, loc, &status, &available);
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, status, available);
             // insert the records in the linked list
         }
         fclose(fp);
@@ -459,7 +556,7 @@ int getLastClientID(Client* start) {
 // inserts a new records in the Client linked list
 Client* insertNewRecord_Client(Client* start, char name[100],
 	int bd, int bm, int by, int phn, char addr[100], int nif, 
-	float balance, char email[50], char pass[50]) { // here is included the needed parameters
+	float balance, char email[50], char pass[50], int available) { // here is included the needed parameters
     
     int lastID = getLastClientID(start);
     Client* client = malloc(sizeof(struct Cliente_Registo));
@@ -475,6 +572,7 @@ Client* insertNewRecord_Client(Client* start, char name[100],
         client->balance = balance;
         strcpy(client->email, email);
         strcpy(client->password, pass);
+        client->available = available;
         client->next = NULL;
         
         if (start == NULL) {
@@ -501,13 +599,33 @@ Client* insertNewRecord_Client(Client* start, char name[100],
  * @return int 
  */
 // count the number of records in the Client linked list
-int countRecords_Client(Client* start) {
+int countAvailableRecords_Client(Client* start) {
     int counter = 0;
-    while (start != NULL) {
-        start = start->next;
-        counter++;
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 1) {
+            counter++; // the incrementing variable is incremented
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
     }
-    return(counter);
+    return(counter); // return the incrementing variable
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @return int 
+ */
+// 
+int countUnavailableRecords_Client(Client* start) {
+    int counter = 0;
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 0) {
+            counter++; // the incrementing variable is incremented
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
+    }
+    return(counter); // return the incrementing variable
 }
 
 /**
@@ -570,15 +688,43 @@ int existRecord_Client(Client* start, int id) {
  * @param start 
  */
 // lists the informations of the records in the console
-void listRecords_Client(Client* start) {
-    while (start != NULL) {
-        printf("\n|    %-6d %-21s %-0.02d-%-0.02d-%-8.04d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s     |", 
-            start->id, start->name, start->birthDate.day, start->birthDate.month, 
-            start->birthDate.year, start->phoneNumber, start->address, start->nif, 
-            start->balance, start->email, start->password);
-            start = start->next;
+void listAvailableRecords_Client(Client* start) {
+
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 1) {
+            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s    |", 
+                start->id, start->name, start->birthDate.day, start->birthDate.month, 
+                start->birthDate.year, start->phoneNumber, start->address, start->nif, 
+                start->balance, start->email, start->password);
+                start = start->next;
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
     }
+}
+
+// 
+void listUnavailableRecords_Client(Client* start) {
     
+    while (start != NULL) { // goes through the linked list until it finds the last record
+        if (start->available == 0) {
+            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s     |", 
+                start->id, start->name, start->birthDate.day, start->birthDate.month, 
+                start->birthDate.year, start->phoneNumber, start->address, start->nif, 
+                start->balance, start->email, start->password);
+                start = start->next;
+        }
+        start = start->next; // the record being read by the loop and passed to the next record
+    }
+}
+
+// 
+int isRecordAvailable_Client(Client* start, int id) {
+    while (start != NULL) { /// goes through the linked list until it finds the last record
+        // checks if the record that is being checked is the same as the record represented by the given id
+        if ((start->id == id) && (start->available == 1)) return(1); // return 1 if a record of the linked list is the same as the one being requested
+        start = start->next; // the record being read by the loop and passed to the next record
+    }
+    return(0); // return 0 if any record of the linked list is the same as the one being requested
 }
 
 /**
@@ -590,6 +736,34 @@ void listRecords_Client(Client* start) {
  */
 // removes the client record from the linked list
 Client* removeRecord_Client(Client* start, int id) {
+    
+    Client* current = start;
+    while (current != NULL) {
+        if (current->id == id) {
+            current->available = 0;
+            break;
+        }
+        current = current->next;
+    }
+    return(start);
+}
+
+//
+Client* recoverRecord_Client(Client* start, int id) {
+    
+    Client* current = start;
+    while (current != NULL) {
+        if (current->id == id) {
+            current->available = 1;
+            break;
+        }
+        current = current->next;
+    }
+    return(start);
+}
+
+//
+Client* deleteRecord_Client(Client* start, int id) {
     Client *prev = start, *now = start, *aux;
 
     if (now == NULL) return(NULL);
@@ -671,9 +845,9 @@ int saveRecords_Client(Client* start)
         Client* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%d-%d-%d;%d;%s;%d;%f;%s;%s\n", aux->id, aux->name, aux->birthDate.day, 
+            fprintf(fp, "%d;%s;%.2d-%.2d-%.4d;%.9d;%s;%.9d;%f;%s;%s;%d\n", aux->id, aux->name, aux->birthDate.day, 
             aux->birthDate.month, aux->birthDate.year, aux->phoneNumber, aux->address, 
-            aux->nif, aux->balance, aux->email, aux->password);
+            aux->nif, aux->balance, aux->email, aux->password, aux->available);
             aux = aux->next;
         }
         fclose(fp);
@@ -689,7 +863,7 @@ int saveRecords_Client(Client* start)
  */
 // reads the content of the "Records_Client" and gives it to the Client linked list
 Client* readrecords_Client() {
-    int id, phn, nif, bd, bm, by;
+    int id, phn, nif, bd, bm, by, available;
     float balance;
     char name[50], addr[50], email[50], pass[20];
 
@@ -701,9 +875,9 @@ Client* readrecords_Client() {
         char line[1024];
         while (fgets(line, sizeof(line), fp))
         {
-            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%d;%f;%[^;];%[^\n]\n", &id, 
-            name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass);
-            client = insertNewRecord_Client(client, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%d;%f;%[^;];%[^;];%d\n", &id, 
+            name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass, &available);
+            client = insertNewRecord_Client(client, name, bd, bm, by, phn, addr, nif, balance, email, pass, available);
         }
         fclose(fp);
     }
