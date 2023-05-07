@@ -234,10 +234,10 @@ int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers
                 showSubMenu_Manager_Meios(meios, clients, managers, resmeios);
             }
 
-            if ((!(op == '1')) && (!(op == '2'))) {
+            if ((!(op == '1')) && (!(op == '2')) && (!(op == '3'))) {
                 clear();
                 Manager_Meios_Loop(meios, clients, managers, resmeios);
-                printf("\n\n\tInvalid Option! [1/2]\n");
+                printf("\n\n\tInvalid Option! [1/3]\n");
             }
             else {
                 if (op == '1') {
@@ -356,7 +356,6 @@ int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMei
     reset();
     listUnavailableRecords_Client(clients);
     printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-    printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     printf("\n|                                1. Delete a Record!                                 2. Recover a Record!                                  3. Return to Main Menu.                                |");
     printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     return(1);
@@ -386,13 +385,13 @@ int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* manage
             reset();
             scanf("%s", &op);
             if (op == '3') {
-                showSubMenu_Client(meios, clients, managers, resmeios);
+                showSubMenu_Manager_Clients(meios, clients, managers, resmeios);
             }
 
-            if ((!(op == '1')) && (!(op == '2'))) {
+            if ((!(op == '1')) && (!(op == '2')) && (!(op == '3'))) {
                 clear();
                 Manager_Clients_Loop(meios, clients, managers, resmeios);
-                printf("\n\n\tInvalid Option! [1/2]\n");
+                printf("\n\n\tInvalid Option! [1/3]\n");
             }
             else {
                 if (op == '1') {
@@ -410,7 +409,7 @@ int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* manage
                         reset();
                     }
                     else {
-                        if (!isRecordAvailable_Meio(clients, id)) {
+                        if (!isRecordAvailable_Client(clients, id)) {
                             deleteRecord_Client(clients, id);
                             saveRecords_Client(clients);
                             red();
@@ -560,7 +559,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
     struct time t = getCurrentTime();
     spdt.time.hour = t.hour;
     spdt.time.min = t.min;
-
+    
     struct periodDateTime fpdt;
 
     globalName_Client = searchName_Client(clients, globalID_Client);
@@ -645,12 +644,25 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             }
             else {
                 if (!isMeioBooked(meios, cod)) {
-                    resmeios = bookMeio(resmeios, spdt, fpdt, cod, globalID_Client, meios, clients, 0.0, 1);
-                    saveRecords_Meio(meios);
-                    saveRecords_Book(resmeios);
-                    red();
-                    printf("\n\nReservation made successfully");
-                    reset();
+                    if (isRecordAvailable_Meio(meios, cod)) {
+                        resmeios = bookMeio(resmeios, spdt, fpdt, cod, globalID_Client, meios, clients, 0.0, 1);
+                        saveRecords_Meio(meios);
+                        saveRecords_Book(resmeios);
+                        red();
+                        printf("\n\nReservation made successfully");
+                        reset();
+                    }
+                    else {
+                        red();
+                        printf("\n\nThe mean with code");
+                        yellow();
+                        printf(" %d ", cod);
+                        reset();
+                        red();
+                        printf("is not available!");
+                        printf("\n\nUnable to book the mean!");
+                        reset();
+                    }
                 }
                 else {
                     red();
@@ -659,7 +671,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
                     printf(" %d ", cod);
                     reset();
                     red();
-                    printf("is already booked");
+                    printf("is already booked!");
                     printf("\n\nUnable to book the mean!");
                     reset();
                 }
@@ -694,7 +706,11 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
                     reset();
                 }
                 else {
-                    resmeios = cancelbookMeio(resmeios, id, spdt);
+                    fpdt.date = getCurrentDate();
+                    fpdt.time.hour = t.hour;
+                    fpdt.time.min = t.min;
+
+                    resmeios = cancelbookMeio(resmeios, id, fpdt);
                     saveRecords_Meio(meios);
                     saveRecords_Client(clients);
                     saveRecords_Book(resmeios);
@@ -820,23 +836,19 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMe
             scanf("%d", &nif);
             flushstdin();
             printf("Enter your balance: ");
-            scanf("%.2f", &balance);
+            scanf("%f", &balance);
             flushstdin();
             printf("Enter your email: ");
             getstring(email);
             printf("Enter your password: ");
             getstring(pass);
-            if (!existRecord_Client(clients, id)) {
-                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
-                red();
-                printf("\n\nYour registration was successful!");
-                reset();
-            }
-            else {
-                red();
-                printf("\n\nYour registration was unsuccessful.");
-                reset();
-            }
+            
+            clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
+            saveRecords_Client(clients);
+                
+            red();
+            printf("\n\nNew client registred!!");
+            reset();
             pause();
             break;
         case 3:
@@ -969,24 +981,13 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             flushstdin();
             printf("Enter the location of the new record: ");
             getstring(loc);
-            if (!existRecord_Meio(meios, cod)) {
-                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0, 1);
-                saveRecords_Meio(meios);
-                red();
-                printf("\n\nNew registered record!");
-                reset();
-            }
-            else {
-                red();
-                printf("\n\nA record with code");
-                yellow();
-                printf(" %d ", cod);
-                reset();
-                red();
-                printf("already exists!");
-                printf("\n\nUnable to insert new record!");
-                reset();
-            }
+
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0, 1);
+            saveRecords_Meio(meios);
+
+            red();
+            printf("\n\nNew registered record!");
+            reset();
             pause();
             break;
         case 2:
@@ -1218,24 +1219,13 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             getstring(email);
             printf("Enter your password: ");
             getstring(pass);
-            if (!existRecord_Client(clients, id)) {
-                clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
-                saveRecords_Client(clients);
-                red();
-                printf("\n\nNew client registred!!");
-                reset();
-            }
-            else {
-                red();
-                printf("\n\nA client with id");
-                yellow();
-                printf(" %d ", id);
-                reset();
-                red();
-                printf("already exists!");
-                printf("\n\nUnable to insert new client!");
-                reset();
-            }
+            
+            clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
+            saveRecords_Client(clients);
+                
+            red();
+            printf("\n\nNew client registred!!");
+            reset();
             pause();
             break;
         case 2:
@@ -1442,6 +1432,22 @@ int main()
      */
     //
     showMenu(meios, clients, managers, resmeios);
+
+    /*float timediff = 0.0;
+
+    struct periodDateTime fd;
+    struct periodDateTime sd;
+
+    printf("Enter a first date and time (dd-mm-yyyy hh:mm): ");
+    scanf("%d-%d-%d %d:%d", &fd.date.day, &fd.date.month, &fd.date.year, &fd.time.hour, &fd.time.min);
+    flushstdin();
+    printf("Enter a second date and time (dd-mm-yyyy hh:mm): ");
+    scanf("%d-%d-%d %d:%d", &sd.date.day, &sd.date.month, &sd.date.year, &sd.time.hour, &sd.time.min);
+    flushstdin();
+
+    timediff = returnTimeDiff(fd, sd);
+
+    printf("\n\tTime Difference in hours: %.2f\n", timediff);*/
 
     return(0);
 }

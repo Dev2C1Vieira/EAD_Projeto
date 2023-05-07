@@ -398,7 +398,7 @@ float returnTimeDiff(struct periodDateTime startDateTime, struct periodDateTime 
  * @return float 
  */
 // 
-float calculateTotalCost (resMeios* head, int id);
+float calculateTotalCost(resMeios* head, int id, float timediff);
 
 /**
  * @brief 
@@ -800,12 +800,12 @@ Manager* readrecords_Manager();
 /**
  * @brief 
  * 
- * @param meio 
- * @param client 
+ * @param meios 
+ * @param clients 
  * @return resMeios* 
  */
 // 
-resMeios* readrecords_Book(Meio* meio, Client* client);
+resMeios* readrecords_Book(Meio* meios, Client* clients);
 
 #pragma endregion
 

@@ -689,14 +689,12 @@ int existRecord_Client(Client* start, int id) {
  */
 // lists the informations of the records in the console
 void listAvailableRecords_Client(Client* start) {
-
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->available == 1) {
-            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s    |", 
+            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9.4d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s    |", 
                 start->id, start->name, start->birthDate.day, start->birthDate.month, 
                 start->birthDate.year, start->phoneNumber, start->address, start->nif, 
                 start->balance, start->email, start->password);
-                start = start->next;
         }
         start = start->next; // the record being read by the loop and passed to the next record
     }
@@ -704,14 +702,12 @@ void listAvailableRecords_Client(Client* start) {
 
 // 
 void listUnavailableRecords_Client(Client* start) {
-    
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->available == 0) {
-            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s     |", 
+            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9.4d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s    |", 
                 start->id, start->name, start->birthDate.day, start->birthDate.month, 
                 start->birthDate.year, start->phoneNumber, start->address, start->nif, 
                 start->balance, start->email, start->password);
-                start = start->next;
         }
         start = start->next; // the record being read by the loop and passed to the next record
     }
@@ -767,12 +763,14 @@ Client* deleteRecord_Client(Client* start, int id) {
     Client *prev = start, *now = start, *aux;
 
     if (now == NULL) return(NULL);
-    else if (now->id == id) {
-        aux = now->next;
-        free(now);
-        return(aux);
+    else if (now->id == id) { // checks if the record code, is the same as the given code if so ...
+        aux = now->next;  // moves on to the next record and ...
+        free(now); // this is where the memory allocated by the record to be removed is freed.
+        return(aux); // return the records of the linked list but now without the removed record
     }
     else {
+        // here as the indicated record was removed now it's needed that the previous record and the next record
+        // become now connected, by assigning to variable next of the previous record the information of the next record
         while ((now != NULL) && (now->id != id)) {
             prev = now;
             now = now->next;
@@ -1278,19 +1276,18 @@ float returnTimeDiff(struct periodDateTime startDateTime, struct periodDateTime 
  * @return float 
  */
 // 
-float calculateTotalCost (resMeios* head, int id) {
-    float timeDiff, costPerHour, totalCost = 0.0;
+float calculateTotalCost (resMeios* head, int id, float timediff) {
+    float costPerHour, totalCost = 0.0;
 
     while (head != NULL) {
         if (head->id == id) {
             costPerHour = head->meios->cost;
-            if (timeDiff <= 1) {
+            if (timediff <= 1) {
                 totalCost = costPerHour;
                 return(totalCost);
             }
             else {
-                timeDiff = returnTimeDiff(head->bookDate, head->unbookDate);
-                totalCost = costPerHour * timeDiff;
+                totalCost = costPerHour * timediff;
             return(totalCost);
             }
         }
@@ -1308,12 +1305,12 @@ float calculateTotalCost (resMeios* head, int id) {
  */
 // 
 int canItBeUnbooked(resMeios* head, int id) {
-    float totalCost = 0.0;
-
-    totalCost = calculateTotalCost(head, id);
+    float totalCost = 0.0, timediff = 0.0;
 
     while (head != NULL) {
         if (head->id == id) {
+            timediff = returnTimeDiff(head->bookDate, head->unbookDate);
+            totalCost = calculateTotalCost(head, id, timediff);
             if (head->clients->balance >= totalCost) {
                 return(1);
             }
@@ -1344,39 +1341,38 @@ resMeios* bookMeio(resMeios* head, struct periodDateTime startDateTime, struct p
     // 
     int lastID = getLastResID(head);
 
-    if (meio == NULL) {
-        red();
-        printf("\n\tMeio not found.\n");
-        reset();
-        return(head);
-    }
+    if (meio == NULL) return(head);
     if (client == NULL) return(head);
 
-    // Criar a nova reserva
     resMeios* newRes = (resMeios*)malloc(sizeof(resMeios));
-    newRes->id = (lastID)+1;
-    newRes->bookDate = startDateTime;
-    newRes->unbookDate = finishDateTime;
-    newRes->meios = meio;
-    newRes->clients = client;
-    newRes->totalCost = totalcost;
-    newRes->available = available;
-    newRes->next = NULL;
 
-    // updates the 'status' field of Meio to 1, so now it becomes booked
-    meio->status = 1;
+    if (newRes != NULL) {
+        if (isRecordAvailable_Meio(meios, idMeio)) {
+            // Criar a nova reserva
+            newRes->id = (lastID)+1;
+            newRes->bookDate = startDateTime;
+            newRes->unbookDate = finishDateTime;
+            newRes->meios = meio;
+            newRes->clients = client;
+            newRes->totalCost = totalcost;
+            newRes->available = available;
+            newRes->next = NULL;
 
-    // Add the new reservation to the ResMeios linked list
-    if (head == NULL) {
-        head = newRes;
-    } else {
-        resMeios* current = head;
-        while (current->next != NULL) {
-            current = current->next;
+            // updates the 'status' field of Meio to 1, so now it becomes booked
+            meio->status = 1;
+
+            // Add the new reservation to the ResMeios linked list
+            if (head == NULL) {
+                head = newRes;
+            } else {
+                resMeios* current = head;
+                while (current->next != NULL) {
+                    current = current->next;
+                }
+                current->next = newRes;
+            }
         }
-        current->next = newRes;
     }
-
     return(head);
 }
 
@@ -1390,7 +1386,7 @@ resMeios* bookMeio(resMeios* head, struct periodDateTime startDateTime, struct p
 // cancels the reservation of the record, by changing the record status to 0
 resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTime) {
     
-    float totalCost = 0.0;
+    float totalCost = 0.0, timediff = 0.0;
 
     if (head == NULL) {
         red();
@@ -1402,9 +1398,10 @@ resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTi
     resMeios* aux = head;
     
     while (aux != NULL) {
-        if (aux->id == id) { // find the reservation you want to cancel
+        if (aux->id == id) { // find the reservation you want to cancel            
             aux->unbookDate = endDateTime;
-            aux->totalCost = calculateTotalCost(aux, id);
+            timediff = returnTimeDiff(aux->bookDate, aux->unbookDate);
+            aux->totalCost = calculateTotalCost(aux, id, timediff);
             aux->clients->balance = (aux->clients->balance - aux->totalCost);
             aux->available = 0;
         }
@@ -1445,7 +1442,7 @@ resMeios* deletebookMeio(resMeios* head, int id, struct periodDateTime endDateTi
                 }
                 // updates the 'status' field of Meio to 0, so it is now available for booking
                 current->meios->status = 0;
-                current->clients->balance -= calculateTotalCost(head, id);
+                current->clients->balance -= calculateTotalCost(head, id, 0.0);
                 free(current); // frees the memory allocated by the canceled reservation
                 //after->id = current->id;
                 return head;
@@ -1471,7 +1468,7 @@ resMeios* deletebookMeio(resMeios* head, int id, struct periodDateTime endDateTi
 //
 void listNonBookingRecords(Meio* head) {
     while (head != NULL) { // goes through the linked list until it finds the last record
-        if (head->status == 0) { // verifies if the record status is 0 then it is yet to be booked
+        if ((head->status == 0) && (head->available == 1)) { // verifies if the record status is 0 then it is yet to be booked
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-14.2f %-14s   |", head->code, head->type, 
                 head->battery, head->autonomy, head->cost, head->location); 
                 // prints the informations of the record in the console
@@ -1619,50 +1616,38 @@ int saveRecords_Book(resMeios* head) {
 /**
  * @brief 
  * 
+ * @param meios 
+ * @param clients 
  * @return resMeios* 
  */
-// Esta a dar erro arranjar
+// 
 resMeios* readrecords_Book(Meio* meios, Client* clients) {
     int id, idMeio, idClient, available;
-    int sdd, sdm, sdy, sth, stm;
-    int fdd, fdm, fdy, fth, ftm;
     float totalC;
     // creating variables to keep the information of the records in the text file
-
+    
     struct periodDateTime spdt;
     struct periodDateTime fpdt;
-
-    FILE* fp = fopen("../data/Text_Files/Records_Reservations.txt","r"); // opens the "Records_Meio" text file
-
-    resMeios* res = NULL; // creates a new NULL linked list
     
-    if (fp != NULL) { // checks if the text file is empty
+    // opens the "Records_Reservations" text file
+    FILE* fp = fopen("../data/Text_Files/Records_Reservations.txt", "r");
+
+    // creates a new linked list
+    resMeios* res = NULL;
+
+    // checks if the text file is empty
+    if (fp != NULL) {
         char line[1024];
         // the fgets function is used to read a line of text from a file and store it in a character buffer. 
         // the first argument is a pointer to the buffer that will store the line read.
         // the second argument is the buffer size. In this case, sizeof(line) returns the size of the line buffer in bytes.
         // the third argument is a pointer to the file from which the line is to be read.
-        while (fgets(line, sizeof(line), fp))
-        {
+        while (fgets(line, sizeof(line), fp)) {
             // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%d-%d-%d;%d:%d;%d-%d-%d;%d:%d;%d;%d;%f;%d\n", &id, 
-                &sdd, &sdm, &sdy, &sth, &stm, 
-                &fdd, &fdm, &fdy, &fth, &ftm, 
-                &idMeio, &idClient, &totalC);
-
-
-
-            spdt.date.day = sdd; // 
-            spdt.date.month = sdm; // 
-            spdt.date.year = sdy; // 
-            spdt.time.hour = sth; // 
-            spdt.time.min = stm; // 
-            
-            fpdt.date.day = fdd; // 
-            fpdt.date.month = fdm; // 
-            fpdt.date.year = fdy; // 
-            fpdt.time.hour = fth; // 
-            fpdt.time.min = ftm; //
+            sscanf(line, "%d;%d-%d-%d;%d:%d;%d-%d-%d;%d:%d;%d;%d;%f;%d\n", &id,
+                &spdt.date.day, &spdt.date.month, &spdt.date.year, &spdt.time.hour, &spdt.time.min, 
+                &fpdt.date.day, &fpdt.date.month, &fpdt.date.year, &fpdt.time.hour, &fpdt.time.min, 
+                &idMeio, &idClient, &totalC, &available);
             
             res = bookMeio(res, spdt, fpdt, idMeio, idClient, meios, clients, totalC, available);
             // insert the records in the linked list
