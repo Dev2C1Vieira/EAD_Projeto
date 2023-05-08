@@ -728,11 +728,30 @@ int isRecordAvailable_Client(Client* start, int id) {
  * 
  * @param start 
  * @param id 
+ * @param value 
+ * @return Client* 
+ */
+// 
+Client* addBalance(Client* start, int id, float value) {
+    Client* current = start;
+    while (current != NULL) {
+        if (current->id == id) {
+            current->balance = (current->balance + value); 
+        }
+        current = current->next;
+    }
+    return(start);
+}
+
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
  * @return Client* 
  */
 // removes the client record from the linked list
 Client* removeRecord_Client(Client* start, int id) {
-    
     Client* current = start;
     while (current != NULL) {
         if (current->id == id) {
@@ -803,8 +822,8 @@ Client* deleteRecord_Client(Client* start, int id) {
  */
 // edits the information of the client record on the linked list
 Client* editRecord_Client(Client* start, int id, char name[100],
-	int bd, int bm, int by, int phn, char addr[100], int nif, 
-	float balance, char email[50], char pass[50]) {
+	int bd, int bm, int by, int phn, char addr[100], 
+    int nif, char email[50], char pass[50]) {
         Client* aux = start;
 
         if (existRecord_Client(aux, id)) {
@@ -817,7 +836,6 @@ Client* editRecord_Client(Client* start, int id, char name[100],
                 aux->phoneNumber = phn;
                 strcpy(aux->address, addr);
                 aux->nif = nif;
-                aux->balance = balance;
                 strcpy(aux->email, email);
                 strcpy(aux->password, pass);
             }
@@ -893,7 +911,7 @@ Client* readrecords_Client() {
 // log in to the account whose registration corresponds to the indicated email and pass
 int login_Client(Client* start, char email[50], char pass[50]) {
     while (start != NULL) {
-        if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) return(1);
+        if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0) && start->available == 1) return(1);
         start = start->next;
     }
     return(0);
@@ -1469,7 +1487,7 @@ resMeios* deletebookMeio(resMeios* head, int id, struct periodDateTime endDateTi
 void listNonBookingRecords(Meio* head) {
     while (head != NULL) { // goes through the linked list until it finds the last record
         if ((head->status == 0) && (head->available == 1)) { // verifies if the record status is 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-14.2f %-14s   |", head->code, head->type, 
+            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s   |", head->code, head->type, 
                 head->battery, head->autonomy, head->cost, head->location); 
                 // prints the informations of the record in the console
         }
@@ -1488,7 +1506,7 @@ void listClientBookingRecords(resMeios* head, int idClient) {
     while (head != NULL) { // goes through the linked list until it finds the last record
         if ((head->meios->status == 1) && (head->clients->id == idClient) && (head->available == 1)) { // finds the record containing the given id 
             // but only if it's was booked by the logged in client
-            printf("\n|     %-10d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-20s %-20s %-9.2f   |", head->id, 
+            printf("\n|     %-11d %-0.2d-%-0.02d-%-10.04d %-0.02d:%-11.02d %-15s %-25s %-14.2f   |", head->id, 
                 head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,
                 head->bookDate.time.hour, head->bookDate.time.min, 
                 head->meios->type, head->clients->name, head->meios->cost);
@@ -1508,7 +1526,7 @@ void listCancelledBookingRecords(resMeios* head, int idClient) {
     while (head != NULL) { // goes through the linked list until it finds the last record
         if ((head->meios->status == 1) && (head->clients->id == idClient) && (head->available == 0)) { // finds the record containing the given id 
             // but only if it's was booked by the logged in client
-            printf("\n|     %-10d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-0.2d-%-0.02d-%-9d %-0.02d:%-9.02d %-20s %-20s %-9.2f %-9.2f   |", head->id, 
+            printf("\n|     %-11d %-0.2d-%-0.02d-%-10.04d %-0.02d:%-11.02d %-0.2d-%-0.02d-%-10.04d %-0.02d:%-9.02d %-20s %-25s %-16.2f %-11.2f   |", head->id, 
                 head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,
                 head->bookDate.time.hour, head->bookDate.time.min, 
                 head->unbookDate.date.day, head->unbookDate.date.month, head->unbookDate.date.year,

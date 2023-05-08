@@ -412,6 +412,21 @@ int canItBeUnbooked(resMeios* head, int id);
 
 #pragma endregion
 
+#pragma region Balance_Functions
+
+/**
+ * @brief 
+ * 
+ * @param clients 
+ * @param id 
+ * @param value 
+ * @return Client* 
+ */
+// 
+Client* addBalance(Client* start, int id, float value);
+
+#pragma endregion
+
 #pragma region Exist_Functions
 
 /**
@@ -708,8 +723,8 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
  */
 // this function goes through the Client linked list and edits the record data that contains the code indicated by the user
 Client* editRecord_Client(Client* start, int id, char name[100],
-	int bd, int bm, int by, int phn, char addr[100], int nif, 
-	float balance, char email[50], char pass[50]); // here is included the need parameters
+	int bd, int bm, int by, int phn, char addr[100], 
+    int nif, char email[50], char pass[50]); // here is included the need parameters
 
 /**
  * @brief 
@@ -831,7 +846,19 @@ int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios
  * @return int 
  */
 // this client menu that allows the client to manipulate the records of reservations of Means
-int showSubMenu_Client(Meio* meios, Client* clients, Manager* manager, resMeios* resmeios);
+int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param manager 
+ * @param resmeios 
+ * @return int 
+ */
+// 
+int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 /**
  * @brief 

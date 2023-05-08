@@ -573,9 +573,9 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             red();
             printf("  --------- Wellcome to the Booking Menu ---------\n");
             reset();
-            if (op < 1 || op > 6) {
+            if (op < 1 || op > 7) {
                 red(); 
-                printf("\n  Invalid Option! [1-6]\n");
+                printf("\n  Invalid Option! [1-7]\n");
             }
             reset();
             printf("\n  Hello, %s.\n", globalName_Client);
@@ -585,10 +585,11 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             printf("\n  +-------------------------------------------+");
             printf("\n  |  1. List the means of transport!          |");
             printf("\n  |  2. Book a means of transport!            |");
-            printf("\n  |  3. Cancel a reservation.                 |");
-            printf("\n  |  4. List my available reservations.       |");
-            printf("\n  |  5. List my unavailable reservations.     |");
-            printf("\n  |  6. Return to Client Login Menu.          |");
+            printf("\n  |  3. Cancel a reservation!                 |");
+            printf("\n  |  4. List my available reservations!       |");
+            printf("\n  |  5. List my unavailable reservations!     |");
+            printf("\n  |  6. Other options!                        |");
+            printf("\n  |  7. Return to Client Login Menu.          |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n  Option: ");
@@ -596,7 +597,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 6);
+        } while (op < 1 || op > 7);
         clear();
         switch (op)
         {
@@ -731,12 +732,12 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             printf("\nTable containing the information of my available reservations.\n");
             // Table Construction
             yellow();
-            printf("\n+---------------------------------------------------------------------------------------------------+");
-            printf("\n|     RESID       STARTDATE        STARTTIME      MEIOTYPE        CLIENTNAME       COST/HOUR        |");
-            printf("\n+---------------------------------------------------------------------------------------------------+");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
+            printf("\n|     RESID       STARTDATE        STARTTIME      MEIOTYPE        CLIENTNAME                COST/HOUR        |");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
             reset();
             listClientBookingRecords(resmeios, globalID_Client);
-            printf("\n+---------------------------------------------------------------------------------------------------+");
+            printf("\n+------------------------------------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of available reservations:");
             red();
             // this function return the amount of records in the Linked List Meios
@@ -749,12 +750,12 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             printf("\nTable containing the information of my unavailable reservations.\n");
             // Table Construction
             yellow();
-            printf("\n+---------------------------------------------------------------------------------------------------------------------------------------------+");
-            printf("\n|     RESID       STARTDATE        STARTTIME      ENDDATE     ENDTIME      MEIOTYPE        CLIENTNAME       COST/HOUR        TOTALCOST        |");
-            printf("\n+---------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n|     RESID       STARTDATE        STARTTIME      ENDDATE          ENDTIME      MEIOTYPE             CLIENTNAME                COST/HOUR        TOTALCOST     |");
+            printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------+");
             reset();
             listCancelledBookingRecords(resmeios, globalID_Client);
-            printf("\n+---------------------------------------------------------------------------------------------------------------------------------------------+");
+            printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------+");
             printf("\n\nTotal sum of unavailable reservations:");
             red();
             // this function return the amount of records in the Linked List Meios
@@ -763,9 +764,119 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             pause();
             break;
         case 6:
+            // 
+            clear();
+            showSubOthersMenu_Client(meios, clients, managers, resmeios);
+            break;
+        case 7:
+            //
             clear();
             showSubSubMenu_Client(meios, clients, managers, resmeios);
             break;
+        }
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param manager 
+ * @param resmeios 
+ * @return int 
+ */
+// 
+int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+    int op = 1, id, phn, nif, bd, bm, by;
+    char name[50], addr[50], email[50], pass[50];
+    float balance = 0.0;
+
+    globalName_Client = searchName_Client(clients, globalID_Client);
+
+    while (1)
+    {
+        do
+        {
+            clear();
+            reset();
+            red();
+            printf("  --------- Wellcome to the Booking Menu ---------\n");
+            reset();
+            if (op < 1 || op > 3) {
+                red(); 
+                printf("\n  Invalid Option! [1-3]\n");
+            }
+            reset();
+            printf("\n  Hello, %s.\n", globalName_Client);
+            yellow();
+            printf("\n  Here you can choose other types of options.\n");
+            reset();
+            printf("\n  +-------------------------------------------+");
+            printf("\n  |  1. Update my informations!               |");
+            printf("\n  |  2. Add balance to my wallet!             |");
+            printf("\n  |  3. Return to Client Menu.                |");
+            printf("\n  +-------------------------------------------+");
+            red();
+            printf("\n\n  Option: ");
+            reset();
+            scanf("%d", &op);
+            flushstdin();
+            reset();
+        } while (op < 1 || op > 3);
+        clear();
+        switch (op)
+        {
+            case 1:
+                // 
+                clear();
+                yellow();
+                printf("Edit only the fields you want to change!\n\n");
+                reset();
+                printf("Enter your new name: ");
+                getstring(name);
+                printf("Enter your new birthdate (dd-mm-yyyy): ");
+                scanf("%d-%d-%d", &bd, &bm, &by);
+                flushstdin();
+                printf("Enter your new phone number: ");
+                scanf("%d", &phn);
+                flushstdin();
+                printf("Enter your new address: ");
+                getstring(addr);
+                printf("Enter your new nif: ");
+                scanf("%d", &nif);
+                flushstdin();
+                printf("Enter your new email: ");
+                getstring(email);
+                printf("Enter your new password: ");
+                getstring(pass);
+                clients = editRecord_Client(clients, globalID_Client, name, bd, bm, by, phn, addr, nif, email, pass);
+                saveRecords_Client(clients);
+                red();
+                printf("\n\nRegistration data has been successfully edited!");
+                reset();
+                pause();
+                break;
+            case 2:
+                // 
+                clear();
+                yellow();
+                printf("Enter the amount you want to add!\n\n");
+                reset();
+                printf("Enter your new balance: ");
+                scanf("%f", &balance);
+                clients = addBalance(clients, globalID_Client, balance);
+                saveRecords_Client(clients);
+                red();
+                printf("\n\nBalance has been successfully added!");
+                reset();
+                pause();
+                break;
+            case 3:
+                // 
+                clear();
+                showSubMenu_Client(meios, clients, managers, resmeios);
+                break;
         }
     }
 }
@@ -835,17 +946,12 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMe
             printf("Enter your nif: ");
             scanf("%d", &nif);
             flushstdin();
-            printf("Enter your balance: ");
-            scanf("%f", &balance);
-            flushstdin();
             printf("Enter your email: ");
             getstring(email);
             printf("Enter your password: ");
             getstring(pass);
-            
-            clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
+            clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, 0.0, email, pass, 1);
             saveRecords_Client(clients);
-                
             red();
             printf("\n\nNew client registred!!");
             reset();
@@ -950,7 +1056,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             printf("\n  |  2. List the records of type Meio!        |");
             printf("\n  |  3. Remove a record of type Meio!         |");
             printf("\n  |  4. Edit a record of type Meio!           |");
-            printf("\n  |  5. List Meios history                    |");
+            printf("\n  |  5. List Meios history!                   |");
             printf("\n  |  6. Return to Main Menu.                  |");
             printf("\n  +-------------------------------------------+");
             red();
@@ -1181,7 +1287,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             printf("\n  |  2. List the records of type Client!      |");
             printf("\n  |  3. Remove a record of type Client!       |");
             printf("\n  |  4. Edit a record of type Client!         |");
-            printf("\n  |  5. List Client history                   |");
+            printf("\n  |  5. List Client history!                  |");
             printf("\n  |  6. Return to Main Menu.                  |");
             printf("\n  +-------------------------------------------+");
             red();
@@ -1212,17 +1318,12 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             printf("Enter your nif: ");
             scanf("%d", &nif);
             flushstdin();
-            printf("Enter your balance: ");
-            scanf("%f", &balance);
-            flushstdin();
             printf("Enter your email: ");
             getstring(email);
             printf("Enter your password: ");
             getstring(pass);
-            
-            clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, balance, email, pass, 1);
+            clients = insertNewRecord_Client(clients, name, bd, bm, by, phn, addr, nif, 0.0, email, pass, 1);
             saveRecords_Client(clients);
-                
             red();
             printf("\n\nNew client registred!!");
             reset();
@@ -1305,9 +1406,6 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
                 printf("Enter the new nif of the client: ");
                 scanf("%d", &nif);
                 flushstdin();
-                printf("Enter the new balance of the client: ");
-                scanf("%.2f", &balance);
-                flushstdin();
                 printf("Enter the new email of the client: ");
                 getstring(email);
                 printf("Enter the new password of the client: ");
@@ -1334,7 +1432,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
                     cost = atof(cost_s);
                 }*/
                 
-                clients = editRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, balance, email, pass);
+                clients = editRecord_Client(clients, id, name, bd, bm, by, phn, addr, nif, email, pass);
                 saveRecords_Client(clients);
                 red();
                 printf("\n\nRegistration data has been successfully edited!");
