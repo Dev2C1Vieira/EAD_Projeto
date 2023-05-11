@@ -5,7 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "header.h"
+#include "./include/grafos.h"
 
 
 #pragma region Global_Variables
@@ -1529,23 +1529,16 @@ int main()
      * 
      */
     //
-    showMenu(meios, clients, managers, resmeios);
+    //showMenu(meios, clients, managers, resmeios);
 
-    /*float timediff = 0.0;
+    Grafo* grafo = NULL;
+    
+    grafo = createVertex(grafo, "1");
+    grafo = createVertex(grafo, "2");
+    grafo = createVertex(grafo, "3");
+    grafo = createVertex(grafo, "4");
 
-    struct periodDateTime fd;
-    struct periodDateTime sd;
-
-    printf("Enter a first date and time (dd-mm-yyyy hh:mm): ");
-    scanf("%d-%d-%d %d:%d", &fd.date.day, &fd.date.month, &fd.date.year, &fd.time.hour, &fd.time.min);
-    flushstdin();
-    printf("Enter a second date and time (dd-mm-yyyy hh:mm): ");
-    scanf("%d-%d-%d %d:%d", &sd.date.day, &sd.date.month, &sd.date.year, &sd.time.hour, &sd.time.min);
-    flushstdin();
-
-    timediff = returnTimeDiff(fd, sd);
-
-    printf("\n\tTime Difference in hours: %.2f\n", timediff);*/
+    listGrafo(grafo);
 
     return(0);
 }

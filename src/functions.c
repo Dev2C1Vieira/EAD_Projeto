@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "header.h"
+#include "./include/header.h"
 
 
 #pragma region Auxiliar_Functions
