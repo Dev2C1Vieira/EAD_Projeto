@@ -64,8 +64,8 @@ void pause() {
     reset();
 }
 
-// %[^\n] sem s Gets, para permitir valor nulo
-// %[^;] sem s, para permitir ler um dado do .txt
+// %[^\n] without s Gets, to allow null value
+// %[^;] without s, to allow reading data from .txt
 
 #pragma endregion
 

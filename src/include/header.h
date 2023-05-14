@@ -4,6 +4,8 @@
 #include <string.h>
 #include <time.h>
 
+#define TAM 100
+
 
 #pragma region Structs
 
@@ -52,7 +54,7 @@ typedef struct Mobilidade_Registo
 	float battery; // Idifify the battery of the Electric Mobility
 	float autonomy; // Idifify the autonomy of the Electric Mobility
 	float cost; // Idifify the cost of the Electric Mobility
-	char location[50]; // Idifify the location of the Electric Mobility 
+	char location[TAM]; // Idifify the location of the Electric Mobility 
 	int status; // if status = 0, then it's not booked, but if status = 1, then it has already been booked
 	int available; // 
 	struct Mobilidade_Registo* next; // Points to the next record in the Meio linked list
@@ -903,6 +905,8 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
  */
 // this client menu that allows the manager to manipulate the records of Clients
 int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
+
+
 
 #pragma endregion
 

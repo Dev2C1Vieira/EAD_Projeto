@@ -1462,6 +1462,147 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
     }
 }
 
+// 
+int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
+    int op = 1, result = -2;
+    char newId[TAM], vOrigin[TAM], vDestiny[TAM], vertex[TAM];
+    float weight = 0.0;
+
+    while (1)
+    {
+        do
+        {
+            clear();
+            reset();
+            red();
+            printf("  ----------------------- Welcome to the Grafo Sub-Menu -----------------------\n");
+            reset();
+            if (op < 1 || op > 7)
+            {
+                printf("\nInvalid Option! [1-7]\n");
+            }
+            yellow();
+            printf("\n  Here you need to choose the option you want to run\n");
+            reset();
+            printf("\n  +-----------------------------------------------------------------------+");
+            printf("\n  |  1. Create Vertex!                                                    |");
+            printf("\n  |  2. Create Edge!                                                      |");
+            printf("\n  |  3. List Adjacent Vertices!                                           |");
+            printf("\n  |  4. List Meios by location!                                           |");
+            printf("\n  |  5. List Clients by location!                                         |");
+            printf("\n  |  6. List Meios within a given radius around the customer!             |");
+            printf("\n  |  7. Return to Main Menu.                                              |");
+            printf("\n  +-----------------------------------------------------------------------+");
+            red();
+            printf("\n\n    Choose an Option: ");
+            reset();
+            scanf("%d", &op);
+            flushstdin();
+            reset();
+        } while (op < 1 || op > 7);
+        clear();
+        switch (op)
+        {
+        case 1:
+            // Create Vertex
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the geocode of the new vertex: ");
+            getstring(newId);
+            if (existVertex(grafo, newId)) {
+                red();
+                printf("\n\nThe vertex");
+                yellow();
+                printf(" %s ", newId);
+                reset();
+                red();
+                printf("already exists!");
+                printf("\n\nUnable to create new vertex!");
+                reset();
+            }
+            else {
+                createVertex(grafo, newId);
+                saveGrafo(grafo);
+                red();
+                printf("\n\nNew vertex successfully created!");
+                reset();
+            }
+            pause();
+            break;
+        case 2:
+            // Create Edge
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the geocode of the origin vertex: ");
+            getstring(vOrigin);
+            printf("Enter the geocode of the destiny vertex: ");
+            getstring(vDestiny);
+            printf("Enter the weight between these vertices: ");
+            scanf("%f", &weight);
+            result = createEdge(grafo, vOrigin, vDestiny, weight);
+            saveGrafo(grafo);
+            red();
+            if (result == 1) printf("\n\nNew edge successfully created!");
+            else if (result == -1) {
+                if (!existVertex(grafo, vOrigin)) printf("\n\nOrigin vertex do not exist!");
+                else if (!existVertex(grafo, vDestiny)) printf("\n\nDestiny vertex do not exist!");
+                printf("\n\nUnable to create new edge!");
+            }
+            else printf("\n\nUnable to create new edge!");
+            reset();
+            pause();
+            break;
+        case 3:
+            // List Adjacent Vertices
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the geocode of the vertex: ");
+            getstring(vertex);
+            // Table Construction
+            yellow();
+            printf("\n+------------------------------------------------------+");
+            printf("\n|     ADJACENT VERTICE                  WEIGHT(M)      |");
+            printf("\n+------------------------------------------------------+");
+            reset();
+            listAdjacentes(grafo, vertex);
+            printf("\n+------------------------------------------------------+");
+            /*printf("\n\nTotal sum of records of type Meios:");
+            red();
+            // this function return the amount of records in the Linked List Meios
+            printf(" %d\n", countAvailableRecords_Meio(meios));
+            reset();
+            pause();*/
+            pause();
+            break;
+        case 4:
+            // List Meios by location
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            break;
+        case 5:
+            // List Clients by location
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            break;
+        case 6:
+            // List Meios within a given radius around the customer
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            break;
+        case 7:
+            // Return to Main Menu
+            showSubMenu_Manager(meios, clients, managers, resmeios);
+            break;
+        }
+    }
+}
+
 #pragma endregion
 
 #pragma region Main_Function
@@ -1496,6 +1637,9 @@ int main()
     //
     resMeios* resmeios = NULL;
     
+    //
+    Grafo grafo = NULL;
+
     /**
      * @brief 
      * 
@@ -1531,14 +1675,7 @@ int main()
     //
     //showMenu(meios, clients, managers, resmeios);
 
-    Grafo* grafo = NULL;
-    
-    grafo = createVertex(grafo, "1");
-    grafo = createVertex(grafo, "2");
-    grafo = createVertex(grafo, "3");
-    grafo = createVertex(grafo, "4");
-
-    listGrafo(grafo);
+    showSubMenu_Manager_Grafos(meios, clients, managers, resmeios, &grafo);
 
     return(0);
 }
