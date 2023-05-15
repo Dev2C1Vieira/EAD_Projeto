@@ -8,7 +8,7 @@
 #pragma region Grafo_Functions
 
 // 
-int existVertex(Grafo grafo, char vertex[]) {
+int existVertex(Grafo* grafo, char vertex[]) {
     while (grafo != NULL) {
         if (strcmp(grafo->vertex, vertex) == 0) return(1);
         grafo = grafo->next; 
@@ -17,8 +17,8 @@ int existVertex(Grafo grafo, char vertex[]) {
 }
 
 // 
-int createVertex(Grafo* grafo, char newID[]) {
-    Grafo new = malloc(sizeof(struct Grafo_Registo));
+Grafo* createVertex(Grafo* grafo, char newID[]) {
+    Grafo* new = malloc(sizeof(struct Grafo_Registo));
     if (new != NULL) {
         strcpy(new->vertex, newID);
         new->meio = NULL;
@@ -28,29 +28,28 @@ int createVertex(Grafo* grafo, char newID[]) {
         
         if (grafo == NULL) {
             // the list is empty, so the new record will be the first record
-            *grafo = new;
+            grafo = new;
         } else {
-            Grafo current = grafo;
+            Grafo* current = grafo;
             while (current->next != NULL) {
                 current = current->next;
             }
             current->next = new;
         }
-        return(1);
+        return(grafo);
     }
-    return(0);
+    //return(0);
 }
 
-// 
-int createEdge(Grafo grafo, char vOrigin[], char vDestiny[], float weight) {
-     Adjacence new;
+Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
+    Adjacence* new;
     if ((existVertex(grafo, vOrigin)) && (existVertex(grafo, vDestiny))) {
         while (strcmp(grafo->vertex, vOrigin) != 0) {
             grafo = grafo->next;
         }
         new = malloc(sizeof(struct Adjacencia_Registo));
         if (new != NULL) {
-            strcpy(new->vertex, vDestiny);
+            strcpy(new, vDestiny);
             new->weight = weight;
             new->next = NULL;  // Novo nó será o último da lista
 
@@ -59,36 +58,32 @@ int createEdge(Grafo grafo, char vOrigin[], char vDestiny[], float weight) {
                 grafo->adjacence = new;
             } else {
                 // Percorre a lista até o último elemento
-                Adjacence current = grafo->adjacence;
+                Adjacence* current = grafo->adjacence;
                 while (current->next != NULL) {
                     current = current->next;
                 }
                 // Adiciona o novo nó no final da lista
                 current->next = new;
             }
-            return(1);  // Sucesso
-        } else return(0);  // Falha na alocação de memória
-    } else return(-1);  // Vértices não encontrados
+        } 
+        return(grafo);
+    }
 }
 
-// 
-void listAdjacentes(Grafo grafo, char vertex[]) {
-    Adjacence aux;
+void listAdjacentes(Grafo* grafo, char vertex[]) {
     if (existVertex(grafo, vertex)) {
         while (strcmp(grafo->vertex, vertex) != 0) {
             grafo = grafo->next;
         }
-        aux = grafo->adjacence;
-        if (aux == NULL) printf("\n\tThe vertex of the indicated graph has no adjacent vertices");
-        while (aux != NULL) {
-            printf("\n|   %-20s %-8.2f    |", aux->vertex, aux->weight);
-            aux = aux->next;
+        if (grafo->adjacence == NULL) printf("\n\tThe vertex of the indicated graph has no adjacent vertices");
+        while (grafo->adjacence != NULL) {
+            printf("\n|   %-20s %-8.2f    |", grafo->adjacence->vertex, grafo->adjacence->weight);
+            grafo->adjacence = grafo->adjacence->next;
         }
     }
 }
 
-//
-void listPerDistance(Grafo grafo, float distance, char location[]) {
+/*void listPerDistance(Grafo grafo, float distance, char location[]) {
     Meio* meio;
     Adjacence adjacence;
     Grafo aux;
@@ -118,25 +113,25 @@ void listPerDistance(Grafo grafo, float distance, char location[]) {
         if (found == 0) printf("\n\tThere are no Meios within %.2f radius", distance);
     }
     else printf("\n\tThe indicated vertex does not exist");
-}
+}*/
 
 // 
-int saveGrafo(Grafo grafo) {
-    Adjacence adjacence;
+int saveGrafo(Grafo* grafo) {
     // this C code opens a file called "Grafo.txt" 
     // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
     FILE* fp = fopen("../data/Text_Files/Grafo.txt", "w");
     // checks if the file is empty or not
     if (fp != NULL)
     {
-        while (grafo != NULL) {
-            adjacence = grafo->adjacence;
-
+        Grafo* aux = grafo;
+        while (aux != NULL) {
+            Adjacence* adjacence = aux->adjacence;
+            
             while (adjacence != NULL) {
-                fprintf(fp, "%s;%s;%.2f\n", grafo->vertex, adjacence->vertex, adjacence->weight);
+                fprintf(fp, "%s;%s;%.2f\n", aux->vertex, adjacence->vertex, adjacence->weight);
                 adjacence = adjacence->next;
             }
-            grafo = grafo->next;
+            aux = aux->next;
         }
         fclose(fp); // closes the text file
         return(1);

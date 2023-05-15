@@ -1522,7 +1522,7 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
                 reset();
             }
             else {
-                createVertex(grafo, newId);
+                grafo = createVertex(grafo, newId);
                 saveGrafo(grafo);
                 red();
                 printf("\n\nNew vertex successfully created!");
@@ -1541,16 +1541,15 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             getstring(vDestiny);
             printf("Enter the weight between these vertices: ");
             scanf("%f", &weight);
-            result = createEdge(grafo, vOrigin, vDestiny, weight);
-            saveGrafo(grafo);
             red();
-            if (result == 1) printf("\n\nNew edge successfully created!");
-            else if (result == -1) {
-                if (!existVertex(grafo, vOrigin)) printf("\n\nOrigin vertex do not exist!");
-                else if (!existVertex(grafo, vDestiny)) printf("\n\nDestiny vertex do not exist!");
-                printf("\n\nUnable to create new edge!");
+
+            if (!existVertex(grafo, vOrigin)) printf("\n\nOrigin vertex do not exist!");
+            else if (!existVertex(grafo, vDestiny)) printf("\n\nDestiny vertex do not exist!");
+            else {
+                grafo = createEdge(grafo, vOrigin, vDestiny, weight);
+                saveGrafo(grafo);
             }
-            else printf("\n\nUnable to create new edge!");
+
             reset();
             pause();
             break;
@@ -1637,8 +1636,12 @@ int main()
     //
     resMeios* resmeios = NULL;
     
+    /**
+     * @brief 
+     * 
+     */
     //
-    Grafo grafo = NULL;
+    Grafo* grafo = NULL;
 
     /**
      * @brief 
@@ -1675,7 +1678,7 @@ int main()
     //
     //showMenu(meios, clients, managers, resmeios);
 
-    showSubMenu_Manager_Grafos(meios, clients, managers, resmeios, &grafo);
+    showSubMenu_Manager_Grafos(meios, clients, managers, resmeios, grafo);
 
     return(0);
 }
