@@ -67,7 +67,7 @@ void getstring(char str[]) {
  * @return int 
  */
 // 
-int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int id, phn, nif, bd, bm, by;
     char op, name[50], addr[50], email[50], pass[50];
     float balance;
@@ -99,10 +99,10 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios*
                 }
                 else {
                     if (op == 'y') { // Compare first character of op with 'y'
-                        loop_Client_Login(meios, clients, managers, resmeios);
+                        loop_Client_Login(meios, clients, managers, resmeios, grafo);
                     }
                     else {
-                        showSubSubMenu_Client(meios, clients, managers, resmeios);
+                        showSubSubMenu_Client(meios, clients, managers, resmeios, grafo);
                     }
                 }
             } while (((!(op == 'y')) && (!(op == 'n'))));
@@ -110,7 +110,7 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios*
         else {
             // keeping the client id in a global variable to use it later
             globalID_Client = searchID_Client(clients, email, pass);
-            showSubMenu_Client(meios, clients, managers, resmeios);        
+            showSubMenu_Client(meios, clients, managers, resmeios, grafo);        
         }
     }
 }
@@ -124,7 +124,7 @@ int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios*
  * @return int 
  */
 // 
-int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     char op[0], email[50], pass[50];
 
     while (1)
@@ -154,10 +154,10 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios
                 }
                 else {
                     if (op[0] == 'y') { // Compare first character of op with 'y'
-                        loop_Manager_Login(meios, clients, managers, resmeios);
+                        loop_Manager_Login(meios, clients, managers, resmeios, grafo);
                     }
                     else {
-                        showMenu(meios, clients, managers, resmeios);
+                        showMenu(meios, clients, managers, resmeios, grafo);
                     }
                 }
             } while (((!(op[0] == 'y')) && (!(op[0] == 'n'))));
@@ -165,7 +165,7 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios
         else {
             // keeping the manager id in a global variable to use it later
             globalID_Manager = searchID_Manager(managers, email, pass);
-            showSubMenu_Manager(meios, clients, managers, resmeios);
+            showSubMenu_Manager(meios, clients, managers, resmeios, grafo);
         }
     }
 }
@@ -184,7 +184,7 @@ int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios
  * @return int 
  */
 //
-int Manager_Meios_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int Manager_Meios_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     // List the available records of type Meio
     red();
     printf("\nTable containing the information of the records of type Meio.\n");
@@ -217,13 +217,13 @@ int Manager_Meios_Loop(Meio* meios, Client* clients, Manager* managers, resMeios
  * @return int 
  */
 // 
-int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
 
     int cod;
     char op;
     while (1) {
         clear();
-        Manager_Meios_Loop(meios, clients, managers, resmeios);
+        Manager_Meios_Loop(meios, clients, managers, resmeios, grafo);
         do
         {
             red();
@@ -231,12 +231,12 @@ int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers
             reset();
             scanf("%s", &op);
             if (op == '3') {
-                showSubMenu_Manager_Meios(meios, clients, managers, resmeios);
+                showSubMenu_Manager_Meios(meios, clients, managers, resmeios, grafo);
             }
 
             if ((!(op == '1')) && (!(op == '2')) && (!(op == '3'))) {
                 clear();
-                Manager_Meios_Loop(meios, clients, managers, resmeios);
+                Manager_Meios_Loop(meios, clients, managers, resmeios, grafo);
                 printf("\n\n\tInvalid Option! [1/3]\n");
             }
             else {
@@ -338,7 +338,7 @@ int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers
  * @return int 
  */
 // 
-int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     // List the records of type Client
     red();
     printf("\nTable containing the information of the records of type Client.\n");
@@ -371,13 +371,13 @@ int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMei
  * @return int 
  */
 //
-int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     
     int id;
     char op;
     while (1) {
         clear();
-        Manager_Clients_Loop(meios, clients, managers, resmeios);
+        Manager_Clients_Loop(meios, clients, managers, resmeios, grafo);
         do
         {
             red();
@@ -385,12 +385,12 @@ int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* manage
             reset();
             scanf("%s", &op);
             if (op == '3') {
-                showSubMenu_Manager_Clients(meios, clients, managers, resmeios);
+                showSubMenu_Manager_Clients(meios, clients, managers, resmeios, grafo);
             }
 
             if ((!(op == '1')) && (!(op == '2')) && (!(op == '3'))) {
                 clear();
-                Manager_Clients_Loop(meios, clients, managers, resmeios);
+                Manager_Clients_Loop(meios, clients, managers, resmeios, grafo);
                 printf("\n\n\tInvalid Option! [1/3]\n");
             }
             else {
@@ -495,7 +495,7 @@ int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* manage
  * @return int 
  */
 // 
-int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1;
     
     while (1)
@@ -528,10 +528,10 @@ int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios
         switch (op)
         {
         case 1:
-            showSubSubMenu_Client(meios, clients, managers, resmeios);
+            showSubSubMenu_Client(meios, clients, managers, resmeios, grafo);
             break;
         case 2:
-            loop_Manager_Login(meios, clients, managers, resmeios);
+            loop_Manager_Login(meios, clients, managers, resmeios, grafo);
             break;  
         case 3:
             exit(0); // stdlib archive
@@ -550,7 +550,7 @@ int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios
  * @return int 
  */
 // 
-int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1, cod, id;
 
     struct periodDateTime spdt;
@@ -766,12 +766,12 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
         case 6:
             // 
             clear();
-            showSubOthersMenu_Client(meios, clients, managers, resmeios);
+            showSubOthersMenu_Client(meios, clients, managers, resmeios, grafo);
             break;
         case 7:
             //
             clear();
-            showSubSubMenu_Client(meios, clients, managers, resmeios);
+            showSubSubMenu_Client(meios, clients, managers, resmeios, grafo);
             break;
         }
     }
@@ -787,7 +787,7 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
  * @return int 
  */
 // 
-int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1, id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
     float balance = 0.0;
@@ -875,7 +875,7 @@ int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, re
             case 3:
                 // 
                 clear();
-                showSubMenu_Client(meios, clients, managers, resmeios);
+                showSubMenu_Client(meios, clients, managers, resmeios, grafo);
                 break;
         }
     }
@@ -890,7 +890,7 @@ int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, re
  * @return int 
  */
 // 
-int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1;
     int id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
@@ -926,7 +926,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMe
         switch (op)
         {
         case 1:
-            loop_Client_Login(meios, clients, managers, resmeios);
+            loop_Client_Login(meios, clients, managers, resmeios, grafo);
             break;
         case 2:
             // Insert a new record of type Client
@@ -959,7 +959,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMe
             break;
         case 3:
             clear();
-            showMenu(meios, clients, managers, resmeios);
+            showMenu(meios, clients, managers, resmeios, grafo);
             break;
         }
         
@@ -975,7 +975,7 @@ int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMe
  * @return int 
  */
 // 
-int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1;
 
     while (1)
@@ -987,35 +987,39 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeio
             red();
             printf("  -------- Welcome to the Manager Menu ---------\n");
             reset();
-            if (op < 1 || op > 3)
+            if (op < 1 || op > 4)
             {
-                printf("\nInvalid Option! [1-3]\n");
+                printf("\nInvalid Option! [1-4]\n");
             }
             yellow();
             printf("\n  Here you choose whether you want to manage records of type Meios or Clients!\n");
             reset();
             printf("\n  1. Manage Meios.");
             printf("\n  2. Manage Clients.");
-            printf("\n  3. Return to Main Menu.");
+            printf("\n  3. Manage Grafo.");
+            printf("\n  4. Return to Main Menu.");
             red();
             printf("\n\n  Option: ");
             reset();
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 6);
+        } while (op < 1 || op > 4);
         clear();
         switch (op)
         {
         case 1:
-            showSubMenu_Manager_Meios(meios, clients, managers, resmeios);
+            showSubMenu_Manager_Meios(meios, clients, managers, resmeios, grafo);
             break;
         case 2:
-            showSubMenu_Manager_Clients(meios, clients, managers, resmeios);
+            showSubMenu_Manager_Clients(meios, clients, managers, resmeios, grafo);
             break;
         case 3:
+            showSubMenu_Manager_Grafos(meios, clients, managers, resmeios, grafo);
+            break;
+        case 4:
             clear();
-            showMenu(meios, clients, managers, resmeios);
+            showMenu(meios, clients, managers, resmeios, grafo);
             break;
         }
     }
@@ -1030,9 +1034,9 @@ int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeio
  * @return int 
  */
 // 
-int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1, cod;
-    char type[50], loc[50], bat_s[20], aut_s[20], cost_s[20];
+    char type[50], loc[TAM], bat_s[20], aut_s[20], cost_s[20], checkLoc[TAM];
     float bat, aut, cost;
 
     while (1)
@@ -1087,13 +1091,23 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             flushstdin();
             printf("Enter the location of the new record: ");
             getstring(loc);
-
-            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0, 1);
-            saveRecords_Meio(meios);
-
-            red();
-            printf("\n\nNew registered record!");
-            reset();
+            strcpy(checkLoc, fromLocationToGeocode(loc));
+            if (strcmp(checkLoc, "Null") != 0) {
+                meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, 0, 1);
+                saveRecords_Meio(meios);
+                red();
+                printf("\n\nNew registered record!");
+                reset();
+            } else {
+                red();
+                printf("\n\nUnknown location");
+                yellow();
+                printf(" %s ", loc);
+                reset();
+                red();
+                printf("\n\nUnable to insert new record!");
+                reset();
+            }
             pause();
             break;
         case 2:
@@ -1241,12 +1255,12 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
             pause();
             break;
         case 5:
-            showSubSubMenu_Manager_Meios(meios, clients, managers, resmeios);
+            showSubSubMenu_Manager_Meios(meios, clients, managers, resmeios, grafo);
             pause();
             break;
         case 6:
             clear();
-            showSubMenu_Manager(meios, clients, managers, resmeios);
+            showSubMenu_Manager(meios, clients, managers, resmeios, grafo);
             break;
         }
     }
@@ -1261,7 +1275,7 @@ int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, r
  * @return int 
  */
 // 
-int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios) {
+int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1, id, phn, nif, bd, bm, by;
     char name[50], addr[50], email[50], pass[50];
     float balance;
@@ -1411,12 +1425,12 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
                 printf("Enter the new password of the client: ");
                 getstring(pass);
                 
-                //meios = consultarDados(meios, id);
+                /*//meios = consultarDados(meios, id);
                 //if (aut = null) aut = meios->aut;
                 //Create consulting function
                 
-                /*//https://stackoverflow.com/questions/30220691/how-to-get-empty-input-or-only-enter-in-c - LINK for stackoverflow
-
+                //https://stackoverflow.com/questions/30220691/how-to-get-empty-input-or-only-enter-in-c - LINK for stackoverflow
+                
                 if (bat_s[0] == '\n') {
                     bat = -1;
                 }
@@ -1451,17 +1465,27 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
             pause();
             break;
         case 5:
-            showSubSubMenu_Manager_Clients(meios, clients, managers, resmeios);
+            showSubSubMenu_Manager_Clients(meios, clients, managers, resmeios, grafo);
             pause();
             break;
         case 6:
             clear();
-            showSubMenu_Manager(meios, clients, managers, resmeios);
+            showSubMenu_Manager(meios, clients, managers, resmeios, grafo);
             break;
         }
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @param resmeios 
+ * @param grafo 
+ * @return int 
+ */
 // 
 int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1, result = -2;
@@ -1596,7 +1620,7 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             break;
         case 7:
             // Return to Main Menu
-            showSubMenu_Manager(meios, clients, managers, resmeios);
+            showSubMenu_Manager(meios, clients, managers, resmeios, grafo);
             break;
         }
     }
@@ -1676,9 +1700,7 @@ int main()
      * 
      */
     //
-    //showMenu(meios, clients, managers, resmeios);
-
-    showSubMenu_Manager_Grafos(meios, clients, managers, resmeios, grafo);
+    showMenu(meios, clients, managers, resmeios, grafo);
 
     return(0);
 }

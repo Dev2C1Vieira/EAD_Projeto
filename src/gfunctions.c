@@ -7,6 +7,13 @@
 
 #pragma region Grafo_Functions
 
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param vertex 
+ * @return int 
+ */
 // 
 int existVertex(Grafo* grafo, char vertex[]) {
     while (grafo != NULL) {
@@ -16,6 +23,13 @@ int existVertex(Grafo* grafo, char vertex[]) {
     return(0);
 }
 
+/**
+ * @brief Create a Vertex object
+ * 
+ * @param grafo 
+ * @param newID 
+ * @return Grafo* 
+ */
 // 
 Grafo* createVertex(Grafo* grafo, char newID[]) {
     Grafo* new = malloc(sizeof(struct Grafo_Registo));
@@ -41,6 +55,16 @@ Grafo* createVertex(Grafo* grafo, char newID[]) {
     //return(0);
 }
 
+/**
+ * @brief Create a Edge object
+ * 
+ * @param grafo 
+ * @param vOrigin 
+ * @param vDestiny 
+ * @param weight 
+ * @return Grafo* 
+ */
+//
 Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
     Adjacence* new;
     if ((existVertex(grafo, vOrigin)) && (existVertex(grafo, vDestiny))) {
@@ -70,6 +94,13 @@ Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param vertex 
+ */
+// 
 void listAdjacentes(Grafo* grafo, char vertex[]) {
     if (existVertex(grafo, vertex)) {
         while (strcmp(grafo->vertex, vertex) != 0) {
@@ -82,6 +113,7 @@ void listAdjacentes(Grafo* grafo, char vertex[]) {
         }
     }
 }
+
 
 /*void listPerDistance(Grafo grafo, float distance, char location[]) {
     Meio* meio;
@@ -115,7 +147,7 @@ void listAdjacentes(Grafo* grafo, char vertex[]) {
     else printf("\n\tThe indicated vertex does not exist");
 }*/
 
-// 
+// Error
 int saveGrafo(Grafo* grafo) {
     // this C code opens a file called "Grafo.txt" 
     // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
@@ -125,11 +157,11 @@ int saveGrafo(Grafo* grafo) {
     {
         Grafo* aux = grafo;
         while (aux != NULL) {
-            Adjacence* adjacence = aux->adjacence;
+            Adjacence* adj = aux->adjacence;
             
-            while (adjacence != NULL) {
-                fprintf(fp, "%s;%s;%.2f\n", aux->vertex, adjacence->vertex, adjacence->weight);
-                adjacence = adjacence->next;
+            while (adj != NULL) {
+                fprintf(fp, "%s;%s;%.2f\n", aux->vertex, adj->vertex, adj->weight);
+                adj = adj->next;
             }
             aux = aux->next;
         }

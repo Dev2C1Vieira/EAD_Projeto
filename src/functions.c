@@ -129,6 +129,60 @@ int getLastMeioCode(Meio* start) {
 /**
  * @brief 
  * 
+ * @param location 
+ * @return char* 
+ */
+// 
+char* fromLocationToGeocode(char location[]) {
+    char* geocode = (char*)malloc(TAM * sizeof(char));
+    if (strcmp(location, "Braga") == 0) {
+        strcpy(geocode, "///calha.recodificado.juros");
+    } else if (strcmp(location, "Porto") == 0) {
+        strcpy(geocode, "///acha.topete.ervilhas");
+    } else if (strcmp(location, "Lisboa") == 0) {
+        strcpy(geocode, "///dera.espiou.afeto");
+    } else if (strcmp(location, "Aveiro") == 0) {
+        strcpy(geocode, "///maca.sentem.tornam");
+    } else if (strcmp(location, "Amadora") == 0) {
+        strcpy(geocode, "///isca.assine.esguio");
+    } else if (strcmp(location, "Odivelas") == 0) {
+        strcpy(geocode, "///somas.rosnou.mornos");
+    } else {
+        strcpy(geocode, "Null");
+    }
+    return(geocode);
+}
+
+/**
+ * @brief 
+ * 
+ * @param location 
+ * @return char* 
+ */
+// 
+char* fromGeocodeToLocation(char geocode[]) {
+    char* location = (char*)malloc(TAM * sizeof(char));
+    if (strcmp(geocode, "///calha.recodificado.juros") == 0) {
+        strcpy(location, "Braga");
+    } else if (strcmp(geocode, "///acha.topete.ervilhas") == 0) {
+        strcpy(location, "Porto");
+    } else if (strcmp(geocode, "///dera.espiou.afeto") == 0) {
+        strcpy(location, "Lisboa");
+    } else if (strcmp(geocode, "///maca.sentem.tornam") == 0) {
+        strcpy(location, "Aveiro");
+    } else if (strcmp(geocode, "///isca.assine.esguio") == 0) {
+        strcpy(location, "Amadora");
+    } else if (strcmp(geocode, "///somas.rosnou.mornos") == 0) {
+        strcpy(location, "Odivelas");
+    } else {
+        strcpy(location, "Null");
+    }
+    return(location);
+}
+
+/**
+ * @brief 
+ * 
  * @param start 
  * @param code 
  * @param type 
@@ -142,7 +196,7 @@ int getLastMeioCode(Meio* start) {
  */
 // inserts a new records in the Meio linked list
 Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat, 
-    float aut, float cost, char loc[50], int status, int available) { // here is included the needed parameters
+    float aut, float cost, char loc[TAM], int status, int available) { // here is included the needed parameters
     
     int lastCode = getLastMeioCode(start);
     Meio* meio = malloc(sizeof(struct Mobilidade_Registo));
@@ -154,7 +208,7 @@ Meio* insertNewRecord_Meio(Meio* start, char type[50], float bat,
         meio->battery = bat; // here the value of the parameter bat is assigned in the respective field of the new record.
         meio->autonomy = aut; // here the value of the parameter aut is assigned in the respective field of the new record.
         meio->cost = cost; // here the value of the parameter cost is assigned in the respective field of the new record.
-        strcpy(meio->location, loc); // here the value of the parameter loc is assigned in the respective field of the new record.
+        strcpy(meio->location, fromLocationToGeocode(loc)); // here the value of the parameter loc is assigned in the respective field of the new record.
         meio->status = status; // here the value of the parameter status is assigned in the respective field of the new record.
         meio->available = available; // 
         meio->next = NULL; // here the 'next' field of the new record is pointing to the record that used to be the last one
@@ -239,13 +293,13 @@ void listAvailableRecords_Meio(Meio* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->available == 1) {
             if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
-            printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
-                start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
-                // prints the informations of the record in the console
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s %s  |", start->code, start->type, 
+                    start->battery, start->autonomy, start->cost, "Por Reservar", fromGeocodeToLocation(start->location)); 
+                    // prints the informations of the record in the console
             }
             else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
                 printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
-                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
+                    start->battery, start->autonomy, start->cost, "Reservado", fromGeocodeToLocation(start->location));
                     // prints the informations of the record in the console
             }
         }
@@ -264,12 +318,12 @@ void listUnavailableRecords_Meio(Meio* start) {
         if (start->available == 0) {
             if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
-                start->battery, start->autonomy, start->cost, "Por Reservar", start->location); 
+                start->battery, start->autonomy, start->cost, "Por Reservar", fromGeocodeToLocation(start->location)); 
                 // prints the informations of the record in the console
             }
             else if (start->status == 1){ // verifies if the record status is 0 then it is yet to be booked
                 printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
-                    start->battery, start->autonomy, start->cost, "Reservado", start->location);
+                    start->battery, start->autonomy, start->cost, "Reservado", fromGeocodeToLocation(start->location));
                     // prints the informations of the record in the console
             }
         }
@@ -376,7 +430,7 @@ Meio* deleteRecord_Meio(Meio* start, int code) {
  */
 // edits the information of the Meio record on the linked list
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, char loc[50]) {
+	float bat, float aut, float cost, char loc[TAM]) {
     /*int code_v;
     char type_v[50], loc_v[50];
     float bat_v, aut_v, cost_v;
@@ -482,7 +536,7 @@ int saveRecords_Meio(Meio* start)
 Meio* readrecords_Meio() {
     int code, idclient, status, available;
     float bat, aut, cost;
-    char type[50], loc[50];
+    char type[50], loc[TAM];
     // creating variables to keep the information of the records in the text file
 
     FILE* fp = fopen("../data/Text_Files/Records_Meio.txt","r"); // opens the "Records_Meio" text file
@@ -499,7 +553,7 @@ Meio* readrecords_Meio() {
         {
             // returns the information of each record and gives them to the linked list
             sscanf(line, "%d;%[^;];%f;%f;%f;%[^;];%d;%d\n", &code, type, &bat, &aut, &cost, loc, &status, &available);
-            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, loc, status, available);
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, fromGeocodeToLocation(loc), status, available);
             // insert the records in the linked list
         }
         fclose(fp);

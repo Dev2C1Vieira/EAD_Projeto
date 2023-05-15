@@ -180,7 +180,7 @@ int getLastManagerID(Manager* start);
  */
 // Function that inserts a new record of type Meio
 Meio* insertNewRecord_Meio(Meio* start, char type[50], 
-	float bat, float aut, float cost, char loc[50], int status, int available); // here is included the need parameters
+	float bat, float aut, float cost, char loc[TAM], int status, int available); // here is included the need parameters
 
 /**
  * @brief 
@@ -475,12 +475,33 @@ int existRecord_Booked(resMeios* head, int id);
 
 #pragma region Check_Available_Functions
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param code 
+ * @return int 
+ */
 // Function that checks whether or not a certain record of type Meio is available
 int isRecordAvailable_Meio(Meio* start, int code);
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return int 
+ */
 // Function that checks whether or not a certain record of type Client is available
 int isRecordAvailable_Client(Client* start, int id);
 
+/**
+ * @brief 
+ * 
+ * @param start 
+ * @param id 
+ * @return int 
+ */
 // Function that checks whether or not a certain record of type Manager is available
 int isRecordAvailable_Manager(Manager* start, int id);
 
@@ -704,7 +725,7 @@ resMeios* deletebookMeio(resMeios* head, int id, struct periodDateTime endDateTi
  */
 // this function goes through the Meio linked list and edits the record data that contains the code indicated by the user
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
-	float bat, float aut, float cost, char loc[50]); // here is included the need parameters
+	float bat, float aut, float cost, char loc[TAM]); // here is included the need parameters
 
 /**
  * @brief 
@@ -826,90 +847,6 @@ resMeios* readrecords_Book(Meio* meios, Client* clients);
 
 #pragma endregion
 
-#pragma region Menu_Functions
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-// this main menu that allows the user to indicate their status in order to be able to login to their respective account
-int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param manager 
- * @return int 
- */
-// this client menu that allows the client to manipulate the records of reservations of Means
-int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param manager 
- * @param resmeios 
- * @return int 
- */
-// 
-int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-// this client sub menu that allows the client to log in if he already has one, or to create one otherwise
-int showSubSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-// this manager menu that allows the manager to choose if he wants to manipulate Meio records or Clients records
-int showSubMenu_Manager(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-// this client menu that allows the manager to manipulate the records of reservations of Means
-int showSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-// this client menu that allows the manager to manipulate the records of Clients
-int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-
-
-#pragma endregion
-
 #pragma region search_ID_Functions
 
 /**
@@ -957,84 +894,6 @@ const char* searchName_Client(Client* start, int id);
  */
 // this function goes through the Manager linked list and return the client name which is represented by id of the manager logged in
 const char* searchName_Manager(Manager* start, int id);
-
-#pragma endregion
-
-#pragma region Loop_Login_Functions
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-// 
-int loop_Client_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @return int 
- */
-//
-int loop_Manager_Login(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-#pragma endregion
-
-#pragma region Recover_Delete_Records_Menus
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @param resmeios 
- * @return int 
- */
-// 
-int Manager_Meios_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @param resmeios 
- * @return int 
- */
-// 
-int showSubSubMenu_Manager_Meios(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @param resmeios 
- * @return int 
- */
-//
-int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
-
-/**
- * @brief 
- * 
- * @param meios 
- * @param clients 
- * @param managers 
- * @param resmeios 
- * @return int 
- */
-// 
-int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios);
 
 #pragma endregion
 
@@ -1108,5 +967,13 @@ void flushstdin(void); // a function that clears the keyboard buffer
  * 
  */
 void pause(); // a function that interrupts the program until a random key is pressed by the user
+
+#pragma endregion
+
+#pragma region Geocode_Location_Function
+
+char* fromLocationToGeocode(char location[]);
+
+char* fromGeocodeToLocation(char geocode[]);
 
 #pragma endregion
