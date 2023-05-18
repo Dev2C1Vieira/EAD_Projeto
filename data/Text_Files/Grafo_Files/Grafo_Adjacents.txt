@@ -1,0 +1,4 @@
+Braga;Porto;50.00
+Braga;Odivelas;150.00
+Odivelas;Coimbra;300.00
+Coimbra;Porto;500.00

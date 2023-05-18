@@ -1571,7 +1571,7 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             else if (!existVertex(grafo, vDestiny)) printf("\n\nDestiny vertex do not exist!");
             else {
                 grafo = createEdge(grafo, vOrigin, vDestiny, weight);
-                saveGrafo(grafo);
+                saveAdjacent(grafo);
             }
 
             reset();
@@ -1590,14 +1590,15 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             printf("\n|     ADJACENT VERTICE                  WEIGHT(M)      |");
             printf("\n+------------------------------------------------------+");
             reset();
-            listAdjacentes(grafo, vertex);
+            listAdjacentsByGeocode(grafo, vertex);
             printf("\n+------------------------------------------------------+");
-            /*printf("\n\nTotal sum of records of type Meios:");
+            printf("\n\nTotal sum of adjacents vertices of");
+            yellow();
+            printf(" %s:", vertex);
             red();
-            // this function return the amount of records in the Linked List Meios
-            printf(" %d\n", countAvailableRecords_Meio(meios));
+            // this function return the amount of adjacents vertices
+            printf(" %d\n", countAdjacentsByGeocode(grafo, vertex));
             reset();
-            pause();*/
             pause();
             break;
         case 4:
@@ -1632,74 +1633,33 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
 
 int main()
 {
-    /**
-     * @brief 
-     * 
-     */
     // Empty Linked List of type Meio
     Meio* meios = NULL;
     
-    /**
-     * @brief 
-     * 
-     */
     // Empty Linked List of type Client
     Client* clients = NULL;
 
-    /**
-     * @brief 
-     * 
-     */
     // Empty Linked List of type Manager
     Manager* managers = NULL;
 
-    /**
-     * @brief 
-     * 
-     */
-    //
+    // Empty Linked List of type resMeios
     resMeios* resmeios = NULL;
     
-    /**
-     * @brief 
-     * 
-     */
-    //
+    // Empty Linked List of type Grafo
     Grafo* grafo = NULL;
 
-    /**
-     * @brief 
-     * 
-     */
-    //
     meios = readrecords_Meio();
 
-    /**
-     * @brief 
-     * 
-     */
-    //
     clients = readrecords_Client();
 
-    /**
-     * @brief 
-     * 
-     */
-    //
     managers = readrecords_Manager();
 
-    /**
-     * @brief 
-     * 
-     */
-    // 
     resmeios = readrecords_Book(meios, clients);
 
-    /**
-     * @brief Construct a new show Menu object
-     * 
-     */
-    //
+    grafo = readGrafo();
+    
+    grafo = readAdjacents(grafo);
+
     showMenu(meios, clients, managers, resmeios, grafo);
 
     return(0);

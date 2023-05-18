@@ -816,7 +816,7 @@ int saveRecords_Book(resMeios* head);
  * 
  * @return Meio* 
  */
-// Function that reads records of type Meio from a text file
+// Function that reads records of type Meio from a binary file
 Meio* readrecords_Meio();
 
 /**
@@ -824,7 +824,7 @@ Meio* readrecords_Meio();
  * 
  * @return Meio* 
  */
-// Function that reads records of type Client from a text file
+// Function that reads records of type Client from a binary file
 Client* readrecords_Client();
 
 /**
@@ -832,7 +832,7 @@ Client* readrecords_Client();
  * 
  * @return Meio* 
  */
-// Function that reads records of type Manager from a text file
+// Function that reads records of type Manager from a binary file
 Manager* readrecords_Manager();
 
 /**
@@ -842,7 +842,7 @@ Manager* readrecords_Manager();
  * @param clients 
  * @return resMeios* 
  */
-// 
+// Function that reads records of type resMeios from a binary file
 resMeios* readrecords_Book(Meio* meios, Client* clients);
 
 #pragma endregion

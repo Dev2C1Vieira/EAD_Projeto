@@ -99,32 +99,7 @@ struct time getCurrentTime() {
 
 #pragma endregion
 
-#pragma region Meios_Related_Functions
-
-// Functions related to records of type Meio
-
-/**
- * @brief Get the Last Meio Code object
- * 
- * @param start 
- * @return int 
- */
-// this function returns the code of the last record, present in the linked list.
-int getLastMeioCode(Meio* start) {
-    if (start == NULL) {
-        // the list is empty, so there is no id to increment, so return 0.
-        return(0);
-    }
-    else {
-        // scrolls through the list to the last record
-        Meio* last = start;
-        while (last->next != NULL) {
-            last = last->next;
-        }
-        // returns the code of the last record, so it can be incremented
-        return(last->code);
-    }
-}
+#pragma region Geocode_Location_Function
 
 /**
  * @brief 
@@ -156,7 +131,7 @@ char* fromLocationToGeocode(char location[]) {
 /**
  * @brief 
  * 
- * @param location 
+ * @param geocode 
  * @return char* 
  */
 // 
@@ -178,6 +153,35 @@ char* fromGeocodeToLocation(char geocode[]) {
         strcpy(location, "Null");
     }
     return(location);
+}
+
+#pragma endregion
+
+#pragma region Meios_Related_Functions
+
+// Functions related to records of type Meio
+
+/**
+ * @brief Get the Last Meio Code object
+ * 
+ * @param start 
+ * @return int 
+ */
+// this function returns the code of the last record, present in the linked list.
+int getLastMeioCode(Meio* start) {
+    if (start == NULL) {
+        // the list is empty, so there is no id to increment, so return 0.
+        return(0);
+    }
+    else {
+        // scrolls through the list to the last record
+        Meio* last = start;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        // returns the code of the last record, so it can be incremented
+        return(last->code);
+    }
 }
 
 /**
@@ -507,23 +511,20 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
 // saves the content of the Meio linked list in the "Records_Meio" text file
 int saveRecords_Meio(Meio* start)
 {
-    // this C code opens a file called "Records_Meio.txt" 
-    // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
-    FILE* fp = fopen("../data/Text_Files/Records_Meio.txt", "w");
-    // checks if the file is empty or not
+    FILE* fp = fopen("../data/Binary_Files/Records_Meio.bin", "wb"); // Open file in binary write mode
     if (fp != NULL)
     {
         Meio* aux = start;
         while (aux != NULL)
         {
-            // saves in the text file each field of a respective record separated by ';'
-            fprintf(fp, "%d;%s;%f;%f;%f;%s;%d;%d\n", aux->code, aux->type, aux->battery, 
-                aux->autonomy, aux->cost, aux->location, aux->status, aux->available);
-            aux = aux->next; // moves to the next record
+            // Write the entire struct to the binary file
+            fwrite(aux, sizeof(Meio), 1, fp);
+            aux = aux->next; // Move to the next record
         }
-        fclose(fp); // closes the text file
+        fclose(fp); // Close the binary file
         return(1);
     }
+    
     return(0);
 }
 
@@ -534,29 +535,23 @@ int saveRecords_Meio(Meio* start)
  */
 // reads the content of the "Records_Meio" and gives it to the Meio linked list
 Meio* readrecords_Meio() {
-    int code, idclient, status, available;
-    float bat, aut, cost;
-    char type[50], loc[TAM];
-    // creating variables to keep the information of the records in the text file
-
-    FILE* fp = fopen("../data/Text_Files/Records_Meio.txt","r"); // opens the "Records_Meio" text file
-
-    Meio* meios = NULL; // creates a new NULL linked list
-    
-    if (fp != NULL) { // checks if the text file is empty
-        char line[1024];
-        // the fgets function is used to read a line of text from a file and store it in a character buffer. 
-        // the first argument is a pointer to the buffer that will store the line read.
-        // the second argument is the buffer size. In this case, sizeof(line) returns the size of the line buffer in bytes.
-        // the third argument is a pointer to the file from which the line is to be read.
-        while (fgets(line, sizeof(line), fp))
-        {
-            // returns the information of each record and gives them to the linked list
-            sscanf(line, "%d;%[^;];%f;%f;%f;%[^;];%d;%d\n", &code, type, &bat, &aut, &cost, loc, &status, &available);
-            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, fromGeocodeToLocation(loc), status, available);
-            // insert the records in the linked list
+    FILE* fp = fopen("../data/Binary_Files/Records_Meio.bin", "rb"); // Open file in binary read mode
+    Meio* meios = NULL; // Create a new NULL linked list
+    if (fp != NULL) {
+        while (1) {
+            Meio* novo = (Meio*)malloc(sizeof(Meio));
+            // Read each struct from the binary file
+            size_t result = fread(novo, sizeof(Meio), 1, fp);
+            if (result != 1) {
+                free(novo); // Free the dynamically allocated memory
+                break; // Exit the loop if there are no more records to read
+            }
+            // Insert the read record into the linked list
+            meios = insertNewRecord_Meio(meios, novo->type, novo->battery, novo->autonomy, 
+                novo->cost, fromGeocodeToLocation(novo->location), novo->status, novo->available);
         }
-        fclose(fp);
+
+        fclose(fp); // Close the binary file
     }
     return(meios);
 }
@@ -908,22 +903,21 @@ Client* editRecord_Client(Client* start, int id, char name[100],
 // saves the content of the Client linked list in the "Records_Client" text file
 int saveRecords_Client(Client* start)
 {
-    FILE* fp = fopen("../data/Text_Files/Records_Client.txt", "w");
-
+    FILE* fp = fopen("../data/Binary_Files/Records_Client.bin", "wb"); // Open file in binary write mode
     if (fp != NULL)
     {
         Client* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%.2d-%.2d-%.4d;%.9d;%s;%.9d;%f;%s;%s;%d\n", aux->id, aux->name, aux->birthDate.day, 
-            aux->birthDate.month, aux->birthDate.year, aux->phoneNumber, aux->address, 
-            aux->nif, aux->balance, aux->email, aux->password, aux->available);
-            aux = aux->next;
+            // Write the entire struct to the binary file
+            fwrite(aux, sizeof(Client), 1, fp);
+            aux = aux->next; // Move to the next record
         }
-        fclose(fp);
+        fclose(fp); // Close the binary file
         return(1);
     }
-    else return(0);
+    
+    return(0);
 }
 
 /**
@@ -933,25 +927,26 @@ int saveRecords_Client(Client* start)
  */
 // reads the content of the "Records_Client" and gives it to the Client linked list
 Client* readrecords_Client() {
-    int id, phn, nif, bd, bm, by, available;
-    float balance;
-    char name[50], addr[50], email[50], pass[20];
-
-    FILE* fp = fopen("../data/Text_Files/Records_Client.txt","r");
-
-    Client* client = NULL;
-    
+    FILE* fp = fopen("../data/Binary_Files/Records_Client.bin", "rb"); // Open file in binary read mode
+    Client* clients = NULL; // Create a new NULL linked list
     if (fp != NULL) {
-        char line[1024];
-        while (fgets(line, sizeof(line), fp))
-        {
-            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%d;%f;%[^;];%[^;];%d\n", &id, 
-            name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass, &available);
-            client = insertNewRecord_Client(client, name, bd, bm, by, phn, addr, nif, balance, email, pass, available);
+        while (1) {
+            Client* novo = (Client*)malloc(sizeof(Client));
+            // Read each struct from the binary file
+            size_t result = fread(novo, sizeof(Client), 1, fp);
+            if (result != 1) {
+                free(novo); // Free the dynamically allocated memory
+                break; // Exit the loop if there are no more records to read
+            }
+            // Insert the read record into the linked list
+            clients = insertNewRecord_Client(clients, novo->name, novo->birthDate.day, 
+                novo->birthDate.month, novo->birthDate.year, novo->phoneNumber, 
+                novo->address, novo->nif, novo->balance, novo->email, novo->password, novo->available);
         }
-        fclose(fp);
+
+        fclose(fp); // Close the binary file
     }
-    return(client);
+    return(clients);
 }
 
 /**
@@ -1139,25 +1134,23 @@ void listRecords_Manager(Manager* start) {
  * @param start 
  * @return int 
  */
-// saves the content of the Manager linked list in the "Records_Manager" text file
+// saves the content of the Manager linked list in the "Records_Manager" binary file
 int saveRecords_Manager(Manager* start)
 {
-    FILE* fp = fopen("Data/Text_Files/Records_Manager.txt", "w");
-
+    FILE* fp = fopen("../data/Binary_Files/Records_Manager.bin", "wb"); // Open file in binary write mode
     if (fp != NULL)
     {
         Manager* aux = start;
         while (aux != NULL)
         {
-            fprintf(fp, "%d;%s;%d-%d-%d;%d;%s;%s\n", start->id, start->name, start->birthDate.day, 
-                start->birthDate.month, start->birthDate.year, start->phoneNumber,
-                start->email, start->password);
-            aux = aux->next;
+            // Write the entire struct to the binary file
+            fwrite(aux, sizeof(Manager), 1, fp);
+            aux = aux->next; // Move to the next record
         }
-        fclose(fp);
+        fclose(fp); // Close the binary file
         return(1);
     }
-    else return(0);
+    return(0);
 }
 
 /**
@@ -1165,26 +1158,27 @@ int saveRecords_Manager(Manager* start)
  * 
  * @return Meio* 
  */
-// reads the content of the "Records_Client" and gives it to the Client linked list
+// reads the content of the "Records_Client" and gives it to the Manager linked list
 Manager* readrecords_Manager() {
-    int id, phn, bd, bm, by;
-    char name[50], email[50], pass[20];
-
-    FILE* fp = fopen("../data/Text_Files/Records_Manager.txt","r");
-
-    Manager* manager = NULL;
-    
+    FILE* fp = fopen("../data/Binary_Files/Records_Manager.bin", "rb"); // Open file in binary read mode
+    Manager* managers = NULL; // Create a new NULL linked list
     if (fp != NULL) {
-        char line[1024];
-        while (fgets(line, sizeof(line), fp))
-        {
-            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%[^\n]\n", 
-            &id, name, &bd, &bm, &by, &phn, email, pass);
-            manager = insertNewRecord_Manager(manager, name, bd, bm, by, phn, email, pass);
+        while (1) {
+            Manager* novo = (Manager*)malloc(sizeof(Manager));
+            // Read each struct from the binary file
+            size_t result = fread(novo, sizeof(Manager), 1, fp);
+            if (result != 1) {
+                free(novo); // Free the dynamically allocated memory
+                break; // Exit the loop if there are no more records to read
+            }
+            // Insert the read record into the linked list
+            managers = insertNewRecord_Manager(managers, novo->name, 
+                novo->birthDate.day, novo->birthDate.month, novo->birthDate.year, 
+                novo->phoneNumber, novo->email, novo->password);
         }
-        fclose(fp);
+        fclose(fp); // Close the binary file
     }
-    return(manager);
+    return(managers);
 }
 
 /**
@@ -1542,7 +1536,7 @@ void listNonBookingRecords(Meio* head) {
     while (head != NULL) { // goes through the linked list until it finds the last record
         if ((head->status == 0) && (head->available == 1)) { // verifies if the record status is 0 then it is yet to be booked
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s   |", head->code, head->type, 
-                head->battery, head->autonomy, head->cost, head->location); 
+                head->battery, head->autonomy, head->cost, fromGeocodeToLocation(head->location)); 
                 // prints the informations of the record in the console
         }
         head = head->next; // the record being read by the loop and passed to the next record
@@ -1602,7 +1596,7 @@ void listCancelledBookingRecords(resMeios* head, int idClient) {
 int countNonBookingRecords(Meio* head) {
     int counter = 0; // creation of an incrementation variable
     while (head != NULL) { // goes through the linked list until it finds the last record
-        if (head->status == 0) { // finds the record containing the given client id
+        if ((head->available == 1) && (head->status == 0)) { // finds the record containing the given client id
             counter++; // increments the incrementation variable
         }
         head = head->next; // moves to the next record
@@ -1681,7 +1675,6 @@ int saveRecords_Book(resMeios* head) {
         fclose(fp); // closes the text file
         return(1);
     }
-    
     return(0);
 }
 

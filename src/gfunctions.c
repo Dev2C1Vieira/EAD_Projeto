@@ -5,7 +5,6 @@
 #include <time.h>
 #include "./include/grafos.h"
 
-#pragma region Grafo_Functions
 
 /**
  * @brief 
@@ -37,7 +36,7 @@ Grafo* createVertex(Grafo* grafo, char newID[]) {
         strcpy(new->vertex, newID);
         new->meio = NULL;
         new->client = NULL;
-        new->adjacence = NULL;
+        new->adjacent = NULL;
         new->next = NULL;
         
         if (grafo == NULL) {
@@ -66,7 +65,7 @@ Grafo* createVertex(Grafo* grafo, char newID[]) {
  */
 //
 Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
-    Adjacence* new;
+    Adjacent* new;
     if ((existVertex(grafo, vOrigin)) && (existVertex(grafo, vDestiny))) {
         while (strcmp(grafo->vertex, vOrigin) != 0) {
             grafo = grafo->next;
@@ -77,12 +76,12 @@ Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
             new->weight = weight;
             new->next = NULL;  // Novo nó será o último da lista
 
-            if (grafo->adjacence == NULL) {
+            if (grafo->adjacent == NULL) {
                 // Caso a lista esteja vazia, o novo nó será o primeiro
-                grafo->adjacence = new;
+                grafo->adjacent = new;
             } else {
                 // Percorre a lista até o último elemento
-                Adjacence* current = grafo->adjacence;
+                Adjacent* current = grafo->adjacent;
                 while (current->next != NULL) {
                     current = current->next;
                 }
@@ -90,30 +89,43 @@ Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
                 current->next = new;
             }
         } 
-        return(grafo);
     }
+    return(grafo);
 }
 
-/**
- * @brief 
- * 
- * @param grafo 
- * @param vertex 
- */
-// 
-void listAdjacentes(Grafo* grafo, char vertex[]) {
+//
+int countAdjacentsByGeocode(Grafo* grafo, char vertex[]) {
+    int counter = 0;
+
+    while (strcmp(grafo->vertex, vertex) != 0) {
+        grafo = grafo->next;
+        if (grafo == NULL) {
+            // O vértice não foi encontrado, retornar 0
+            return 0;
+        }
+    }
+
+    Adjacent* adj = grafo->adjacent;
+    while (adj != NULL) {
+        counter++;
+        adj = adj->next;
+    }
+    return(counter); // return the incrementing variable
+}
+
+//
+void listAdjacentsByGeocode(Grafo* grafo, char vertex[]) {
     if (existVertex(grafo, vertex)) {
         while (strcmp(grafo->vertex, vertex) != 0) {
             grafo = grafo->next;
         }
-        if (grafo->adjacence == NULL) printf("\n\tThe vertex of the indicated graph has no adjacent vertices");
-        while (grafo->adjacence != NULL) {
-            printf("\n|   %-20s %-8.2f    |", grafo->adjacence->vertex, grafo->adjacence->weight);
-            grafo->adjacence = grafo->adjacence->next;
+        if (grafo->adjacent == NULL) printf("\n\tThe vertex of the indicated graph has no adjacent vertices");
+        while (grafo->adjacent != NULL) {
+            printf("\n|   %-20s %-8.2f    |", grafo->adjacent->vertex, grafo->adjacent->weight);
+            grafo->adjacent = grafo->adjacent->next;
         }
     }
 }
-
 
 /*void listPerDistance(Grafo grafo, float distance, char location[]) {
     Meio* meio;
@@ -151,17 +163,38 @@ void listAdjacentes(Grafo* grafo, char vertex[]) {
 int saveGrafo(Grafo* grafo) {
     // this C code opens a file called "Grafo.txt" 
     // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
-    FILE* fp = fopen("../data/Text_Files/Grafo.txt", "w");
+    FILE* fp = fopen("../data/Text_Files/Grafo_Files/Grafo.txt", "w");
     // checks if the file is empty or not
     if (fp != NULL)
     {
         Grafo* aux = grafo;
         while (aux != NULL) {
-            Adjacence* adj = aux->adjacence;
-            
-            while (adj != NULL) {
-                fprintf(fp, "%s;%s;%.2f\n", aux->vertex, adj->vertex, adj->weight);
-                adj = adj->next;
+            fprintf(fp, "%s\n", aux->vertex);
+            aux = aux->next;
+        }
+        fclose(fp); // closes the text file
+        return(1);
+    }
+    return(0);
+}
+
+
+int saveAdjacent(Grafo* grafo) {
+    // this C code opens a file called "Grafo.txt" 
+    // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
+    FILE* fp = fopen("../data/Text_Files//Grafo_Files/Grafo_Adjacents.txt", "w");
+    // checks if the file is empty or not
+    if (fp != NULL)
+    {
+        Grafo* aux = grafo;
+        while (aux != NULL) {
+            Adjacent* adj = aux->adjacent;
+
+            if (adj != NULL) {
+                while (adj != NULL) {
+                    fprintf(fp, "%s;%s;%.2f\n", aux->vertex, adj->vertex, adj->weight);
+                    adj = adj->next;
+                }
             }
             aux = aux->next;
         }
@@ -171,4 +204,54 @@ int saveGrafo(Grafo* grafo) {
     return(0);
 }
 
-#pragma endregion
+// 
+Grafo* readGrafo() {
+    char vertex[TAM];
+    // creating variables to keep the information of the records in the text file
+
+    FILE* fp = fopen("../data/Text_Files/Grafo_Files/Grafo.txt","r"); // opens the "Records_Meio" text file
+
+    Grafo* grafo = NULL; // creates a new NULL linked list
+    
+    if (fp != NULL) { // checks if the text file is empty
+        char line[1024];
+        // the fgets function is used to read a line of text from a file and store it in a character buffer. 
+        // the first argument is a pointer to the buffer that will store the line read.
+        // the second argument is the buffer size. In this case, sizeof(line) returns the size of the line buffer in bytes.
+        // the third argument is a pointer to the file from which the line is to be read.
+        while (fgets(line, sizeof(line), fp))
+        {
+            // returns the information of each record and gives them to the linked list
+            sscanf(line, "%[^\n]\n", vertex);
+            grafo = createVertex(grafo, vertex);
+            // insert the records in the linked list
+        }
+        fclose(fp);
+    }
+    return(grafo);
+}
+
+// 
+Grafo* readAdjacents(Grafo* grafo) {
+    char vOrigin[TAM], vDestiny[TAM];
+    float weight = 0.0;
+    // creating variables to keep the information of the records in the text file
+
+    FILE* fp = fopen("../data/Text_Files//Grafo_Files/Grafo_Adjacents.txt","r"); // opens the "Records_Meio" text file
+    
+    if (fp != NULL) { // checks if the text file is empty
+        char line[1024];
+        // the fgets function is used to read a line of text from a file and store it in a character buffer. 
+        // the first argument is a pointer to the buffer that will store the line read.
+        // the second argument is the buffer size. In this case, sizeof(line) returns the size of the line buffer in bytes.
+        // the third argument is a pointer to the file from which the line is to be read.
+        while (fgets(line, sizeof(line), fp))
+        {
+            // returns the information of each record and gives them to the linked list
+            sscanf(line, "%[^;];%[^;];%f\n", vOrigin, vDestiny, &weight);
+            createEdge(grafo, vOrigin, vDestiny, weight);
+        }
+        fclose(fp);
+    }
+    return(grafo);
+}

@@ -14,7 +14,7 @@ typedef struct Adjacencia_Registo
     char vertex[TAM];
     float weight;
     struct Adjacencia_Registo* next;
-} Adjacence;
+} Adjacent;
 
 
 typedef struct Grafo_Registo
@@ -22,7 +22,7 @@ typedef struct Grafo_Registo
     char vertex[TAM];
     Meio* meio;
     Client* client;
-    Adjacence* adjacence;
+    Adjacent* adjacent;
     struct Grafo_Registo* next;
 } Grafo;
 
@@ -39,8 +39,11 @@ Grafo* createVertex(Grafo* grafo, char newID[]);
 //
 Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight);
 
-// 
-void listAdjacentes(Grafo* grafo, char vertex[]);
+//
+int countAdjacentsByGeocode(Grafo* grafo, char vertex[]);
+
+//
+void listAdjacentsByGeocode(Grafo* grafo, char vertex[]);
 
 // 
 void listPerDistance(Grafo grafo, float distance, char location[]);
@@ -50,6 +53,15 @@ void listPerDistance(Grafo grafo, float distance, char location[]);
 
 // 
 int saveGrafo(Grafo* grafo);
+
+// 
+int saveAdjacent(Grafo* grafo);
+
+// 
+Grafo* readGrafo();
+
+// 
+Grafo* readAdjacents(Grafo* grafo);
 
 #pragma endregion
 
