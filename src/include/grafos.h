@@ -5,6 +5,7 @@
 #include <time.h>
 #include "header.h"
 
+
 #pragma region Structs
 
 // Creation of data structs
@@ -13,6 +14,7 @@ typedef struct Adjacencia_Registo
 {
     char vertex[TAM];
     float weight;
+    int visited;
     struct Adjacencia_Registo* next;
 } Adjacent;
 
@@ -21,47 +23,112 @@ typedef struct Grafo_Registo
 {
     char vertex[TAM];
     Meio* meio;
-    Client* client;
+    //Client* client;
     Adjacent* adjacent;
+    int visited;
     struct Grafo_Registo* next;
 } Grafo;
 
 #pragma endregion
 
-#pragma region Grafo_Functions
+#pragma region Exist_Records_Functions
 
 //
 int existVertex(Grafo* grafo, char vertex[]);
+
+// 
+int existEdge(Grafo* grafo, char vOrigin[], char vDestiny[]);
+
+//
+int existMeioFromLocation(Meio* meios, char loc[]);
+
+// 
+int isMeioInGrafoList(Grafo* grafo, char loc[], int idMeio);
+
+#pragma endregion
+
+#pragma region Find_Records_Functions
+
+// 
+Grafo* findVertex(Grafo* grafo, char vertex[]);
+
+#pragma endregion
+
+#pragma region Create_Records_Functions
 
 //
 Grafo* createVertex(Grafo* grafo, char newID[]);
 
 //
-Grafo* createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight);
+int createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight);
+
+#pragma endregion
+
+#pragma region Add_Records_Functions
+
+//
+int addMeiosToVertex(Grafo* grafo, Meio* meios, char loc[], int idMeio);
+
+#pragma endregion
+
+#pragma region Count_Records_Functions
 
 //
 int countAdjacentsByGeocode(Grafo* grafo, char vertex[]);
 
+#pragma endregion
+
+#pragma region List_Records_Functions
+
 //
 void listAdjacentsByGeocode(Grafo* grafo, char vertex[]);
 
-// 
-void listPerDistance(Grafo grafo, float distance, char location[]);
-
 //
-//void listGrafo(Grafo* grafo);
+void listMeiosByGeocode(Grafo* grafo, char vertex[]);
 
-// 
-int saveGrafo(Grafo* grafo);
+#pragma endregion
 
-// 
-int saveAdjacent(Grafo* grafo);
+#pragma region Save_Functions
 
-// 
-Grafo* readGrafo();
+// this function saves the Grafo records into a text file
+int saveGrafo_txt(Grafo* grafo);
 
-// 
-Grafo* readAdjacents(Grafo* grafo);
+// this function saves the Grafo records into a binary file
+int saveGrafo_bin(Grafo* grafo);
+
+// this function saves the Adjacents records of the Grafo into a text file
+int saveAdjacent_txt(Grafo* grafo);
+
+// this function saves the Adjacents records of the Grafo into a binary file
+int saveAdjacent_bin(Grafo* grafo);
+
+// this function saves the Meios records of the Grafo into a text file
+int saveGrafoMeios_txt(Grafo* grafo);
+
+// this function saves the Meios records of the Grafos into a binary file
+int saveGrafoMeios_bin(Grafo* grafo);
+
+#pragma endregion
+
+#pragma region Read_Functions
+
+// this function reads the Grafo records from a text file
+Grafo* readGrafo_txt();
+
+// this function reads the Grafo records from a binary file
+Grafo* readGrafo_bin();
+
+// this function reads the Adjacents records of the Grafo from a text file
+Grafo* readAdjacents_txt(Grafo* grafo);
+
+// this function reads the Adjacents records of the Grafo from a binary file
+Grafo* readAdjacents_bin(Grafo* grafo);
+
+// this function reads the Meios records of the Grafo from a text file
+Grafo* readGrafoMeios_txt(Grafo* grafo, Meio* meios);
+
+// this function reads the Meios records of the Grafo from a binary file
+Grafo* readGrafoMeios_bin(Grafo* grafo, Meio* meios);
 
 #pragma endregion
 

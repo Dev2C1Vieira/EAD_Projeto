@@ -157,6 +157,60 @@ char* fromGeocodeToLocation(char geocode[]) {
 
 #pragma endregion
 
+#pragma region Query_Records
+
+/**
+ * @brief Get the Meio By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Meio* 
+ */
+// 
+Meio* getMeioByIndex(Meio* head, int index) {
+    Meio* current = head;
+    while (current != NULL) {
+        if (current->code == index) {
+            return current;
+        }
+        current = current->next;
+    }
+    return(NULL); // returns NULL if no record is found with the given code
+}
+
+/**
+ * @brief Get the Client By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Client* 
+ */
+// 
+Client* getClientByIndex(Client* head, int index) {
+    Client* current = head;
+    while (current != NULL) {
+        if (current->id == index) {
+            return current;
+        }
+        current = current->next;
+    }
+    return(NULL); // returns NULL if no record is found with the given code
+}
+
+// 
+Manager* getManagerByIndex(Manager* head, int index) {
+    Manager* current = head;
+    while (current != NULL) {
+        if (current->id == index) {
+            return current;
+        }
+        current = current->next;
+    }
+    return(NULL); // returns NULL if no record is found with the given code
+}
+
+#pragma endregion
+
 #pragma region Meios_Related_Functions
 
 // Functions related to records of type Meio
@@ -183,7 +237,7 @@ int getLastMeioCode(Meio* start) {
         return(last->code);
     }
 }
-
+ 
 /**
  * @brief 
  * 
@@ -687,32 +741,13 @@ int countUnavailableRecords_Client(Client* start) {
  */
 // return the id of the client by searching the record containing the email and pass given
 const int searchID_Client(Client* start, char email[50], char pass[50]) {
-    while (start != NULL)
-    {
+    while (start != NULL) {
         if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) {
             return(start->id);
         }
         start = start->next;
     }
     return(0);
-}
-
-/**
- * @brief 
- * 
- * @param start 
- * @param id 
- * @return const char* 
- */
-// return the name of the client by searching the record containing the given id
-const char* searchName_Client(Client* start, int id) {
-    while (start != NULL) {
-        if (start->id == id) {
-            return(start->name);
-        }
-        start = start->next;
-    }
-    return("NULL");
 }
 
 /**
@@ -740,7 +775,7 @@ int existRecord_Client(Client* start, int id) {
 void listAvailableRecords_Client(Client* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->available == 1) {
-            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9.4d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s    |", 
+            printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
                 start->id, start->name, start->birthDate.day, start->birthDate.month, 
                 start->birthDate.year, start->phoneNumber, start->address, start->nif, 
                 start->balance, start->email, start->password);
@@ -753,7 +788,7 @@ void listAvailableRecords_Client(Client* start) {
 void listUnavailableRecords_Client(Client* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->available == 0) {
-            printf("\n|    %-6d %-21s %-0.2d-%-0.02d-%-9.4d %-18.09d %-40s %-15.09d %-13.2f %-34s %-15s    |", 
+            printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
                 start->id, start->name, start->birthDate.day, start->birthDate.month, 
                 start->birthDate.year, start->phoneNumber, start->address, start->nif, 
                 start->balance, start->email, start->password);
@@ -1069,32 +1104,13 @@ int countRecords_Manager(Manager* start) {
  */
 // return the id of the manager by searching the record containing the email and pass given
 const int searchID_Manager(Manager* start, char email[50], char pass[50]) {
-    while (start != NULL)
-    {
-        if ((strcpy(start->email, email) == 0) && (strcpy(start->password, pass) == 0)) {
+    while (start != NULL) {
+        if ((strcmp(start->email, email) == 0) && (strcmp(start->password, pass) == 0)) {
             return(start->id);
         }
         start = start->next;
     }
     return(0);
-}
-
-/**
- * @brief 
- * 
- * @param start 
- * @param id 
- * @return const char* 
- */
-// return the name of the manager by searching the record containing the given id
-const char* searchName_Manager(Manager* start, int id) {
-    while (start != NULL) {
-        if (start->id == id) {
-            return(start->name);
-        }
-        start = start->next;
-    }
-    return("There is no name, which matches the given id");
 }
 
 /**
@@ -1276,44 +1292,6 @@ int existRecord_Booked(resMeios* head, int id) {
         head = head->next; // the record being read by the loop and passed to the next record
     }
     return(0); // return 0 if any record of the linked list is the same as the one being requested
-}
-
-/**
- * @brief Get the Meio By Index object
- * 
- * @param head 
- * @param index 
- * @return Meio* 
- */
-// 
-Meio* getMeioByIndex(Meio* head, int index) {
-    Meio* current = head;
-    while (current != NULL) {
-        if (current->code == index) {
-            return current;
-        }
-        current = current->next;
-    }
-    return NULL; // returns NULL if no record is found with the given code
-}
-
-/**
- * @brief Get the Client By Index object
- * 
- * @param head 
- * @param index 
- * @return Client* 
- */
-// 
-Client* getClientByIndex(Client* head, int index) {
-    Client* current = head;
-    while (current != NULL) {
-        if (current->id == index) {
-            return current;
-        }
-        current = current->next;
-    }
-    return NULL; // returns NULL if no record is found with the given code
 }
 
 /**

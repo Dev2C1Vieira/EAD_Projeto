@@ -7,7 +7,7 @@
 #define TAM 100
 
 
-#pragma region Structs
+#pragma region Structs	
 
 // Creation of data structs
 
@@ -71,7 +71,7 @@ typedef struct Cliente_Registo
 	char name[100]; // This is the name field that identifies the client
 	struct BirthDate birthDate; // This is the birth date field that identifies the client
 	int phoneNumber; // This is the phone number field that identifies the client
-	char address[100]; // This is the address field that identifies the client
+	char address[TAM]; // This is the address field that identifies the client
 	int nif; // This is the nif field that identifies the client
 	float balance; // This is the balance field that identifies the client
 	char email[50]; // This is the email field that identifies the client
@@ -159,6 +159,14 @@ int getLastClientID(Client* start);
  */
 // 
 int getLastManagerID(Manager* start);
+
+#pragma endregion
+
+#pragma region Geocode_Location_Function
+
+char* fromLocationToGeocode(char location[]);
+
+char* fromGeocodeToLocation(char geocode[]);
 
 #pragma endregion
 
@@ -323,30 +331,6 @@ int countAvailableRecords_Book(resMeios* head, int idclient);
  */
 // 
 int countUnavailableRecords_Book(resMeios* head, int idclient);
-
-#pragma endregion
-
-#pragma region Query_Records
-
-/**
- * @brief Get the Meio By Index object
- * 
- * @param head 
- * @param index 
- * @return Meio* 
- */
-// 
-Meio* getMeioByIndex(Meio* head, int index);
-
-/**
- * @brief Get the Client By Index object
- * 
- * @param head 
- * @param index 
- * @return Client* 
- */
-// 
-Client* getClientByIndex(Client* head, int index);
 
 #pragma endregion
 
@@ -873,27 +857,37 @@ const int searchID_Manager(Manager* start, char email[50], char pass[50]);
 
 #pragma endregion
 
-#pragma region search_Name_Functions
+#pragma region Query_Records
 
 /**
- * @brief 
+ * @brief Get the Meio By Index object
  * 
- * @param start 
- * @param id 
- * @return const char* 
+ * @param head 
+ * @param index 
+ * @return Meio* 
  */
-// this function goes through the Client linked list and return the client name which is represented by id of the client logged in
-const char* searchName_Client(Client* start, int id);
+// 
+Meio* getMeioByIndex(Meio* head, int index);
 
 /**
- * @brief 
+ * @brief Get the Client By Index object
  * 
- * @param start 
- * @param id 
- * @return const char* 
+ * @param head 
+ * @param index 
+ * @return Client* 
  */
-// this function goes through the Manager linked list and return the client name which is represented by id of the manager logged in
-const char* searchName_Manager(Manager* start, int id);
+// 
+Client* getClientByIndex(Client* head, int index);
+
+/**
+ * @brief Get the Manager By Index object
+ * 
+ * @param head 
+ * @param index 
+ * @return Manager* 
+ */
+// 
+Manager* getManagerByIndex(Manager* head, int index);
 
 #pragma endregion
 
@@ -967,13 +961,5 @@ void flushstdin(void); // a function that clears the keyboard buffer
  * 
  */
 void pause(); // a function that interrupts the program until a random key is pressed by the user
-
-#pragma endregion
-
-#pragma region Geocode_Location_Function
-
-char* fromLocationToGeocode(char location[]);
-
-char* fromGeocodeToLocation(char geocode[]);
 
 #pragma endregion

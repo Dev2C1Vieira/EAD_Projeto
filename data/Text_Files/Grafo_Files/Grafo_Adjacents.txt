@@ -1,4 +1,5 @@
-Braga;Porto;50.00
-Braga;Odivelas;150.00
-Odivelas;Coimbra;300.00
-Coimbra;Porto;500.00
+///calha.recodificado.juros;///dera.espiou.afeto;100.00
+///calha.recodificado.juros;///somas.rosnou.mornos;30.00
+///calha.recodificado.juros;///maca.sentem.tornam;100.00
+///acha.topete.ervilhas;///isca.assine.esguio;150.00
+///acha.topete.ervilhas;///calha.recodificado.juros;250.00
