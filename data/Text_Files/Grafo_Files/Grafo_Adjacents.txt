@@ -1,5 +1,5 @@
-///calha.recodificado.juros;///dera.espiou.afeto;100.00
-///calha.recodificado.juros;///somas.rosnou.mornos;30.00
-///calha.recodificado.juros;///maca.sentem.tornam;100.00
-///acha.topete.ervilhas;///isca.assine.esguio;150.00
-///acha.topete.ervilhas;///calha.recodificado.juros;250.00
+Braga;Porto;100.00
+Braga;Aveiro;200.00
+Braga;Odivelas;300.00
+Porto;Lisboa;50.00
+Odivelas;Aveiro;130.00

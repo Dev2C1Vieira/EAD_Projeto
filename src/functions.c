@@ -489,55 +489,6 @@ Meio* deleteRecord_Meio(Meio* start, int code) {
 // edits the information of the Meio record on the linked list
 Meio* editRecord_Meio(Meio* start, int code, char type[50], 
 	float bat, float aut, float cost, char loc[TAM]) {
-    /*int code_v;
-    char type_v[50], loc_v[50];
-    float bat_v, aut_v, cost_v;
-
-    // Saving the old data
-    code_v = start->code;
-    strcpy(type_v, start->type);
-    bat_v = start->battery;
-    aut_v = start->autonomy;
-    cost_v = start->cost;
-    strcpy(loc_v, start->location);
-    
-    if (type[0] == '\n') {
-                    strcpy(aux->type, type_v);
-                    aux->battery = bat_v;
-                    aux->autonomy = aut;
-                    aux->cost = cost;
-                    strcpy(aux->location, loc);
-                }
-                if (bat == -1.00) {
-                    strcpy(aux->type, type);
-                    aux->battery = bat_v;
-                    aux->autonomy = aut;
-                    aux->cost = cost;
-                    strcpy(aux->location, loc);
-                }
-                if (aut == -1.00) {
-                    strcpy(aux->type, type);
-                    aux->battery = bat;
-                    aux->autonomy = aut_v;
-                    aux->cost = cost;
-                    strcpy(aux->location, loc);
-                }
-                if (cost == -1.00) {
-                    strcpy(aux->type, type);
-                    aux->battery = bat;
-                    aux->autonomy = aut;
-                    aux->cost = cost_v;
-                    strcpy(aux->location, loc);
-                    
-                }
-                if (loc[0] == '\n') {
-                    strcpy(aux->type, type);
-                    aux->battery = bat_v;
-                    aux->autonomy = aut;
-                    aux->cost = cost;
-                    strcpy(aux->location, loc_v);
-                }
-                return(aux);*/
 
     Meio* aux = start; // creates a new linked list and initializes it with the first Client linked list record
     // Setting the new data to the record
@@ -563,8 +514,7 @@ Meio* editRecord_Meio(Meio* start, int code, char type[50],
  * @return int 
  */
 // saves the content of the Meio linked list in the "Records_Meio" text file
-int saveRecords_Meio(Meio* start)
-{
+int saveRecords_Meio(Meio* start){
     FILE* fp = fopen("../data/Binary_Files/Records_Meio.bin", "wb"); // Open file in binary write mode
     if (fp != NULL)
     {
@@ -579,6 +529,29 @@ int saveRecords_Meio(Meio* start)
         return(1);
     }
     
+    return(0);
+}
+
+//
+int saveRecords_Meio_txt(Meio* start) {
+    // this C code opens a file called "Records_Meio.txt" 
+    // in write mode ("w") and stores the file pointer in a FILE* variable called fp.
+    FILE* fp = fopen("../data/Text_Files/Records_Meio.txt", "w");
+    // checks if the file is empty or not
+    if (fp != NULL)
+    {
+        Meio* aux = start;
+        while (aux != NULL)
+        {
+            // saves in the text file each field of a respective record separated by ';'
+            fprintf(fp, "%d;%s;%f;%f;%f;%s;%d;%d\n", aux->code, aux->type, aux->battery, 
+                aux->autonomy, aux->cost, aux->location, aux->status, aux->available);
+            aux = aux->next; // moves to the next record
+        }
+        fclose(fp); // closes the text file
+        return(1);
+    }
+
     return(0);
 }
 
@@ -606,6 +579,33 @@ Meio* readrecords_Meio() {
         }
 
         fclose(fp); // Close the binary file
+    }
+    return(meios);
+}
+
+//
+Meio* readrecords_Meio_txt() {
+    int code, idclient, status, available;
+    float bat, aut, cost;
+    char type[50], loc[50];
+    // creating variables to keep the information of the records in the text file
+    FILE* fp = fopen("../data/Text_Files/Records_Meio.txt","r"); // opens the "Records_Meio" text file
+    Meio* meios = NULL; // creates a new NULL linked list
+    
+    if (fp != NULL) { // checks if the text file is empty
+        char line[1024];
+        // the fgets function is used to read a line of text from a file and store it in a character buffer. 
+        // the first argument is a pointer to the buffer that will store the line read.
+        // the second argument is the buffer size. In this case, sizeof(line) returns the size of the line buffer in bytes.
+        // the third argument is a pointer to the file from which the line is to be read.
+        while (fgets(line, sizeof(line), fp))
+        {
+            // returns the information of each record and gives them to the linked list
+            sscanf(line, "%d;%[^;];%f;%f;%f;%[^;];%d;%d\n", &code, type, &bat, &aut, &cost, loc, &status, &available);
+            meios = insertNewRecord_Meio(meios, type, bat, aut, cost, fromGeocodeToLocation(loc), status, available);
+            // insert the records in the linked list
+        }
+        fclose(fp);
     }
     return(meios);
 }
@@ -670,7 +670,7 @@ Client* insertNewRecord_Client(Client* start, char name[100],
         client->birthDate.month = bm;
         client->birthDate.year = by;
         client->phoneNumber = phn;
-        strcpy(client->address, addr);
+        strcpy(client->address, fromLocationToGeocode(addr));
         client->nif = nif;
         client->balance = balance;
         strcpy(client->email, email);
@@ -777,7 +777,7 @@ void listAvailableRecords_Client(Client* start) {
         if (start->available == 1) {
             printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
                 start->id, start->name, start->birthDate.day, start->birthDate.month, 
-                start->birthDate.year, start->phoneNumber, start->address, start->nif, 
+                start->birthDate.year, start->phoneNumber, fromGeocodeToLocation(start->address), start->nif, 
                 start->balance, start->email, start->password);
         }
         start = start->next; // the record being read by the loop and passed to the next record
@@ -790,7 +790,7 @@ void listUnavailableRecords_Client(Client* start) {
         if (start->available == 0) {
             printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
                 start->id, start->name, start->birthDate.day, start->birthDate.month, 
-                start->birthDate.year, start->phoneNumber, start->address, start->nif, 
+                start->birthDate.year, start->phoneNumber, fromGeocodeToLocation(start->address), start->nif, 
                 start->balance, start->email, start->password);
         }
         start = start->next; // the record being read by the loop and passed to the next record
@@ -918,7 +918,7 @@ Client* editRecord_Client(Client* start, int id, char name[100],
                 aux->birthDate.month = bm;
                 aux->birthDate.year = by;
                 aux->phoneNumber = phn;
-                strcpy(aux->address, addr);
+                strcpy(aux->address, fromLocationToGeocode(addr));
                 aux->nif = nif;
                 strcpy(aux->email, email);
                 strcpy(aux->password, pass);
@@ -958,6 +958,30 @@ int saveRecords_Client(Client* start)
 /**
  * @brief 
  * 
+ * @param start 
+ * @return int 
+ */
+int saveRecords_Client_txt(Client* start) {
+    FILE* fp = fopen("../data/Text_Files/Records_Client.txt", "w");
+    if (fp != NULL)
+    {
+        Client* aux = start;
+        while (aux != NULL)
+        {
+            fprintf(fp, "%d;%s;%.2d-%.2d-%.4d;%.9d;%s;%.9d;%f;%s;%s;%d\n", aux->id, aux->name, aux->birthDate.day, 
+            aux->birthDate.month, aux->birthDate.year, aux->phoneNumber, aux->address, 
+            aux->nif, aux->balance, aux->email, aux->password, aux->available);
+            aux = aux->next;
+        }
+        fclose(fp);
+        return(1);
+    }
+    else return(0);
+}
+
+/**
+ * @brief 
+ * 
  * @return Meio* 
  */
 // reads the content of the "Records_Client" and gives it to the Client linked list
@@ -976,12 +1000,38 @@ Client* readrecords_Client() {
             // Insert the read record into the linked list
             clients = insertNewRecord_Client(clients, novo->name, novo->birthDate.day, 
                 novo->birthDate.month, novo->birthDate.year, novo->phoneNumber, 
-                novo->address, novo->nif, novo->balance, novo->email, novo->password, novo->available);
+                fromGeocodeToLocation(novo->address), novo->nif, novo->balance, novo->email, novo->password, novo->available);
         }
 
         fclose(fp); // Close the binary file
     }
     return(clients);
+}
+
+/**
+ * @brief 
+ * 
+ * @return Client* 
+ */
+Client* readrecords_Client_txt() {
+    int id, phn, nif, bd, bm, by, available;
+    float balance;
+    char name[50], addr[50], email[50], pass[20];
+    FILE* fp = fopen("../data/Text_Files/Records_Client.txt","r");
+    Client* client = NULL;
+    
+    if (fp != NULL) {
+        char line[1024];
+        while (fgets(line, sizeof(line), fp))
+        {
+            sscanf(line, "%d;%[^;];%d-%d-%d;%d;%[^;];%d;%f;%[^;];%[^;];%d\n", &id, 
+            name, &bd, &bm, &by, &phn, addr, &nif, &balance, email, pass, &available);
+            client = insertNewRecord_Client(client, name, bd, bm, by, phn, 
+                fromGeocodeToLocation(addr), nif, balance, email, pass, available);
+        }
+        fclose(fp);
+    }
+    return(client);
 }
 
 /**
@@ -1402,8 +1452,10 @@ resMeios* bookMeio(resMeios* head, struct periodDateTime startDateTime, struct p
             newRes->available = available;
             newRes->next = NULL;
 
-            // updates the 'status' field of Meio to 1, so now it becomes booked
-            meio->status = 1;
+            if (available == 1) {  
+                meio->status = 1; // updates the 'status' field of Meio to 1, so now it becomes booked
+            } 
+            else meio->status = 0; // updates the 'status' field of Meio to 0, so now it becomes available to booking
 
             // Add the new reservation to the ResMeios linked list
             if (head == NULL) {
@@ -1428,8 +1480,7 @@ resMeios* bookMeio(resMeios* head, struct periodDateTime startDateTime, struct p
  * @return Meio* 
  */
 // cancels the reservation of the record, by changing the record status to 0
-resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTime) {
-    
+resMeios* cancelbookMeio(resMeios* head, Meio* meios, int id, struct periodDateTime endDateTime) {
     float totalCost = 0.0, timediff = 0.0;
 
     if (head == NULL) {
@@ -1448,6 +1499,10 @@ resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTi
             aux->totalCost = calculateTotalCost(aux, id, timediff);
             aux->clients->balance = (aux->clients->balance - aux->totalCost);
             aux->available = 0;
+            
+            aux->meios->status = 0;
+
+            //aux->meios = NULL ????????
         }
         aux = aux->next;
     }
@@ -1550,7 +1605,7 @@ void listClientBookingRecords(resMeios* head, int idClient) {
 // 
 void listCancelledBookingRecords(resMeios* head, int idClient) {
     while (head != NULL) { // goes through the linked list until it finds the last record
-        if ((head->meios->status == 1) && (head->clients->id == idClient) && (head->available == 0)) { // finds the record containing the given id 
+        if ((head->clients->id == idClient) && (head->available == 0)) { // finds the record containing the given id 
             // but only if it's was booked by the logged in client
             printf("\n|     %-11d %-0.2d-%-0.02d-%-10.04d %-0.02d:%-11.02d %-0.2d-%-0.02d-%-10.04d %-0.02d:%-9.02d %-20s %-25s %-16.2f %-11.2f   |", head->id, 
                 head->bookDate.date.day, head->bookDate.date.month, head->bookDate.date.year,

@@ -610,7 +610,7 @@ Manager* removeRecord_Manager(Manager* start, int id);
  * @return resMeios* 
  */
 // this function scrolls through the linked list and cancels the reservation of the record indicated by the user
-resMeios* cancelbookMeio(resMeios* head, int id, struct periodDateTime endDateTime);
+resMeios* cancelbookMeio(resMeios* head, Meio* meios, int id, struct periodDateTime endDateTime);
 
 #pragma endregion
 
@@ -761,8 +761,11 @@ Manager* editRecord_Manager(Manager* start, int id, char name[100], int bd,
  * @param start 
  * @return int 
  */
-// Function that saves records of type Meio in a text file
+// Function that saves records of type Meio in a binary file
 int saveRecords_Meio(Meio* start);
+
+// Function that saves records of type Meio in a text file
+int saveRecords_Meio_txt(Meio* start);
 
 /**
  * @brief 
@@ -773,14 +776,20 @@ int saveRecords_Meio(Meio* start);
 // Function that saves records of type Client in a text file
 int saveRecords_Client(Client* start);
 
+// Function that saves records of type Client in a text file
+int saveRecords_Client_txt(Client* start);
+
 /**
  * @brief 
  * 
  * @param start 
  * @return int 
  */
-// Function that saves records of type Manager in a text file
+// Function that saves records of type Manager in a binary file
 int saveRecords_Manager(Manager* start);
+
+// Function that saves records of type Manager in a text file
+int saveRecords_Manager_txt(Manager* start);
 
 /**
  * @brief 
@@ -803,6 +812,9 @@ int saveRecords_Book(resMeios* head);
 // Function that reads records of type Meio from a binary file
 Meio* readrecords_Meio();
 
+// Function that reads records of type Meio from a text file
+Meio* readrecords_Meio_txt();
+
 /**
  * @brief 
  * 
@@ -811,6 +823,9 @@ Meio* readrecords_Meio();
 // Function that reads records of type Client from a binary file
 Client* readrecords_Client();
 
+// Function that reads records of type Client from a text file
+Client* readrecords_Client_txt();
+
 /**
  * @brief 
  * 
@@ -818,6 +833,9 @@ Client* readrecords_Client();
  */
 // Function that reads records of type Manager from a binary file
 Manager* readrecords_Manager();
+
+// Function that reads records of type Manager from a text file
+Manager* readrecords_Manager_txt();
 
 /**
  * @brief 

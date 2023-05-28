@@ -1,6 +1,5 @@
-///calha.recodificado.juros
-///acha.topete.ervilhas
-///somas.rosnou.mornos
-///isca.assine.esguio
-///maca.sentem.tornam
-///dera.espiou.afeto
+Braga
+Porto
+Lisboa
+Odivelas
+Aveiro

@@ -1,6 +1,5 @@
-1;Bicicleta;53.630001;24.530001;63.240002;///calha.recodificado.juros;0;1
-2;teste;1.000000;1.000000;1.000000;///dera.espiou.afeto;0;1
-3;Mota;53.349998;25.356001;35.529999;///acha.topete.ervilhas;0;1
-4;Test1;1.000000;1.000000;1.000000;///somas.rosnou.mornos;0;0
-5;TEstar444;4.000000;4.000000;4.000000;///acha.topete.ervilhas;0;1
-6;Testar 25;4.000000;5.000000;6.000000;///somas.rosnou.mornos;0;1
+1;Vibe Chopper 3.000;53.630001;24.530001;63.240002;///calha.recodificado.juros;0;1
+2;Vibe Tiger;53.349998;25.356001;35.529999;///acha.topete.ervilhas;0;1
+3;Vibe K10;36.827461;72.372635;21.728373;///calha.recodificado.juros;0;1
+4;Vibe 2.000 S Plus;72.827385;31.283726;31.627361;///maca.sentem.tornam;0;1
+5;She-Jef;52.637264;62.847263;27.948275;///acha.topete.ervilhas;0;1
