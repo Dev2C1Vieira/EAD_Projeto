@@ -468,6 +468,288 @@ int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* manage
 
 #pragma endregion
 
+#pragma region Grafo_List_Menu
+
+/**
+ * @brief 
+ * 
+ * @param meios 
+ * @param clients 
+ * @param managers 
+ * @param resmeios 
+ * @param grafo 
+ * @return int 
+ */
+int showMenuListRecords_Grafo(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
+    int op = 1, result = -2;
+    char vertex[TAM], location[TAM], checkLoc[TAM];
+
+    while (1)
+    {
+        do
+        {
+            clear();
+            reset();
+            red();
+            printf("  ----------------------- Welcome to the Grafo Sub-Menu -----------------------\n");
+            reset();
+            if (op < 1 || op > 7)
+            {
+                printf("\nInvalid Option! [1-7]\n");
+            }
+            yellow();
+            printf("\n  Here you need to choose the option you want to run\n");
+            reset();
+            printf("\n  +-----------------------------------------------------------------------+");
+            printf("\n  |  1. List Vertices!                                                    |");
+            printf("\n  |  2. List Adjacent Vertices!                                           |");
+            printf("\n  |  3. List Meios in a vertex!                                           |");
+            printf("\n  |  4. List Clients in a vertex!                                         |");
+            printf("\n  |  5. List Meios by location!                                           |");
+            printf("\n  |  6. List Clients by location!                                         |");
+            printf("\n  |  7. Return to Grafo Sub-Menu!                                         |");
+            printf("\n  +-----------------------------------------------------------------------+");
+            red();
+            printf("\n\n    Choose an Option: ");
+            reset();
+            scanf("%d", &op);
+            flushstdin();
+            reset();
+        } while (op < 1 || op > 7);
+        clear();
+        switch (op)
+        {
+        case 1:
+            // List Vertices
+            clear();
+            red();
+            printf("\nTable containing the vertices of the Grafo.\n");
+            // Table Construction
+            yellow();
+            printf("\n+-------------------------------+");
+            printf("\n|     GRAFO VERTEX              |");
+            printf("\n+-------------------------------+");
+            reset();
+            listGrafoVertices(grafo);
+            printf("\n+-------------------------------+");
+            printf("\n\nTotal sum of vertices");
+            red();
+            // this function return the amount of vertices
+            printf(" %d\n", countGrafoVertices(grafo));
+            reset();
+            pause();
+            break;
+        case 2:
+            // List Adjacent Vertices
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the geocode of the vertex: ");
+            getstring(vertex);
+
+            if (!existVertex(grafo, vertex)) {
+                red();
+                printf("\n\nThe vertex");
+                yellow();
+                printf(" %s ", vertex);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to list it's adjacents!");
+                reset();
+            }
+            else {
+                clear();
+                red();
+                printf("\nTable containing the Adjacents records of the vertex.\n");
+                // Table Construction
+                yellow();
+                printf("\n+-------------------------------------------------------+");
+                printf("\n|     ADJACENT VERTICE                  WEIGHT(M)       |");
+                printf("\n+-------------------------------------------------------+");
+                reset();
+                listAdjacentsInAVertex(grafo, vertex);
+                printf("\n+-------------------------------------------------------+");
+                printf("\n\nTotal sum of adjacents vertices of");
+                yellow();
+                printf(" %s:", vertex);
+                red();
+                // this function return the amount of adjacents vertices
+                printf(" %d\n", countAdjacentsInAVertex(grafo, vertex));
+                reset();   
+            }
+            pause();
+            break;
+        case 3:
+            // List Meios in a vertex
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the geocode of the vertex: ");
+            getstring(vertex);
+
+            if (!existVertex(grafo, vertex)) {
+                red();
+                printf("\n\nThe vertex");
+                yellow();
+                printf(" %s ", vertex);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to list it's meios!");
+                reset();
+            }
+            else {
+                clear();
+                red();
+                printf("\nTable containing the Meios records of the vertex.\n");
+                // Table Construction
+                yellow();
+                printf("\n+-----------------------------------------------------------------------------------------------+");
+                printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        LOCATION            |");
+                printf("\n+-----------------------------------------------------------------------------------------------+");
+                reset();
+                listMeiosInAVertex(grafo, vertex);
+                printf("\n+-----------------------------------------------------------------------------------------------+");
+                printf("\n\nTotal sum of meios in");
+                yellow();
+                printf(" %s:", vertex);
+                red();
+                // this function return the amount of adjacents vertices
+                printf(" %d\n", countMeiosInAVertex(grafo, vertex));
+                reset();   
+            }
+            pause();
+            break;
+        case 4:
+            // List Clients in a vertex
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the geocode of the vertex: ");
+            getstring(vertex);
+
+            if (!existVertex(grafo, vertex)) {
+                red();
+                printf("\n\nThe vertex");
+                yellow();
+                printf(" %s ", vertex);
+                reset();
+                red();
+                printf("doesn't exist!");
+                printf("\n\nUnable to list it's clients!");
+                reset();
+            }
+            else {
+                clear();
+                red();
+                printf("\nTable containing the Clients records of the vertex.\n");
+                // Table Construction
+                yellow();
+                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+                printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS              NIF             BALANCE       EMAIL                         PASSWORD       |");
+                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+                reset();
+                listClientsInAVertex(grafo, vertex);
+                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+                printf("\n\nTotal sum of clients in");
+                yellow();
+                printf(" %s:", vertex);
+                red();
+                // this function return the amount of adjacents vertices
+                printf(" %d\n", countClientsInAVertex(grafo, vertex));
+                reset();   
+            }
+            pause();
+            break;
+        case 5:
+            // List Meios by location
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the location you wish to list Meios From: ");
+            getstring(location);
+
+            strcpy(checkLoc, fromLocationToGeocode(location));
+            if (strcmp(checkLoc, "Null") == 0) {
+                red();
+                printf("\n\nUnknown location");
+                yellow();
+                printf(" %s ", location);
+                reset();
+                red();
+                printf("\n\nUnable to create new vertex!");
+                reset();
+            }
+            else {
+                clear();
+                red();
+                printf("\nTable containing the Meios listed in a certain location.\n");
+                // Table Construction
+                yellow();
+                printf("\n+-----------------------------------------------------------------------------------------------+");
+                printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        LOCATION            |");
+                printf("\n+-----------------------------------------------------------------------------------------------+");
+                reset();
+                listMeiosByGeocode(meios, location);
+                printf("\n+-----------------------------------------------------------------------------------------------+");
+                printf("\n\nTotal sum of records:");
+                red();
+                // this function return the amount of records in the Linked List Meios
+                printf(" %d\n", countMeiosByGeocode(meios, location));
+                reset();
+            }
+            pause();   
+            break;
+        case 6:
+            // List Clients by location
+            yellow();
+            printf("Enter the needed information!\n\n");
+            reset();
+            printf("Enter the location you wish to list Clients From: ");
+            getstring(location);
+
+            strcpy(checkLoc, fromLocationToGeocode(location));
+            if (strcmp(checkLoc, "Null") == 0) {
+                red();
+                printf("\n\nUnknown location");
+                yellow();
+                printf(" %s ", location);
+                reset();
+                red();
+                printf("\n\nUnable to create new vertex!");
+                reset();
+            }
+            else {
+                clear();
+                red();
+                printf("\nTable containing the Clients listed in a certain location.\n");
+                // Table Construction
+                yellow();
+                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+                printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS              NIF             BALANCE       EMAIL                         PASSWORD       |");
+                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+                reset();
+                listClientsByGeocode(clients, location);
+                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+                printf("\n\nTotal sum of records of type Client:");
+                red();
+                // this function return the amount of records in the Linked List Meios
+                printf(" %d\n", countClientsByGeocode(clients, location));
+                reset();  
+            }
+            pause();
+            break;
+        case 7:
+             // Return to Grafo Sub-Menu
+            showSubMenu_Manager_Grafos(meios, clients, managers, resmeios, grafo);
+            break;
+        }
+    }
+}
+
+#pragma endregion
+
 #pragma region Menu_Functions
 
 /**
@@ -1566,22 +1848,22 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             red();
             printf("  ----------------------- Welcome to the Grafo Sub-Menu -----------------------\n");
             reset();
-            if (op < 1 || op > 8)
+            if (op < 1 || op > 6)
             {
-                printf("\nInvalid Option! [1-8]\n");
+                printf("\nInvalid Option! [1-6]\n");
             }
             yellow();
             printf("\n  Here you need to choose the option you want to run\n");
             reset();
             printf("\n  +-----------------------------------------------------------------------+");
+            //printf("\n  |  1. Delete Vertex!                                                    |");
+            //printf("\n  |  1. Create Adjacent!                                                  |");
             printf("\n  |  1. Create Vertex!                                                    |");
             printf("\n  |  2. Create Edge!                                                      |");
-            printf("\n  |  3. Add Meios to Vertex!                                              |");
-            printf("\n  |  4. Add Clients to Vertex!                                            |");
-            printf("\n  |  5. List Adjacent Vertices!                                           |");
-            printf("\n  |  6. List Meios by location!                                           |");
-            printf("\n  |  7. List Clients by location!                                         |");
-            printf("\n  |  8. Return to Main Menu!                                              |");
+            printf("\n  |  3. List Records Menu!                                                |");
+            printf("\n  |  4. Add Meios to Vertex!                                              |");
+            printf("\n  |  5. Add Clients to Vertex!                                            |");
+            printf("\n  |  6. Return to Main Menu!                                              |");
             printf("\n  +-----------------------------------------------------------------------+");
             red();
             printf("\n\n    Choose an Option: ");
@@ -1589,7 +1871,7 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             scanf("%d", &op);
             flushstdin();
             reset();
-        } while (op < 1 || op > 8);
+        } while (op < 1 || op > 6);
         clear();
         switch (op)
         {
@@ -1659,6 +1941,10 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             pause();
             break;
         case 3:
+            // List Records Menu
+            showMenuListRecords_Grafo(meios, clients, managers, resmeios, grafo);
+            break;
+        case 4:
             // Add Meios to Vertex
             yellow();
             printf("Enter the needed information!\n\n");
@@ -1706,7 +1992,7 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             }
             pause();
             break;
-        case 4:
+        case 5:
             // Add Clients to Vertex
             yellow();
             printf("Enter the needed information!\n\n");
@@ -1753,127 +2039,7 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
             }
             pause();
             break;
-        case 5:
-            // List Adjacent Vertices
-            yellow();
-            printf("Enter the needed information!\n\n");
-            reset();
-            printf("Enter the geocode of the vertex: ");
-            getstring(vertex);
-
-            if (!existVertex(grafo, vertex)) {
-                red();
-                printf("\n\nThe vertex");
-                yellow();
-                printf(" %s ", vertex);
-                reset();
-                red();
-                printf("doesn't exist!");
-                printf("\n\nUnable to list adjacents!");
-                reset();
-            }
-            else {
-                clear();
-                red();
-                printf("\nTable containing the Adjacents records of the vertex.\n");
-                // Table Construction
-                yellow();
-                printf("\n+------------------------------------------------------+");
-                printf("\n|     ADJACENT VERTICE                  WEIGHT(M)      |");
-                printf("\n+------------------------------------------------------+");
-                reset();
-                listAdjacentsByGeocode(grafo, vertex);
-                printf("\n+------------------------------------------------------+");
-                printf("\n\nTotal sum of adjacents vertices of");
-                yellow();
-                printf(" %s:", vertex);
-                red();
-                // this function return the amount of adjacents vertices
-                printf(" %d\n", countAdjacentsByGeocode(grafo, vertex));
-                reset();   
-            }
-            pause();
-            break;
         case 6:
-            // List Meios by location
-            yellow();
-            printf("Enter the needed information!\n\n");
-            reset();
-            printf("Enter the location you wish to list Meios From: ");
-            getstring(location);
-
-            strcpy(checkLoc, fromLocationToGeocode(location));
-            if (strcmp(checkLoc, "Null") == 0) {
-                red();
-                printf("\n\nUnknown location");
-                yellow();
-                printf(" %s ", location);
-                reset();
-                red();
-                printf("\n\nUnable to create new vertex!");
-                reset();
-            }
-            else {
-                clear();
-                red();
-                printf("\nTable containing the Meios listed in a certain location.\n");
-                // Table Construction
-                yellow();
-                printf("\n+-----------------------------------------------------------------------------------------------+");
-                printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        LOCATION            |");
-                printf("\n+-----------------------------------------------------------------------------------------------+");
-                reset();
-                listMeiosByGeocode(meios, location);
-                printf("\n+-----------------------------------------------------------------------------------------------+");
-                printf("\n\nTotal sum of records:");
-                red();
-                // this function return the amount of records in the Linked List Meios
-                printf(" %d\n", countMeiosByGeocode(meios, location));
-                reset();
-                
-            }
-            pause();       
-            break;
-        case 7:
-            // List Clients by location
-            yellow();
-            printf("Enter the needed information!\n\n");
-            reset();
-            printf("Enter the location you wish to list Clients From: ");
-            getstring(location);
-
-            strcpy(checkLoc, fromLocationToGeocode(location));
-            if (strcmp(checkLoc, "Null") == 0) {
-                red();
-                printf("\n\nUnknown location");
-                yellow();
-                printf(" %s ", location);
-                reset();
-                red();
-                printf("\n\nUnable to create new vertex!");
-                reset();
-            }
-            else {
-                clear();
-                red();
-                printf("\nTable containing the Clients listed in a certain location.\n");
-                // Table Construction
-                yellow();
-                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-                printf("\n|    ID      NAME                 BIRTHDATE      PHONE NUMBER       ADDRESS              NIF             BALANCE       EMAIL                         PASSWORD       |");
-                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-                reset();
-                listClientsByGeocode(clients, location);
-                printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-                printf("\n\nTotal sum of records of type Client:");
-                red();
-                // this function return the amount of records in the Linked List Meios
-                printf(" %d\n", countClientsByGeocode(clients, location));
-                reset();  
-            }
-            pause();
-            break;
-        case 8:
             // Return to Main Menu
             showSubMenu_Manager(meios, clients, managers, resmeios, grafo);
             break;
@@ -1904,7 +2070,7 @@ int main()
 
     meios = readrecords_Meio();
 
-    clients = readrecords_Client_txt();
+    clients = readrecords_Client();
 
     managers = readrecords_Manager();
 

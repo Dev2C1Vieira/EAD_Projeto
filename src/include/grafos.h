@@ -83,7 +83,16 @@ int addClientsToVertex(Grafo* grafo, Client* clients, char loc[], int idClient);
 #pragma region Count_Records_Functions
 
 //
-int countAdjacentsByGeocode(Grafo* grafo, char loc[]);
+int countGrafoVertices(Grafo* grafo);
+
+//
+int countAdjacentsInAVertex(Grafo* grafo, char loc[]);
+
+//
+int countMeiosInAVertex(Grafo* grafo, char loc[]);
+
+//
+int countClientsInAVertex(Grafo* grafo, char loc[]);
 
 //
 int countMeiosByGeocode(Meio* meios, char loc[]);
@@ -96,7 +105,16 @@ int countClientsByGeocode(Client* clients, char loc[]);
 #pragma region List_Records_Functions
 
 //
-void listAdjacentsByGeocode(Grafo* grafo, char loc[]);
+void listGrafoVertices(Grafo* grafo);
+
+//
+void listAdjacentsInAVertex(Grafo* grafo, char loc[]);
+
+//
+void listMeiosInAVertex(Grafo* grafo, char loc[]);
+
+//
+void listClientsInAVertex(Grafo* grafo, char loc[]);
 
 //
 void listMeiosByGeocode(Meio* meios, char loc[]);
@@ -237,6 +255,13 @@ int Manager_Clients_Loop(Meio* meios, Client* clients, Manager* managers, resMei
  */
 // 
 int showSubSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo);
+
+#pragma endregion
+
+#pragma region Grafo_List_Menu
+
+//
+int showMenuListRecords_Grafo(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo);
 
 #pragma endregion
 

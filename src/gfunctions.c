@@ -231,7 +231,7 @@ int addMeiosToVertex(Grafo* grafo, Meio* meios, char loc[], int idMeio) {
         if (strcmp(grafo->vertex, fromLocationToGeocode(loc)) == 0) {
             while (meio != NULL) {
                 if (meio->code == idMeio) {
-                    if (strcmp(grafo->vertex, fromLocationToGeocode(meio->location)) == 0) {
+                    if (strcmp(grafo->vertex, meio->location) == 0) {
                         Meio* newMeio = (Meio*)malloc(sizeof(Meio));
 
                         strcpy(newMeio->type, meio->type);
@@ -324,11 +324,26 @@ int addClientsToVertex(Grafo* grafo, Client* clients, char loc[], int idClient) 
  * @brief 
  * 
  * @param grafo 
+ * @return int 
+ */
+int countGrafoVertices(Grafo* grafo) {
+    int counter = 0;
+
+    while (grafo != NULL) {
+        counter++;
+        grafo = grafo->next;
+    }
+    return(counter);
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
  * @param vertex 
  * @return int 
  */
-//
-int countAdjacentsByGeocode(Grafo* grafo, char loc[]) {
+int countAdjacentsInAVertex(Grafo* grafo, char loc[]) {
     int counter = 0;
 
     while (grafo != NULL) {
@@ -346,7 +361,45 @@ int countAdjacentsByGeocode(Grafo* grafo, char loc[]) {
     return(counter);
 }
 
-//
+
+int countMeiosInAVertex(Grafo* grafo, char loc[]) {
+    int counter = 0;
+
+    while (grafo != NULL) {
+        if (strcmp(grafo->vertex, fromLocationToGeocode(loc)) == 0) {
+            Meio* current = grafo->meio;
+
+            while (current != NULL) {
+                counter++; // 
+                current = current->next;
+            }
+            return(counter);
+        }
+        grafo = grafo->next;
+    }
+    return(counter);
+}
+
+
+int countClientsInAVertex(Grafo* grafo, char loc[]) {
+    int counter = 0;
+
+    while (grafo != NULL) {
+        if (strcmp(grafo->vertex, fromLocationToGeocode(loc)) == 0) {
+            Client* current = grafo->client;
+
+            while (current != NULL) {
+                counter++; // 
+                current = current->next;
+            }
+            return(counter);
+        }
+        grafo = grafo->next;
+    }
+    return(counter);
+}
+
+
 int countMeiosByGeocode(Meio* meios, char loc[]) {
     int counter = 0;
 
@@ -357,7 +410,7 @@ int countMeiosByGeocode(Meio* meios, char loc[]) {
     return(counter);
 }
 
-//
+
 int countClientsByGeocode(Client* clients, char loc[]) {
     int counter = 0;
 
@@ -376,22 +429,110 @@ int countClientsByGeocode(Client* clients, char loc[]) {
  * @brief 
  * 
  * @param grafo 
+ */
+void listGrafoVertices(Grafo* grafo) {
+    Grafo* grafoList = grafo;
+
+    if (grafoList == NULL) {
+        printf("\n|                               |");
+        printf("\n|     There are no vertices!    |");
+        printf("\n|                               |");
+    }  
+
+    while (grafoList != NULL) {
+        // prints the informations of the record in the console
+        printf("\n|     %-22s    |", fromGeocodeToLocation(grafoList->vertex));
+        grafoList = grafoList->next;
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
  * @param vertex 
  */
-// 
-void listAdjacentsByGeocode(Grafo* grafo, char loc[]) {
+void listAdjacentsInAVertex(Grafo* grafo, char loc[]) {
     Grafo* current = grafo;
     
     while (current != NULL) {
         if (strcmp(current->vertex, fromLocationToGeocode(loc)) == 0) {
             Adjacent* currentAdj = current->adjacent;
-
-            if (currentAdj == NULL) printf("There are no Meios added to this vertex!"); 
+    
+            if (currentAdj == NULL) {
+                printf("\n|                                                       |");
+                printf("\n| There are no adjacents vertices added to this vertex! |");
+                printf("\n|                                                       |");
+            }  
 
             while (currentAdj != NULL) {
                 // prints the informations of the record in the console
-                printf("\n|     %-33s %-11.2f    |", fromGeocodeToLocation(currentAdj->vertex), currentAdj->weight);
+                printf("\n|     %-33s %-12.2f    |", fromGeocodeToLocation(currentAdj->vertex), currentAdj->weight);
                 currentAdj = currentAdj->next;
+            }
+        }
+        current = current->next;
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param loc 
+ */
+void listMeiosInAVertex(Grafo* grafo, char loc[]) {
+    Grafo* current = grafo;
+
+    while (current != NULL) {
+        if (strcmp(current->vertex, fromLocationToGeocode(loc)) == 0) {
+            Meio* currentMeio = current->meio;
+    
+            if (currentMeio == NULL) {
+                printf("\n|                                                                                               |");
+                printf("\n|                           There are no Meios added to this vertex!                            |");
+                printf("\n|                                                                                               |");
+            } 
+            
+            while (currentMeio != NULL) {
+                // 
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s   |", currentMeio->code, currentMeio->type, 
+                    currentMeio->battery, currentMeio->autonomy, currentMeio->cost, fromGeocodeToLocation(currentMeio->location));
+
+                currentMeio = currentMeio->next;
+            }
+        }
+        current = current->next;
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param loc 
+ */
+void listClientsInAVertex(Grafo* grafo, char loc[]) {
+    Grafo* current = grafo;
+
+    while (current != NULL) {
+        if (strcmp(current->vertex, fromLocationToGeocode(loc)) == 0) {
+            Client* currentClient = current->client;
+                                        
+            if (currentClient == NULL) {
+                printf("\n|                                                                                                                                                                   |");
+                printf("\n|                                                            There are no Clients added to this vertex!                                                             |"); 
+                printf("\n|                                                                                                                                                                   |");
+            }
+            
+            while (currentClient != NULL) {
+                // 
+                printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
+                    currentClient->id, currentClient->name, currentClient->birthDate.day, currentClient->birthDate.month, 
+                    currentClient->birthDate.year, currentClient->phoneNumber, fromGeocodeToLocation(currentClient->address), currentClient->nif, 
+                    currentClient->balance, currentClient->email, currentClient->password);
+
+                currentClient = currentClient->next;
             }
         }
         current = current->next;
@@ -404,22 +545,38 @@ void listAdjacentsByGeocode(Grafo* grafo, char loc[]) {
  * @param grafo 
  * @param vertex 
  */
-// 
 void listMeiosByGeocode(Meio* meios, char loc[]) {
+    int count = 0;
+    
     while (meios != NULL) {
         if (strcmp(meios->location, fromLocationToGeocode(loc)) == 0) {
+            count++;
             // 
             printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s   |", meios->code, meios->type, 
                     meios->battery, meios->autonomy, meios->cost, fromGeocodeToLocation(meios->location));
         }
         meios = meios->next;
     }
+
+    if (count == 0) {
+        printf("\n|                                                                                               |");
+        printf("\n|                          There are no Meios listed in this location!                          |");
+        printf("\n|                                                                                               |");
+    }
 }
 
-//
+/**
+ * @brief 
+ * 
+ * @param clients 
+ * @param loc 
+ */
 void listClientsByGeocode(Client* clients, char loc[]) {
+    int count = 0;
+    
     while (clients != NULL) {
         if (strcmp(clients->address, fromLocationToGeocode(loc)) == 0) {
+            count++;
             // 
             printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
                 clients->id, clients->name, clients->birthDate.day, clients->birthDate.month, 
@@ -427,6 +584,12 @@ void listClientsByGeocode(Client* clients, char loc[]) {
                 clients->balance, clients->email, clients->password);
         }
         clients = clients->next;
+    }
+
+    if (count == 0) {
+        printf("\n|                                                                                                                                                                   |");
+        printf("\n|                                                           There are no Clients listed in this location!                                                           |"); 
+        printf("\n|                                                                                                                                                                   |");
     }
 }
 
