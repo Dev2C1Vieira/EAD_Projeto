@@ -103,13 +103,20 @@ int existClientFromLocation(Client* clients, char loc[]) {
     return(0); // location not found in Clients list
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param loc 
+ * @param idClient 
+ * @return int 
+ */
 int isClientInGrafoList(Grafo* grafo, char loc[], int idClient) {
     Grafo* current = grafo;
 
     while (current != NULL) {
         if (strcmp(current->vertex, fromLocationToGeocode(loc)) == 0) {
-            Client* clientsList = grafo->meio;
+            Client* clientsList = grafo->client;
             
             while (clientsList != NULL) {
                 if (clientsList->id == idClient) {
@@ -223,7 +230,15 @@ int createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
 
 #pragma region Add_Records_Functions
 
-// 
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param meios 
+ * @param loc 
+ * @param idMeio 
+ * @return int 
+ */
 int addMeiosToVertex(Grafo* grafo, Meio* meios, char loc[], int idMeio) {
     Meio* meio = meios;
 
@@ -234,6 +249,7 @@ int addMeiosToVertex(Grafo* grafo, Meio* meios, char loc[], int idMeio) {
                     if (strcmp(grafo->vertex, meio->location) == 0) {
                         Meio* newMeio = (Meio*)malloc(sizeof(Meio));
 
+                        newMeio->code = meio->code;   
                         strcpy(newMeio->type, meio->type);
                         newMeio->battery = meio->battery;
                         newMeio->autonomy = meio->autonomy;
@@ -268,7 +284,15 @@ int addMeiosToVertex(Grafo* grafo, Meio* meios, char loc[], int idMeio) {
     return(0);
 }
 
-//
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param clients 
+ * @param loc 
+ * @param idClient 
+ * @return int 
+ */
 int addClientsToVertex(Grafo* grafo, Client* clients, char loc[], int idClient) {
     Client* client = clients;
 
@@ -302,11 +326,11 @@ int addClientsToVertex(Grafo* grafo, Client* clients, char loc[], int idClient) 
                             }
                             // Adds the new record to the end of the linked list
                             lastClient->next = newClient;
-                            return(1); // Indicate successful addition of the client
+                            
                         }
-                    } else {
-                        return(-1); // Indicate that the client's address does not match the vertex
-                    }
+                        return(1); // Indicate successful addition of the client
+                    } 
+                    else return(-1); // Indicate that the client's address does not match the vertex
                 }
                 client = client->next;
             }

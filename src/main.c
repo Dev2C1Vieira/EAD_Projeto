@@ -1835,7 +1835,7 @@ int showSubMenu_Manager_Clients(Meio* meios, Client* clients, Manager* managers,
  */
 // 
 int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
-    int op = 1, result = -2, idMeio, idClient;
+    int op = 1, result = -3, idMeio, idClient;
     char newId[TAM], vOrigin[TAM], vDestiny[TAM], vertex[TAM], location[TAM], checkLoc[TAM];
     float weight = 0.0;
 
@@ -1975,19 +1975,34 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
                 }
                 else {
                     printf("Enter the code of the meio you want to add to the location: ");
-                    scanf("%d", idMeio);
+                    scanf("%d", &idMeio);
 
+                    // tentar arranjar erro de adicionar registro que ja pertence.
                     if (!isMeioInGrafoList(grafo, location, idMeio)) {
                         result = addMeiosToVertex(grafo, meios, location, idMeio);
                         if (result == 1) {
                             saveGrafoMeios_bin(grafo);
                             saveGrafoMeios_txt(grafo);
+                            red();
                             printf("\n\nMeio added to the vertex!");
+                            reset();
                         }
-                        else if (result == -1) printf("\n\nThe meio location is not the same as the vertex!");
-                        else printf("\n\nUnable to add meio to location!");
+                        else if (result == -1) {
+                            red();
+                            printf("\n\nThe meio location is not the same as the vertex!");
+                            reset();
+                        }
+                        else {
+                            red();
+                            printf("\n\nUnable to add meio to location!");
+                            reset();
+                        } 
                     }
-                    else printf("\n\nThis meio is already parte of the location!");
+                    else {
+                        red();
+                        printf("\n\nThis meio is already part of the location!");
+                        reset();
+                    }
                 }
             }
             pause();
@@ -2023,17 +2038,32 @@ int showSubMenu_Manager_Grafos(Meio* meios, Client* clients, Manager* managers, 
                 }
                 else {
                     printf("Enter the id of the client you want to add to the location: ");
-                    scanf("%d", idClient);
+                    scanf("%d", &idClient);
 
                     if (!isClientInGrafoList(grafo, location, idClient)) {
                         result = addClientsToVertex(grafo, clients, location, idClient);
                         if (result == 1) {
                             saveGrafoClients_bin(grafo);
                             saveGrafoClients_txt(grafo);
+                            red();
                             printf("\n\nClient added to location!");
+                            reset();
                         }
-                        else if (result == -1) printf("\n\nThe client location is not the same as the vertex!");
-                        else printf("\n\nUnable to add client to location!");
+                        else if (result == -1) {
+                            red();
+                            printf("\n\nThe client location is not the same as the vertex!");
+                            reset();
+                        }
+                        else {
+                            red();
+                            printf("\n\nUnable to add client to location!");
+                            reset();
+                        }
+                    }
+                    else {
+                        red();
+                        printf("\n\nThis client is already part of the location!");
+                        reset();
                     }
                 }
             }
@@ -2068,19 +2098,30 @@ int main()
     // Empty Linked List of type Grafo
     Grafo* grafo = NULL;
 
-    meios = readrecords_Meio();
+    meios = readrecords_Meio_txt();
 
-    clients = readrecords_Client();
+    clients = readrecords_Client_txt();
 
     managers = readrecords_Manager();
 
     resmeios = readrecords_Book(meios, clients);
 
-    grafo = readGrafo_bin();
+    grafo = readGrafo_txt();
     
     grafo = readAdjacents_txt(grafo);
 
-    //grafo = readGrafoMeios_bin(grafo, meios);
+    //grafo = readGrafoMeios_txt(grafo, meios);
+
+    //grafo = readGrafoClients_txt(grafo, clients);
+
+    // depois de colocar o ponto 3 a funcionar, arranjar o 'readGrafoMeios_txt' e '...//.bin'.
+    addMeiosToVertex(grafo, meios, "Braga", 1);
+    addMeiosToVertex(grafo, meios, "Porto", 2);
+    addMeiosToVertex(grafo, meios, "Braga", 3);
+    addMeiosToVertex(grafo, meios, "Porto", 5);
+
+    //addClientsToVertex(grafo, clients, "Braga", 1);
+    //addClientsToVertex(grafo, clients, "Porto", 2);
 
     showMenu(meios, clients, managers, resmeios, grafo);
 
