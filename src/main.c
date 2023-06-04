@@ -819,8 +819,8 @@ int showMenu(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios
 // depois de resolver, retirar do codigo, o saveRecordsMeio_txt e o readrecords_txt
 int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios* resmeios, Grafo* grafo) {
     int op = 1, cod, id;
-    char type[100];
-    float radious = 0.0;
+    char type[TAM];
+    float radius = 0.0;
 
     int found = 0; // Variable to keep track of whether the type was found
 
@@ -858,8 +858,8 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             printf("\n  |  4. List my available reservations!       |");
             printf("\n  |  5. List my unavailable reservations!     |");
             printf("\n  |  6. Other options!                        |");
-            printf("\n  |  7. Return to Client Login Menu.          |");
-            printf("\n  |  8. List the means of transport!          |");
+            printf("\n  |  7. List the means of transport!          |");
+            printf("\n  |  8. Return to Client Login Menu.          |");
             printf("\n  +-------------------------------------------+");
             red();
             printf("\n\n  Option: ");
@@ -956,7 +956,6 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             reset();
             printf("Enter the id of the reservation you want to unbook: ");
             scanf("%d", &id);
-            //flushstdin();
             if (!existRecord_Booked(resmeios, id)) {
                 red();
                 printf("\n\nThe reservation with the id");
@@ -988,14 +987,6 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
                     saveRecords_Meio_txt(meios);
                     saveRecords_Client(clients);
                     saveRecords_Client_txt(clients);
-                    red();
-                    printf("\n\nA mean containing the code");
-                    yellow();
-                    printf(" %d ", cod);
-                    reset();
-                    red();
-                    printf("was successfully unbooked!");
-                    reset();
                 }
             }
             pause();
@@ -1043,57 +1034,21 @@ int showSubMenu_Client(Meio* meios, Client* clients, Manager* managers, resMeios
             break;
         case 7:
             //
-            clear();
-            showSubSubMenu_Client(meios, clients, managers, resmeios, grafo);
-            break;
-        case 8:
             yellow();
             printf("Enter the needed information!\n\n");
             reset();
             printf("Enter the type of the the Meio u want to drive: ");
             getstring(type);
             printf("Enter the radious ur able to walk: ");
-            scanf("%f", &radious);
-            
-            Meio* aux = meios;
-
-            while (aux != NULL) {
-                if (strcmp(aux->type, type) == 0) {
-                    found = 1; // Set the found variable to true if the type is found
-                    red();
-                    printf("\nTable containing the Meios in a certain radious.\n");
-                    // Table Construction
-                    yellow();
-                    printf("\n+-----------------------------------------------------------------------------------------------+");
-                    printf("\n|    CODE      TYPE                 BATTERY      AUTONOMY       COST        LOCATION            |");
-                    printf("\n+-----------------------------------------------------------------------------------------------+");
-                    reset();
-                    listMeiosByGeocode(grafo, globalClient->address);
-                    //listMeioInACertainRadious(grafo, globalClient->address, type, radious);
-                    printf("\n+-----------------------------------------------------------------------------------------------+");
-                    printf("\n\nTotal sum of accessible records:");
-                    red();
-                    // this function return the amount of records in the Linked List Meios
-                    printf(" %d\n", countNonBookingRecords(aux));
-                    reset();
-                    pause();
-                    break;
-                }
-                aux = aux->next;
-            }
-
-            if (!found) { // Se o tipo não foi encontrado na lista
-                red();
-                printf("\n\nThere aren't any Meios of type");
-                yellow();
-                printf(" %s", type);
-                reset();
-                red();
-                printf("!");
-                printf("\n\nUnable to list Meios!");
-                reset();
-            }
+            scanf("%f", &radius);
+            clear();
+            listMeiosPerRadius(grafo, globalClient->address, type, radius);
             pause();
+            break;
+        case 8:
+            //
+            clear();
+            showSubSubMenu_Client(meios, clients, managers, resmeios, grafo);
             break;
         }
     }
@@ -1159,7 +1114,7 @@ int showSubOthersMenu_Client(Meio* meios, Client* clients, Manager* managers, re
                 reset();
                 printf("\n|    %-7d %-20s %-0.2d-%-0.02d-%-8.4d %-18.09d %-20s %-15.09d %-13.2f %-29s %-11s    |", 
                     globalClient->id, globalClient->name, globalClient->birthDate.day, globalClient->birthDate.month, 
-                    globalClient->birthDate.day, globalClient->phoneNumber, globalClient->address, globalClient->nif, 
+                    globalClient->birthDate.day, globalClient->phoneNumber, fromGeocodeToLocation(globalClient->address), globalClient->nif, 
                     globalClient->balance, globalClient->email, globalClient->password);
                 printf("\n+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
                 pause();

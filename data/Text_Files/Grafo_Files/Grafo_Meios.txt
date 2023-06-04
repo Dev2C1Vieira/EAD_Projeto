@@ -1,5 +1,5 @@
 Braga;NULL
-Porto;2;2;
+Porto;2;
 Odivelas;NULL
 Lisboa;NULL
 Amadora;NULL

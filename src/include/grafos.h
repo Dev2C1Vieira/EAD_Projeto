@@ -13,6 +13,7 @@
 typedef struct Adjacencia_Registo
 {
     char vertex[TAM];
+    int id;
     float weight;
     int visited;
     struct Adjacencia_Registo* next;
@@ -22,6 +23,7 @@ typedef struct Adjacencia_Registo
 typedef struct Grafo_Registo
 {
     char vertex[TAM];
+    int id;
     Meio* meio;
     Client* client;
     Adjacent* adjacent;
@@ -57,6 +59,16 @@ int isClientInGrafoList(Grafo* grafo, char loc[], int idClient);
 
 // 
 Grafo* findVertex(Grafo* grafo, char vertex[]);
+
+#pragma endregion
+
+#pragma region Get_Last_ID_Functions
+
+//
+int getLastVertexId(Grafo* grafo);
+
+//
+int getLastAdjacentId(Grafo* grafo);
 
 #pragma endregion
 
@@ -121,6 +133,53 @@ void listMeiosByGeocode(Meio* meios, char loc[]);
 
 //
 void listClientsByGeocode(Client* clients, char loc[]);
+
+#pragma endregion
+
+#pragma region List_Radius_Functions
+
+//
+void visitedVertex(Grafo* grafo);
+
+// 
+Grafo* findNode(Grafo* grafo, char geocode[]);
+
+// 
+void traverseEdgesDFS(Grafo* node, char type[], float radius, float currentWeight, Grafo* grafo);
+
+// 
+void listMeiosPerRadius(Grafo* grafo, char geocode[], char type[], float radius);
+
+#pragma endregion
+
+#pragma region List_Radius_Functions_2
+
+//
+int numVertices(Grafo* grafo);
+
+//
+char* location(Grafo* grafo, int id);
+
+//
+void meioList(Meio* meio, char loc[], char type[]);
+
+//
+void listMeiosPathAux(Grafo* grafo, Meio* meio, int path[], int currentVertex, char type[]);
+
+//
+void listMeiosPath(Grafo* grafo, Meio* meio, int path[], int currentVertex, int start, char type[]);
+
+//
+int getShortestDistance(int distances[], int visited[], int vertices);
+
+//
+void printPath(Grafo* grafo, int path[], int currentVertex);
+
+//
+void printShortestPath(Grafo* grafo, int path[], int distances[], int start, int end);
+
+//
+void findBoundaryPaths(Grafo* grafo, Meio* meio, int start, int boundry, char type[]);
 
 #pragma endregion
 

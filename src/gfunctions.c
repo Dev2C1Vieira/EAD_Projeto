@@ -5,6 +5,8 @@
 #include <time.h>
 #include "./include/grafos.h"
 
+#define MIN 100000000000
+
 
 #pragma region Exist_Records_Functions
 
@@ -21,6 +23,11 @@ int existVertex(Grafo* grafo, char vertex[]) {
         grafo = grafo->next; 
     }
     return(0);
+}
+
+
+int existVertexID(Grafo* grafo, int start) {
+
 }
 
 /**
@@ -70,10 +77,8 @@ int existMeioFromLocation(Meio* meios, char loc[]) {
   * @return int 
   */
 int isMeioInGrafoList(Grafo* grafo, char loc[], int idMeio) {
-    Grafo* current = grafo;
-
-    while (current != NULL) {
-        if (strcmp(current->vertex, fromLocationToGeocode(loc)) == 0) {
+    while (grafo != NULL) {
+        if (strcmp(grafo->vertex, fromLocationToGeocode(loc)) == 0) {
             Meio* meiosList = grafo->meio;
             
             while (meiosList != NULL) {
@@ -83,7 +88,7 @@ int isMeioInGrafoList(Grafo* grafo, char loc[], int idMeio) {
                 meiosList = meiosList->next;
             }
         }
-        current = current->next;
+        grafo = grafo->next;
     }
     return(0); // this meio is not yet part of this vertex meios list
 }
@@ -149,6 +154,51 @@ Grafo* findVertex(Grafo* grafo, char vertex[]) {
 
 #pragma endregion
 
+#pragma region Get_Last_ID_Functions
+
+/**
+ * @brief Get the Last Vertex Id object
+ * 
+ * @param grafo 
+ * @return int 
+ */
+int getLastVertexId(Grafo* grafo) {
+    if (grafo == NULL) {
+        // the list is empty, so there is no id to increment, so return 0.
+        return(0);
+    }
+    else {
+        // scrolls through the list to the last record
+        Grafo* last = grafo;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        // returns the code of the last record, so it can be incremented
+        return(last->id);
+    }
+}
+
+
+int getLastAdjacentId(Grafo* grafo) {
+    while (grafo != NULL) {
+        if (grafo->adjacent == NULL) {
+            // the list is empty, so there is no id to increment, so return 0.
+            return(0);
+        }
+        else {
+            // scrolls through the list to the last record
+            Adjacent* last = grafo->adjacent;
+            while (last->next != NULL) {
+                last = last->next;
+            }
+            // returns the code of the last record, so it can be incremented
+            return(last->id);
+        }
+    }
+}
+
+#pragma endregion
+
 #pragma region Create_Records_Functions
 
 /**
@@ -162,8 +212,12 @@ Grafo* findVertex(Grafo* grafo, char vertex[]) {
 // 
 Grafo* createVertex(Grafo* grafo, char newID[]) {
     Grafo* new = malloc(sizeof(struct Grafo_Registo));
+
+    int lastID = getLastVertexId(grafo);
+
     if (new != NULL) {
         strcpy(new->vertex, fromLocationToGeocode(newID));
+        new->id = (lastID)+1;
         // Connects the Meio linked list to the meio field of the new vertex
         new->meio = NULL;
         //new->client = NULL;
@@ -197,11 +251,15 @@ Grafo* createVertex(Grafo* grafo, char newID[]) {
 //
 int createEdge(Grafo* grafo, char vOrigin[], char vDestiny[], float weight) {
     Adjacent* new;
+
+    int lastID = getLastAdjacentId(grafo);
+
     while (grafo != NULL) {
         if (strcmp(grafo->vertex, fromLocationToGeocode(vOrigin)) == 0) {
             new = malloc(sizeof(struct Adjacencia_Registo));
             if (new != NULL) {
                 strcpy(new, fromLocationToGeocode(vDestiny));
+                new->id = (lastID)+1;
                 new->weight = weight;
                 new->visited = 0;
                 new->next = NULL;
@@ -329,8 +387,8 @@ int addClientsToVertex(Grafo* grafo, Client* clients, char loc[], int idClient) 
                             
                         }
                         return(1); // Indicate successful addition of the client
-                    } 
-                    else return(-1); // Indicate that the client's address does not match the vertex
+                    }
+                    else return(0); // Indicate that the client's address does not match the vertex
                 }
                 client = client->next;
             }
@@ -619,6 +677,326 @@ void listClientsByGeocode(Client* clients, char loc[]) {
 
 #pragma endregion
 
+#pragma region List_Radius_Functions
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ */
+void visitedVertex(Grafo* grafo) {
+    while (grafo != NULL) {
+        grafo->visited = 0;
+        grafo = grafo->next;
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param geocode 
+ * @return Grafo* 
+ */
+Grafo* findNode(Grafo* grafo, char geocode[]) {
+    while (grafo != NULL)
+    {
+        if (strcmp(grafo->vertex, geocode) == 0 && (grafo->visited == 0 || grafo->visited == 1)) return(grafo);
+        grafo = grafo->next;
+    }
+    return(NULL);
+}
+
+/**
+ * @brief 
+ * 
+ * @param node 
+ * @param type 
+ * @param radius 
+ * @param currentWeight 
+ * @param grafo 
+ */
+void traverseEdgesDFS(Grafo* node, char type[], float radius, float currentWeight, Grafo* grafo) {
+    if (node->visited == 1) return;
+    node->visited = 1;
+
+    Meio* meios = node->meio;
+
+    while (meios != NULL) {
+        if ((strcmp(meios->type, type) == 0) && (currentWeight <= radius)) {
+            node->visited = 2;
+            printf("\n\nMeio: %s -> %d: %s | %.2f | %.2f | %.2f |;", 
+                fromGeocodeToLocation(meios->location), meios->code, meios->type,
+                meios->battery, meios->autonomy, meios->cost);
+        }
+        meios = meios->next;
+    }
+
+    Adjacent* adj = node->adjacent;
+    while (adj != NULL) {
+        printf(" -> %s\n:", fromGeocodeToLocation(adj->vertex));
+        Grafo* nextNode = findNode(grafo, adj->vertex);
+        if (nextNode != NULL) {
+            float newWeight = currentWeight + adj->weight;
+            traverseEdgesDFS(nextNode, type, radius, newWeight, grafo);
+        }
+        adj = adj->next;
+    }
+
+    if (node->visited == 1) node->visited = 1;
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param geocode 
+ * @param type 
+ * @param radius 
+ */
+void listMeiosPerRadius(Grafo* grafo, char geocode[], char type[], float radius) {
+    if (grafo != NULL) {
+        Grafo* clientNode = findNode(grafo, geocode);
+        if (clientNode == NULL) {
+            printf("This geocode doesn't exist!");
+            return;
+        }
+        traverseEdgesDFS(clientNode, type, radius, 0.0, grafo);
+        visitedVertex(grafo);
+    }
+    else printf("Nodes list is empty!\n");
+}
+
+#pragma endregion
+
+#pragma region List_Radius_Functions_2
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @return int 
+ */
+int numVertices(Grafo* grafo) {
+    int count = 0;
+    while (grafo != NULL) {
+        if (grafo->vertex != NULL) {
+            count++;
+            grafo = grafo->next;
+        }
+    }
+    return(count);
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param id 
+ * @return char* 
+ */
+char* location(Grafo* grafo, int id) {
+    char* loc = malloc(50 * sizeof(char));
+    while (grafo != NULL) {
+        if (grafo->id == id) {
+            strcpy(loc, grafo->vertex);
+            return(loc);
+        }
+        else grafo = grafo->next;
+    }
+    return(NULL);
+}
+
+/**
+ * @brief 
+ * 
+ * @param meio 
+ * @param loc 
+ * @param type 
+ */
+void meioList(Meio* meio, char loc[], char type[]) {
+    int found = 0;
+
+    while (meio != NULL)
+    {
+        if ((strcmp(meio->location, loc) == 0) && (strcmp(meio->type, type) == 0))
+        {
+            printf("-------------------------------------------------------------------------------------------------------------------\n");
+            printf("CODE %d\nBATTERY %.2f \nLOCATION %s\nCOST %.2f\nTYPE %s\n", meio->code, meio->battery, meio->location, meio->cost, meio->type);
+            printf("-------------------------------------------------------------------------------------------------------------------\n");
+            found = 1;
+        }
+        meio = meio->next;
+    }
+
+    if (!found)
+    {
+        printf("Location within intended radius, however, there is no %s in %s\n", type, loc);
+        printf("----------------------------------------------------------------------------------------------------------------------\n");
+    }
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param meio 
+ * @param path 
+ * @param currentVertex 
+ * @param type 
+ */
+void listMeiosPathAux(Grafo* grafo, Meio* meio, int path[], int currentVertex, char type[]) {
+    if (path[currentVertex] == -1) return;
+        
+    listMeiosPathAux(grafo, meio, path, path[currentVertex], type);
+
+    char* loc = location(grafo, currentVertex);
+    meioList(meio, loc, type);
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param meio 
+ * @param path 
+ * @param currentVertex 
+ * @param start 
+ * @param type 
+ */
+void listMeiosPath(Grafo* grafo, Meio* meio, int path[], int currentVertex, int start, char type[]) {
+    char* loc = location(grafo, start);
+    meioList(meio, loc, type);
+
+    if (path[currentVertex] == -1) return;
+
+    listMeiosPathAux(grafo, meio, path, path[currentVertex], type);
+
+    char* locat = location(grafo, currentVertex);
+    meioList(meio, locat, type);
+}
+
+/**
+ * @brief Get the Shortest Distance object
+ * 
+ * @param distances 
+ * @param visited 
+ * @param vertices 
+ * @return int 
+ */
+int getShortestDistance(int distances[], int visited[], int vertices) {
+    int min = MIN;
+    int indexMin = -1;
+    for (int i = 0; i < vertices; i++) {
+        if (visited[i] == 0 && distances[i] <= min) {
+            min = distances[i];
+            indexMin = i;
+        }
+    }
+    return(indexMin);
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param path 
+ * @param currentVertex 
+ */
+void printPath(Grafo* grafo, int path[], int currentVertex) {
+    char* currentLoc = location(grafo, currentVertex);
+    if (path[currentVertex] == -1) {
+        printf("%d: %s -> ", currentVertex, currentLoc);
+        return;
+    }
+    printPath(grafo, path, path[currentVertex]);
+    printf("%d: %s -> ", currentVertex, currentLoc);
+}
+
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param path 
+ * @param distances 
+ * @param start 
+ * @param end 
+ */
+void printShortestPath(Grafo* grafo, int path[], int distances[], int start, int end) {
+    char* startVertex = location(grafo, start);
+    char* endVertex = location(grafo, end);
+    if(strcmp(endVertex, startVertex) == 0) return;
+    else {
+        printf("Shortest path between %d: %s and %d: %s:\n", start, startVertex, end, endVertex);
+        printPath(grafo, path, end);
+        printf("\nTotal distance: %d meters\n", distances[end]);
+    }
+}
+
+
+void findBoundaryPaths(Grafo* grafo, Meio* meio, int start, int boundry, char type[]) {
+    int v = numVertices(grafo);
+    v = v + 1;
+    int* distances = malloc(v * sizeof(int));
+    int* visited = malloc(v * sizeof(int));
+    int* path = malloc(v * sizeof(int));
+
+    if (existVertex(grafo, start) == 1) {
+        printf("Vertex not found\n");
+        return;
+    }
+
+    for (int i = 0; i < v; i++) {
+        distances[i] = MIN;
+        visited[i] = 0;
+        path[i] = -1;
+    }
+
+    distances[start] = 0;
+
+    for (int i = 0; i < v - 1; i++) {
+        int currentVertex = getShortestDistance(distances, visited, v);
+        path[currentVertex] = 1;
+
+        Grafo* head = grafo;
+
+        while (head != NULL) {
+            if (head->id == currentVertex) {
+                Adjacent* adj = head->adjacent;
+
+                while (adj != NULL) {
+                    int adjacentVertex = adj->id;
+                    int edgeWeight = adj->weight;
+
+                    if (!visited[adjacentVertex] && distances[currentVertex] != MIN &&
+                        distances[currentVertex] + edgeWeight < distances[adjacentVertex]) {
+                        
+                        distances[adjacentVertex] = distances[currentVertex] + edgeWeight;
+                        path[adjacentVertex] = currentVertex;
+                    }
+                    adj = adj->next;
+                }
+                break;
+            }
+            head = head->next;
+        }
+    }
+
+    printf("Paths from vertex %d within distance limit %d:\n", start, boundry);
+    for (int i = 0; i < v; i++) {
+        if (distances[i] <= boundry) {
+            printShortestPath(grafo, path, distances, start, i);
+            listMeiosPathAux(grafo, meio, path, i, type);
+        }
+    }
+
+    free(distances);
+    free(visited);
+    free(path);
+}
+
+#pragma endregion
+
 #pragma region Save_Functions
 
 /**
@@ -802,7 +1180,12 @@ int saveGrafoMeios_txt(Grafo* grafo) {
     return(0);
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @return int 
+ */
 int saveGrafoClients_bin(Grafo* grafo) {
     FILE* fp = fopen("../data/Binary_Files/Grafo_Files/Grafo_Clients.bin", "wb");
 
@@ -832,7 +1215,12 @@ int saveGrafoClients_bin(Grafo* grafo) {
     return(0);
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @return int 
+ */
 int saveGrafoClients_txt(Grafo* grafo) {
     FILE* fp = fopen("../data/Text_Files/Grafo_Files/Grafo_Clients.txt", "w");
 
@@ -1021,7 +1409,7 @@ Grafo* readGrafoMeios_bin(Grafo* grafo, Meio* meios) {
  */
 Grafo* readGrafoMeios_txt(Grafo* grafo, Meio* meios) {
     FILE* fp = fopen("../data/Text_Files/Grafo_Files/Grafo_Meios.txt", "r");
-
+    
     if (fp != NULL) {
         char line[1024];
 
@@ -1051,11 +1439,21 @@ Grafo* readGrafoMeios_txt(Grafo* grafo, Meio* meios) {
             }
         }
         fclose(fp);
+    } 
+    else {
+        printf("Erro ao abrir o arquivo %s\n", "../data/Text_Files/Grafo_Files/Grafo_Meios.txt");
+        return;
     }
     return(grafo);
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param clients 
+ * @return Grafo* 
+ */
 Grafo* readGrafoClients_bin(Grafo* grafo, Client* clients) {
     FILE* fp = fopen("../data/Binary_Files/Grafo_Files/Grafo_Clients.bin", "rb");
 
@@ -1083,7 +1481,13 @@ Grafo* readGrafoClients_bin(Grafo* grafo, Client* clients) {
     return(grafo);
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param grafo 
+ * @param clients 
+ * @return Grafo* 
+ */
 Grafo* readGrafoClients_txt(Grafo* grafo, Client* clients) {
     FILE* fp = fopen("../data/Text_Files/Grafo_Files/Grafo_Clients.txt", "r");
 

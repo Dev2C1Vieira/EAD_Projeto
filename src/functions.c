@@ -351,7 +351,7 @@ void listAvailableRecords_Meio(Meio* start) {
     while (start != NULL) { // goes through the linked list until it finds the last record
         if (start->available == 1) {
             if (start->status == 0) { // verifies if the record status is 1 then it is booked, but if 0 then it is yet to be booked
-                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s %s  |", start->code, start->type, 
+                printf("\n|     %-8d %-20s %-12.2f %-14.2f %-11.2f %-17s %-14s   |", start->code, start->type, 
                     start->battery, start->autonomy, start->cost, "Por Reservar", fromGeocodeToLocation(start->location)); 
                     // prints the informations of the record in the console
             }
@@ -1493,7 +1493,15 @@ resMeios* cancelbookMeio(resMeios* head, Meio* meios, int id, struct periodDateT
     resMeios* aux = head;
     
     while (aux != NULL) {
-        if (aux->id == id) { // find the reservation you want to cancel            
+        if ((aux->id == id) && (aux->available == 0)) {
+            clear();
+            red();
+            printf("That reservation doens't exist!");
+            reset();
+            return(head);
+        }
+
+        if ((aux->id == id) && (aux->available == 1)) { // find the reservation you want to cancel            
             aux->unbookDate = endDateTime;
             timediff = returnTimeDiff(aux->bookDate, aux->unbookDate);
             aux->totalCost = calculateTotalCost(aux, id, timediff);
@@ -1502,7 +1510,14 @@ resMeios* cancelbookMeio(resMeios* head, Meio* meios, int id, struct periodDateT
             
             aux->meios->status = 0;
 
-            //aux->meios = NULL ????????
+            red();
+            printf("\n\nA mean containing the code");
+            yellow();
+            printf(" %d ", aux->meios->code);
+            reset();
+            red();
+            printf("was successfully unbooked!");
+            reset();
         }
         aux = aux->next;
     }
